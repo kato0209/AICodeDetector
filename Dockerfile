@@ -15,6 +15,7 @@ USER $USERNAME
 WORKDIR /home/kato/GPTSniffer
 COPY requirements.txt /home/kato/GPTSniffer
 
-RUN sudo apt-get install -y python3 python3-pip
+RUN sudo apt-get update && \
+    sudo apt-get install -y python3 python3-pip
 RUN pip3 install torch torchvision torchaudio
 RUN pip3 install -r /home/kato/GPTSniffer/requirements.txt
