@@ -12,4 +12,5 @@
     "workspaceFolder": "/home/kato/GPTSniffer",
     "remoteUser": "kato",
     "workspaceMount": "source=${localWorkspaceFolder},target=/home/kato/GPTSniffer,type=bind,consistency=cached",
+    "runArgs": ["--gpus", "all"]
 }
