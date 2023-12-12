@@ -55,7 +55,7 @@ def model_save(model):
     logging.info(f"Model saved to {model_save_path}")
 
 # define the dataset
-DATASET_PATH = 'datasets/unpaired'
+DATASET_PATH = 'datasets/Java/'
 class CodeDataset(Dataset):
     def __init__(self, directory):
         self.samples = []
