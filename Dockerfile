@@ -20,4 +20,5 @@ RUN sudo apt-get update && \
     sudo apt-get install -y python3 python3-pip
 RUN pip3 install torch torchvision torchaudio
 RUN pip3 install antlr4-python3-runtime
+RUN pip3 install transformers[torch]
 RUN pip3 install -r requirements.txt
