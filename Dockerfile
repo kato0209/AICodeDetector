@@ -1,6 +1,7 @@
 FROM nvidia/cuda:12.1.1-runtime-ubuntu22.04 as base
 
 RUN apt-get update && apt-get install -y sudo 
+RUN sudo apt-get install git
 
 ARG USERNAME=kato
 ARG GROUPNAME=docker
