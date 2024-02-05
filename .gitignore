@@ -1,3 +1,5 @@
 .env
 temp_test_data
 datasets/Python/temp_test/
+saved_model
+results
