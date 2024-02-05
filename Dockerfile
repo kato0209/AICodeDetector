@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.1.1-base-ubuntu20.04 as base
+FROM nvidia/cuda:12.1.1-runtime-ubuntu22.04 as base
 
 RUN apt-get update && apt-get install -y sudo 
 RUN apt-get update && apt-get install -y git
