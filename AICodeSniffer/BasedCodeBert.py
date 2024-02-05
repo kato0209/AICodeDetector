@@ -33,7 +33,6 @@ from torch.utils.data import random_split
 from os.path import join
 from datetime import datetime
 import logging
-from torchinfo import summary
 
 
 # Set device to GPU if available, otherwise use CPU
@@ -43,8 +42,24 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # Define the tokenizer and the model
 tokenizer = AutoTokenizer.from_pretrained("microsoft/codebert-base")
 model = AutoModelForSequenceClassification.from_pretrained("microsoft/codebert-base")
-#print(model)
-#exit()
+
+# Define the classification head
+N_MSD = 5
+class CustomClassificationHead(nn.Module):
+    def __init__(self,config):
+        super(CustomClassificationHead, self).__init__()
+        print(config.hidden_size)
+        self.dense = nn.Linear(config.hidden_size, config.hidden_size)
+        self.dropouts = nn.ModuleList([nn.Dropout(0.2) for _ in range(N_MSD)])
+        self.regressor = nn.Linear(config.hidden_size, 2)
+    
+    def forward(self, features, **kwargs):
+        logits = sum([self.regressor(dropout(features)) for dropout in self.dropouts])/N_MSD
+        return logits
+
+# Replace the classification head
+model.classifier = CustomClassificationHead(model.config)
+
 
 def model_save(model):
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
