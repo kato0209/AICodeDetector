@@ -48,13 +48,20 @@ N_MSD = 5
 class CustomClassificationHead(nn.Module):
     def __init__(self,config):
         super(CustomClassificationHead, self).__init__()
-        print(config.hidden_size)
         self.dense = nn.Linear(config.hidden_size, config.hidden_size)
         self.dropouts = nn.ModuleList([nn.Dropout(0.2) for _ in range(N_MSD)])
         self.regressor = nn.Linear(config.hidden_size, 2)
     
     def forward(self, features, **kwargs):
-        logits = sum([self.regressor(dropout(features)) for dropout in self.dropouts])/N_MSD
+        # featuresの形状は [batch_size, sequence_length, hidden_size] を想定
+        batch_size, sequence_length, hidden_size = features.size()
+
+        # featuresを [batch_size, hidden_size] に変形
+        features = features.view(batch_size, -1, hidden_size).mean(dim=1)
+
+        # 線形変換とドロップアウトを適用
+        features = self.dense(features)
+        logits = sum([self.regressor(dropout(features)) for dropout in self.dropouts]) / N_MSD
         return logits
 
 # Replace the classification head
