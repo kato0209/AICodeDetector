@@ -4,8 +4,9 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from torch.utils.data import DataLoader, Dataset
 from sklearn.metrics import accuracy_score
 import torch.nn as nn
+from datetime import datetime
 import logging
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report, confusion_matrix
 from confusion_matrix import plot_confusion_matrix
 from custom_bert import CustomBertModel
 from code_dataset_model import CodeDataset
@@ -13,7 +14,7 @@ from code_dataset_model import CodeDataset
 cbm = CustomBertModel()
 cbm.set_classification_head()
 model = cbm.return_model()
-model_path = 'saved_model/model_20240206_065502.pth' 
+model_path = 'saved_model/model_20240212_060218.pth' 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model.load_state_dict(torch.load(model_path, map_location=device))
 model.to(device)
@@ -21,9 +22,18 @@ model.to(device)
 
 # define the dataset
 #DATASET_PATH = 'datasets/Python/temp_test'
-DATASET_PATH = 'datasets/go/test'
+DATASET_PATH = 'datasets/go/test2'
 datasets = CodeDataset(DATASET_PATH, cbm.tokenizer)
 test_dataloader = DataLoader(datasets, batch_size=32, shuffle=False)
+
+
+log_path = './logs'
+os.makedirs(log_path, exist_ok=True)
+timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+logging.basicConfig(filename=os.path.join(log_path, f'test_{timestamp}.log'),
+                    format='%(asctime)s - %(levelname)s - %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S',
+                    level=logging.INFO)
 
 model.eval()
 y_true = []
@@ -40,8 +50,12 @@ with torch.no_grad():
         y_pred += predictions.tolist()
 accuracy = accuracy_score(y_true, y_pred)
 print(accuracy)
-
+print(y_true)
+print(y_pred)
 
 target_names = ['ChatGPT','Human']
+logging.info('Confusion Matrix')
 cm = confusion_matrix(y_true, y_pred)
 plot_confusion_matrix(cm, target_names, title='Confusion Matrix')
+logging.info('Classification Report')
+logging.info(classification_report(y_true, y_pred, target_names=target_names))
