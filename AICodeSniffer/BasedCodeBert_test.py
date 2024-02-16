@@ -14,7 +14,7 @@ from code_dataset_model import CodeDataset
 cbm = CustomBertModel()
 cbm.set_classification_head()
 model = cbm.return_model()
-model_path = 'saved_model/model_20240212_060218.pth' 
+model_path = 'saved_model/model_20240206_065502.pth' 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model.load_state_dict(torch.load(model_path, map_location=device))
 model.to(device)
@@ -22,7 +22,7 @@ model.to(device)
 
 # define the dataset
 #DATASET_PATH = 'datasets/Python/temp_test'
-DATASET_PATH = 'datasets/go/test2'
+DATASET_PATH = 'datasets/Python/test'
 datasets = CodeDataset(DATASET_PATH, cbm.tokenizer)
 test_dataloader = DataLoader(datasets, batch_size=32, shuffle=False)
 
@@ -53,6 +53,8 @@ print(accuracy)
 print(y_true)
 print(y_pred)
 
+
+logging.info(model_path)
 target_names = ['ChatGPT','Human']
 logging.info('Confusion Matrix')
 cm = confusion_matrix(y_true, y_pred)
