@@ -12,9 +12,9 @@ from custom_bert import CustomBertModel
 from code_dataset_model import CodeDataset
 
 cbm = CustomBertModel()
-cbm.set_classification_head()
+#cbm.set_classification_head()
 model = cbm.return_model()
-model_path = 'saved_model/model_20240206_065502.pth' 
+model_path = 'saved_model/model_20240220_052915.pth' 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model.load_state_dict(torch.load(model_path, map_location=device))
 model.to(device)
@@ -22,7 +22,7 @@ model.to(device)
 
 # define the dataset
 #DATASET_PATH = 'datasets/Python/temp_test'
-DATASET_PATH = 'datasets/Python/test'
+DATASET_PATH = 'datasets/go/test2'
 datasets = CodeDataset(DATASET_PATH, cbm.tokenizer)
 test_dataloader = DataLoader(datasets, batch_size=32, shuffle=False)
 
