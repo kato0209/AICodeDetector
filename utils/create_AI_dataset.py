@@ -59,10 +59,11 @@ Note: Do not output anything other than the code snippet! """
 
 
 # レスポンスを保存するファイル名
-file_path = "datasets/all/no_label"
+file_path = "datasets/all/AI"
 extension = "go"
 
 
 # APIを呼び出してレスポンスを取得し、ファイルに保存
-saved_file  = query_chatgpt_and_save(prompt, api_key, file_path, extension)
-print("Response saved to", saved_file )
+for i in range(90):
+    saved_file  = query_chatgpt_and_save(prompt, api_key, file_path, extension)
+    print("Response saved to", saved_file )

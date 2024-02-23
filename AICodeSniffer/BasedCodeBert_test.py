@@ -14,7 +14,7 @@ from code_dataset_model import CodeDataset
 cbm = CustomBertModel()
 #cbm.set_classification_head()
 model = cbm.return_model()
-model_path = 'saved_model/model_20240220_052915.pth' 
+model_path = 'saved_model/model_20240223_050425.pth' 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model.load_state_dict(torch.load(model_path, map_location=device))
 model.to(device)
@@ -22,7 +22,7 @@ model.to(device)
 
 # define the dataset
 #DATASET_PATH = 'datasets/Python/temp_test'
-DATASET_PATH = 'datasets/go/test2'
+DATASET_PATH = 'datasets/Python/temp_test'
 datasets = CodeDataset(DATASET_PATH, cbm.tokenizer)
 test_dataloader = DataLoader(datasets, batch_size=32, shuffle=False)
 
@@ -49,9 +49,9 @@ with torch.no_grad():
         y_true += labels.tolist()
         y_pred += predictions.tolist()
 accuracy = accuracy_score(y_true, y_pred)
-print(accuracy)
 print(y_true)
 print(y_pred)
+print(accuracy)
 
 
 logging.info(model_path)
