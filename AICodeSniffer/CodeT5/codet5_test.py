@@ -8,17 +8,20 @@ from datetime import datetime
 import logging
 from sklearn.metrics import classification_report, confusion_matrix
 
-from custom_bert import CustomBertModel
 
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from utils.code_dataset_model import CodeDataset
-from utils.confusion_matrix import plot_confusion_matrix
 
-cbm = CustomBertModel()
+from utils.confusion_matrix import plot_confusion_matrix
+from utils.code_dataset_model import CodeDataset
+
+from custom_codet5 import CustomCodeT5Model
+
+# Define the tokenizer and the model
+ccm = CustomCodeT5Model()
 #cbm.set_classification_head()
-model = cbm.return_model()
-model_path = 'saved_model/model_20240223_050425.pth' 
+model = ccm.return_model()
+model_path = 'saved_model/model_20240301_044357.pth' 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model.load_state_dict(torch.load(model_path, map_location=device))
 model.to(device)
@@ -26,8 +29,8 @@ model.to(device)
 
 # define the dataset
 #DATASET_PATH = 'datasets/Python/temp_test'
-DATASET_PATH = 'datasets/Python/temp_test'
-datasets = CodeDataset(DATASET_PATH, cbm.tokenizer)
+DATASET_PATH = 'datasets/Python/test'
+datasets = CodeDataset(DATASET_PATH, ccm.tokenizer)
 test_dataloader = DataLoader(datasets, batch_size=32, shuffle=False)
 
 

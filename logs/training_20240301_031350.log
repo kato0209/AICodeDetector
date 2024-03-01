@@ -1,0 +1,14 @@
+2024-03-01 04:43:57 - INFO - time to inference: 35.825817346572876 seconds
+2024-03-01 04:43:57 - INFO - Confusion Matrix
+2024-03-01 04:43:57 - INFO - Normalized confusion matrix
+2024-03-01 04:43:57 - INFO - Classification Report
+2024-03-01 04:43:57 - INFO -               precision    recall  f1-score   support
+
+     ChatGPT       0.99      0.96      0.98       191
+       Human       0.96      0.99      0.98       180
+
+    accuracy                           0.98       371
+   macro avg       0.98      0.98      0.98       371
+weighted avg       0.98      0.98      0.98       371
+
+2024-03-01 04:43:57 - INFO - Model saved to ./saved_model/model_20240301_044357.pth

@@ -21,10 +21,13 @@ from datetime import datetime
 import logging
 
 from custom_bert import CustomBertModel
-from model_save import model_save
-from code_dataset_model import CodeDataset
-from custom_trainer import CustomTrainer
-from confusion_matrix import plot_confusion_matrix
+
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from utils.model_save import model_save
+from utils.code_dataset_model import CodeDataset
+from utils.custom_trainer import CustomTrainer
+from utils.confusion_matrix import plot_confusion_matrix
 
 # Set device to GPU if available, otherwise use CPU
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
