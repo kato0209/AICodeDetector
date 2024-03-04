@@ -20,7 +20,7 @@ from os.path import join
 from datetime import datetime
 import logging
 
-from custom_codet5 import CustomCodeT5Model
+from custom_graph_code_bert import CustomGraphCodeBertModel
 
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -35,13 +35,13 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 #device = torch.device('cpu')
 
 # Define the tokenizer and the model
-ccm = CustomCodeT5Model()
+cgm = CustomGraphCodeBertModel()
 #cbm.set_classification_head()
-model = ccm.return_model()
+model = cgm.return_model()
 
 # define the dataset
 DATASET_PATH = 'datasets/all'
-datasets = CodeDataset(DATASET_PATH, ccm.tokenizer)
+datasets = CodeDataset(DATASET_PATH, cgm.tokenizer)
 
 # データセットの全長を取得
 dataset_size = len(datasets)
