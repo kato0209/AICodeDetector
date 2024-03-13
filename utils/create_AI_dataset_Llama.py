@@ -1,23 +1,22 @@
 from transformers import AutoTokenizer, LlamaForCausalLM
 from tqdm import tqdm
+import torch
 
 # initialize the model
 
-model_path = "codellama/CodeLlama-13b-Instruct-hf"
-model = LlamaForCausalLM.from_pretrained(model_path, device_map="auto")
+model_path = "unsloth/codellama-7b-bnb-4bit"
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+model = LlamaForCausalLM.from_pretrained(model_path, device_map=device)
 tokenizer = AutoTokenizer.from_pretrained(model_path)
 
 # HumanEval helper
 
 def generate_one_completion(prompt: str):
-    tokenizer.pad_token = tokenizer.eos_token
-    inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=4096)
+    inputs = tokenizer(prompt, return_tensors="pt", truncation=True)
 
     # Generate
-    generate_ids = model.generate(inputs.input_ids.to("cuda"), max_new_tokens=384, do_sample=True, top_p=0.75, top_k=40, temperature=0.1)
-    completion = tokenizer.batch_decode(generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
-    completion = completion.replace(prompt, "").split("\n\n\n")[0]
+    generate_ids = model.generate(inputs.input_ids.to(device), do_sample=True, top_p=0.75, temperature=0.1)
 
-    return completion
+    return generate_ids
 
 print(generate_one_completion("hello world"))
