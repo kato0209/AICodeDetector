@@ -21,7 +21,7 @@ from custom_graph_code_bert import CustomGraphCodeBertModel
 cgm = CustomGraphCodeBertModel()
 #cbm.set_classification_head()
 model = cgm.return_model()
-model_path = 'saved_model/model_20240301_044357.pth' 
+model_path = 'saved_model/model_20240314_084111.pth' 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model.load_state_dict(torch.load(model_path, map_location=device))
 model.to(device)
@@ -29,7 +29,7 @@ model.to(device)
 
 # define the dataset
 #DATASET_PATH = 'datasets/Python/temp_test'
-DATASET_PATH = 'datasets/Python/test'
+DATASET_PATH = 'datasets/go/train'
 datasets = CodeDataset(DATASET_PATH, cgm.tokenizer)
 test_dataloader = DataLoader(datasets, batch_size=32, shuffle=False)
 

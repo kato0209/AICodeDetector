@@ -65,7 +65,7 @@ logging.basicConfig(filename=os.path.join(log_path, f'training_{timestamp}.log')
 training_args = TrainingArguments(
     output_dir='./results',
     num_train_epochs=12,
-    per_device_train_batch_size=16,
+    per_device_train_batch_size=32,
     per_device_eval_batch_size=32,
     warmup_steps=500,
     weight_decay=0.01,
@@ -82,7 +82,7 @@ training_args = TrainingArguments(
     # hub_token=HfFolder.get_token(),
 )
 
-trainer = CustomTrainer(
+trainer = Trainer(
     model=model,
     args=training_args,
     train_dataset=train_dataset

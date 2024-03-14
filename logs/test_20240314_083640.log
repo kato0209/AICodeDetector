@@ -1,0 +1,13 @@
+2024-03-14 08:37:24 - INFO - saved_model/model_20240314_082950.pth
+2024-03-14 08:37:24 - INFO - Confusion Matrix
+2024-03-14 08:37:24 - INFO - Normalized confusion matrix
+2024-03-14 08:37:24 - INFO - Classification Report
+2024-03-14 08:37:24 - INFO -               precision    recall  f1-score   support
+
+     ChatGPT       1.00      0.98      0.99      4452
+       Human       0.03      0.20      0.05        10
+
+    accuracy                           0.98      4462
+   macro avg       0.51      0.59      0.52      4462
+weighted avg       1.00      0.98      0.99      4462
+

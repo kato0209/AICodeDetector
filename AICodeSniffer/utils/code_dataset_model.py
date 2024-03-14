@@ -30,4 +30,5 @@ class CodeDataset(Dataset):
         inputs = self.tokenizer.encode_plus(code, padding='max_length', max_length=512, truncation=True)
         input_ids = inputs['input_ids']
         attention_mask = inputs['attention_mask']
-        return {'input_ids': torch.tensor(input_ids, dtype=torch.long), 'attention_mask': torch.tensor(attention_mask, dtype=torch.long), 'labels': torch.tensor(label, dtype=torch.long)}
+        return {'input_ids': torch.tensor(input_ids, dtype=torch.long), 'attention_mask': torch.tensor(attention_mask, dtype=torch.float), 'labels': torch.tensor(label, dtype=torch.float)}
+        #return {'input_ids': torch.tensor(input_ids, dtype=torch.long), 'attention_mask': torch.tensor(attention_mask, dtype=torch.long), 'labels': torch.tensor(label, dtype=torch.long)}

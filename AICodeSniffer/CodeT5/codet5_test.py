@@ -19,9 +19,9 @@ from custom_codet5 import CustomCodeT5Model
 
 # Define the tokenizer and the model
 ccm = CustomCodeT5Model()
-#cbm.set_classification_head()
+#ccm.set_classification_head()
 model = ccm.return_model()
-model_path = 'saved_model/model_20240301_044357.pth' 
+model_path = 'saved_model/model_20240314_081012.pth' 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model.load_state_dict(torch.load(model_path, map_location=device))
 model.to(device)

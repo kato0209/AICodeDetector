@@ -24,8 +24,8 @@ class CustomClassificationHead(nn.Module):
 class CustomCodeT5Model(nn.Module):
     def __init__(self):
         super(CustomCodeT5Model, self).__init__()
-        self.tokenizer = AutoTokenizer.from_pretrained("microsoft/graphcodebert-base")
-        self.model = AutoModelForSequenceClassification.from_pretrained("microsoft/graphcodebert-base")
+        self.tokenizer = AutoTokenizer.from_pretrained("Salesforce/codet5-small")
+        self.model = AutoModelForSequenceClassification.from_pretrained("Salesforce/codet5-small")
     
     def set_classification_head(self):
         self.model.classifier = CustomClassificationHead(self.model.config)
