@@ -36,7 +36,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Define the tokenizer and the model
 ccm = CustomCodeT5Model()
-ccm.set_classification_head()
+#ccm.set_classification_head()
 model = ccm.return_model()
 
 # define the dataset
@@ -66,7 +66,7 @@ logging.basicConfig(filename=os.path.join(log_path, f'training_{timestamp}.log')
 training_args = TrainingArguments(
     output_dir='./results',
     num_train_epochs=12,
-    per_device_train_batch_size=32,
+    per_device_train_batch_size=16,
     per_device_eval_batch_size=32,
     warmup_steps=500,
     weight_decay=0.01,
@@ -83,7 +83,7 @@ training_args = TrainingArguments(
     # hub_token=HfFolder.get_token(),
 )
 
-trainer = Trainer(
+trainer = CustomTrainer(
     model=model,
     args=training_args,
     train_dataset=train_dataset

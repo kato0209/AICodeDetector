@@ -29,7 +29,7 @@ model.to(device)
 
 # define the dataset
 #DATASET_PATH = 'datasets/Python/temp_test'
-DATASET_PATH = 'datasets/Python/temp_test'
+DATASET_PATH = 'datasets/go/test2'
 datasets = CodeDataset(DATASET_PATH, ccm.tokenizer)
 test_dataloader = DataLoader(datasets, batch_size=32, shuffle=False)
 
