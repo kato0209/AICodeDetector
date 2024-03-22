@@ -18,7 +18,7 @@ from utils.code_dataset_model import CodeDataset
 from custom_codet5 import CustomCodeT5Model
 
 # Define the tokenizer and the model
-ccm = CustomCodeT5Model()
+ccm = CustomCodeT5Model() 
 #ccm.set_classification_head()
 model = ccm.return_model()
 model_path = 'saved_model/model_20240314_081012.pth' 
