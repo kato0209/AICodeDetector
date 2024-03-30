@@ -39,7 +39,7 @@ cbm = CustomBertModel()
 model = cbm.return_model()
 
 # define the dataset
-DATASET_PATH = 'datasets/go/train'
+DATASET_PATH = 'datasets/Java/train'
 datasets = CodeDataset(DATASET_PATH, cbm.tokenizer)
 
 # データセットの全長を取得
