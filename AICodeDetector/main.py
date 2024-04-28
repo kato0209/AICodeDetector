@@ -4,8 +4,10 @@ from preprocessing import preprocess_and_save
 from load_model import load_mask_filling_model
 from filling_mask import replace_masks
 from extract_fill import extract_fills, apply_extracted_fills
+from code_dataset import CodeDataset
 import argparse
 import torch
+from torch.utils.data import DataLoader, random_split
 
 
 parser = argparse.ArgumentParser()
@@ -123,22 +125,44 @@ def remove_mask_space(text, args, **kwargs):
 ''']
 
 #tokens = tokenizer(example_code)
-tokens = example_codes[0].split(' ')
+
+model_config = {}
+model_config = load_mask_filling_model(args, args.mask_filling_model_name, model_config)
+
+# define the dataset
+DATASET_PATH = 'train2'
+datasets = CodeDataset(DATASET_PATH, model_config)
+
+# データセットの全長を取得
+dataset_size = len(datasets)
+train_size = int(0.8 * dataset_size)
+test_size = dataset_size - train_size
+
+# データセットをランダムに分割
+train_dataset, test_dataset = random_split(datasets, [train_size, test_size])
+
+train_dataloader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+test_dataloader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+
+for batch in test_dataloader:
+    input_ids = batch['input_ids'].to(device)
+    #print(input_ids)
+
+"""
 span_length = 2
 pct = 0.3
 buffer_size = 1
-masked_text = tokenize_and_mask(tokens, buffer_size, span_length, pct, ceil_pct=False)
-
+#masked_text = tokenize_and_mask(tokens, buffer_size, span_length, pct, ceil_pct=False)
+masked_texts = [tokenize_and_mask(x, buffer_size, span_length, pct, ceil_pct=False) for x in example_codes]
 _, base_model_name, SAVE_FOLDER = preprocess_and_save(args)
 
 model_config = {}
 model_config = load_mask_filling_model(args, args.mask_filling_model_name, model_config)
 
-#print(masked_text)
-masked_texts = [masked_text]
 raw_fills = replace_masks(masked_texts, model_config, args)
 #print(raw_fills)
 extracted_fills = extract_fills(raw_fills)
 #print(extracted_fills)
 perturbed_texts = apply_extracted_fills(masked_texts, extracted_fills)
-print(perturbed_texts)
+#print(perturbed_texts)
+"""
