@@ -7,6 +7,8 @@ from extract_fill import extract_fills, apply_extracted_fills
 from code_dataset import CodeDataset
 import argparse
 import torch
+import os
+import datetime
 from torch.utils.data import DataLoader, random_split
 
 
@@ -115,106 +117,78 @@ for key, value in args_dict.items():
 
 args = parser.parse_args(input_args)
 
-example_codes = ['''
-package main
-import (
-
-   // fmt package provides the function to print anything
-   "fmt"
- 
-   // math package is to use all the math-related predefined functions
-   "math"
-)
-func main() {
-   
-   // declaring the variables to store the value
-   
-   // of the coefficients of quadratic equation
-   var a, b, c float64
-   
-   // declaring a variable of float type to store discriminant
-   
-   // of the quadratic equation
-   var d float64
-   
-
-''', 
-'''
-package main
-
-import (
-	"log"
-	"os"
-)
-
-func appendToFile(filename, text string) {
-	// Open the file in append mode. If it doesn't exist, create it with permissions 0644.
-	file, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		log.Fatalf("Failed to open file: %s", err)
-	}
-	defer file.Close()
-
-	// Write the text to the file.
-	if _, err := file.WriteString(text + "\n"); err != nil {
-		log.Fatalf("Failed to write to file: %s", err)
-	}
-
-	log.Println("Text appended to file successfully.")
-}
-
-func main() {
-	text := "This is another line of text."
-	filename := "example.txt"
-
-	appendToFile(filename, text)
-}
-
-
-'''
-]
-
-
-"""
-#tokens = tokenizer(example_code)
-
 model_config = {}
 model_config = load_mask_filling_model(args, args.mask_filling_model_name, model_config)
 
 # define the dataset
 DATASET_PATH = 'train2'
-datasets = CodeDataset(DATASET_PATH, model_config, args)
 
-# データセットの全長を取得
-dataset_size = len(datasets)
-train_size = int(0.8 * dataset_size)
-test_size = dataset_size - train_size
+# humanのコードを収集
+human_codes = []
+human_code_dir = os.path.join(DATASET_PATH, 'human')
+for filename in os.listdir(human_code_dir):
+    with open(os.path.join(human_code_dir, filename), 'r') as f:
+        code = f.read()
+        human_codes.append(code)
 
-# データセットをランダムに分割
-train_dataset, test_dataset = random_split(datasets, [train_size, test_size])
+# chatGPTのコードを収集
+AI_codes = []
+AI_code_dir = os.path.join(DATASET_PATH, 'AI')
+for filename in os.listdir(AI_code_dir):
+    with open(os.path.join(AI_code_dir, filename), 'r') as f:
+        code = f.read()
+        AI_codes.append(code)
 
-train_dataloader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-test_dataloader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
-"""
+def pertubate_code(codes, model_config, args):
+    span_length = 2
+    pct = 0.3
+    buffer_size = 1
+    #masked_text = tokenize_and_mask(tokens, buffer_size, span_length, pct, ceil_pct=False)
+    masked_codes = [tokenize_and_mask(x, buffer_size, span_length, pct, ceil_pct=False) for x in codes]
 
+    raw_fills = replace_masks(masked_codes, model_config, args)
+    #print(raw_fills)
+    extracted_fills = extract_fills(raw_fills)
+    #print(extracted_fills)
+    perturbed_codes = apply_extracted_fills(masked_codes, extracted_fills)
+    #print(perturbed_texts)
 
+    return masked_codes, perturbed_codes 
 
-span_length = 2
-pct = 0.3
-buffer_size = 1
-#masked_text = tokenize_and_mask(tokens, buffer_size, span_length, pct, ceil_pct=False)
-masked_texts = [tokenize_and_mask(x, buffer_size, span_length, pct, ceil_pct=False) for x in example_codes]
-_, base_model_name, SAVE_FOLDER = preprocess_and_save(args)
+batch_size = 16
+file_path = 'train'
+extension = '.go'
 
-model_config = {}
-model_config = load_mask_filling_model(args, args.mask_filling_model_name, model_config)
+for i in range(0, len(human_codes), batch_size):
+    batch_codes = human_codes[i:i + batch_size]
+    human_masked_codes, human_perturbed_codes = pertubate_code(batch_codes, model_config, args)
 
-print(masked_texts)
-raw_fills = replace_masks(masked_texts, model_config, args)
-#print(raw_fills)
-extracted_fills = extract_fills(raw_fills)
-#print(extracted_fills)
-perturbed_texts = apply_extracted_fills(masked_texts, extracted_fills)
-print(perturbed_texts)
+    for j, code in enumerate(human_masked_codes):
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        output_file = f"{file_path}/human/mask-{j}-{timestamp}.{extension}"
+        with open(output_file, 'w') as file:
+            file.write(code)
 
+    for k, code in enumerate(human_perturbed_codes):
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        output_file = f"{file_path}/human/fill-{k}-{timestamp}.{extension}"
+        with open(output_file, 'w') as file:
+            file.write(code) 
+    
+
+for i in range(0, len(AI_codes), batch_size):
+    batch_codes = AI_codes[i:i + batch_size]
+    AI_masked_codes, AI_perturbed_codes = pertubate_code(batch_codes, model_config, args)
+
+    for j, code in enumerate(AI_masked_codes):
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        output_file = f"{file_path}/AI/mask-{j}-{timestamp}.{extension}"
+        with open(output_file, 'w') as file:
+            file.write(code)
+
+    for k, code in enumerate(AI_perturbed_codes):
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        output_file = f"{file_path}/AI/fill-{k}-{timestamp}.{extension}"
+        with open(output_file, 'w') as file:
+            file.write(code) 

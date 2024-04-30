@@ -3,6 +3,8 @@ import np
 
 def tokenize_and_mask(code, buffer_size, span_length, pct, ceil_pct=False):
     tokens = code.split(' ')
+    if len(tokens) > 128:
+        tokens = tokens[:128]
     mask_string = '<<<mask>>>'
 
     n_spans = pct * len(tokens) / (span_length + buffer_size * 2)

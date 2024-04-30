@@ -8,9 +8,10 @@ from filling_mask import replace_masks
 from extract_fill import extract_fills, apply_extracted_fills
 
 class CodeDataset(Dataset):
-    def __init__(self, directory_path, model_config):
+    def __init__(self, directory_path, model_config, args):
         self.samples = []
         self.model_config = model_config
+        self.args = args
 
         # humanのコードを収集
         human_code_dir = os.path.join(directory_path, 'human')
@@ -18,13 +19,14 @@ class CodeDataset(Dataset):
             with open(os.path.join(human_code_dir, filename), 'r') as f:
                 code = f.read()
                 self.samples.append((code, 0))
-
+    
         # chatGPTのコードを収集
         AI_code_dir = os.path.join(directory_path, 'AI')
         for filename in os.listdir(AI_code_dir):
             with open(os.path.join(AI_code_dir, filename), 'r') as f:
                 code = f.read()
                 self.samples.append((code, 1))
+                
             
     
     def __len__(self):

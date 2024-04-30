@@ -13,5 +13,5 @@ def replace_masks(texts, model_config, args):
     stop_id = model_config['mask_tokenizer'].encode(f"<extra_id_{max(n_expected)}>")[0]
     tokens = model_config['mask_tokenizer'](texts, return_tensors="pt", padding=True).to(args.DEVICE)
     # tokens = model_config['mask_tokenizer'](texts, return_tensors="pt", padding=True, return_token_type_ids=False).to(args.DEVICE)
-    outputs = model_config['mask_model'].generate(**tokens, max_length=512, do_sample=True, top_p=args.mask_top_p, num_return_sequences=1, eos_token_id=stop_id, temperature=args.mask_temperature)
+    outputs = model_config['mask_model'].generate(**tokens, max_length=128, do_sample=True, top_p=args.mask_top_p, num_return_sequences=1, eos_token_id=stop_id, temperature=args.mask_temperature)
     return model_config['mask_tokenizer'].batch_decode(outputs, skip_special_tokens=False)
