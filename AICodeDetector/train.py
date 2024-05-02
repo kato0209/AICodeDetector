@@ -9,7 +9,17 @@ from model import CustomBertModel
 import argparse
 import torch
 from torch.utils.data import DataLoader, random_split
+from transformers.optimization import AdamW, get_linear_schedule_with_warmup
+from utils.model_save import model_save
+from utils.confusion_matrix import plot_confusion_matrix
 
+import os
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.metrics import accuracy_score
+from datetime import datetime
+import logging
+from sklearn.metrics import classification_report, confusion_matrix
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', type=str, default="writing")
@@ -57,6 +67,11 @@ parser.add_argument('--max_comment_num', type=int, default=10)
 parser.add_argument('--max_def_num', type=int, default=5)
 parser.add_argument('--cut_def', action='store_true')
 parser.add_argument('--max_todo_num', type=int, default=3)
+parser.add_argument("--learning_rate", default=1e-5, type=float)
+parser.add_argument("--adam_epsilon", default=1e-6, type=float)
+parser.add_argument("--num_train_epochs", default=12, type=float)
+parser.add_argument("--warmup_ratio", default=0.06, type=float)
+parser.add_argument("--weight_decay", default=0.01, type=float)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -106,7 +121,7 @@ args_dict = {
     'max_comment_num': 10,
     'max_def_num': 5,
     'cut_def': False,
-    'max_todo_num': 3
+    'max_todo_num': 3,
 }
 
 input_args = []
@@ -134,18 +149,76 @@ train_dataset, test_dataset = random_split(datasets, [train_size, test_size])
 train_dataloader = DataLoader(train_dataset, batch_size=32, shuffle=True)
 test_dataloader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
-
-
 cbm = CustomBertModel()
 cbm.to(device)
 
+
+total_steps = int(len(train_dataloader) * args.num_train_epochs)
+warmup_steps = int(total_steps * args.warmup_ratio)
+no_decay = ["LayerNorm.weight", "bias"]
+optimizer_grouped_parameters = [
+    {
+        "params": [p for n, p in cbm.named_parameters() if not any(nd in n for nd in no_decay)],
+        "weight_decay": args.weight_decay,
+    },
+    {"params": [p for n, p in cbm.named_parameters() if any(nd in n for nd in no_decay)], "weight_decay": 0.0},
+]
+optimizer = AdamW(optimizer_grouped_parameters, lr=args.learning_rate, eps=args.adam_epsilon)
+scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps, num_training_steps=total_steps)
+
 cbm.train()
-for batch in train_dataloader:
-    input_ids = batch['input_ids'].to(device)
-    attention_mask = batch['attention_mask'].to(device)
-    labels = batch['labels'].to(device)
-    outputs = cbm(input_ids, attention_mask=attention_mask)
-    print(outputs)
-    exit()
+num_steps = 0
+for epoch in range(int(args.num_train_epochs)):
+    for batch in train_dataloader:
+        input_ids = batch['input_ids'].to(device)
+        attention_mask = batch['attention_mask'].to(device)
+        labels = batch['labels'].to(device)
+        outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels)
+        loss, cos_loss = outputs[0], outputs[1]
+        loss.backward()
+        optimizer.step()
+        scheduler.step()
+        cbm.zero_grad()
+        num_steps += 1
+        print(f"Epoch: {epoch}, Step: {num_steps}, Loss: {loss.item()}, Cosine Loss: {cos_loss.item()}")
+
+model_save(cbm)
+print("done training")
 
 
+# Test the model and print out the confusion matrix
+log_path = './logs'
+os.makedirs(log_path, exist_ok=True)
+timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+logging.basicConfig(filename=os.path.join(log_path, f'test_{timestamp}.log'),
+                    format='%(asctime)s - %(levelname)s - %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S',
+                    level=logging.INFO)
+
+cbm.eval()
+label_list, logit_list = [], []
+with torch.no_grad():
+    for batch in test_dataloader:
+        input_ids = batch['input_ids'].to(device)
+        attention_mask = batch['attention_mask'].to(device)
+        outputs = cbm(input_ids, attention_mask=attention_mask)
+        labels = batch["labels"].detach().cpu().numpy()
+        logits = outputs[0].detach().cpu().numpy()
+        predictions = torch.argmax(logits, dim=1)
+        label_list.append(labels)
+        logit_list.append(logits)
+
+preds = np.concatenate(logit_list, axis=0)
+labels = np.concatenate(label_list, axis=0)
+accuracy = accuracy_score(labels, preds)
+print(labels)
+print(preds)
+print(accuracy)
+
+
+target_names = ['ChatGPT','Human']
+logging.info('Confusion Matrix')
+cm = confusion_matrix(labels, preds)
+plot_confusion_matrix(cm, target_names, title='Confusion Matrix')
+logging.info('Classification Report')
+logging.info(classification_report(labels, preds, target_names=target_names))
