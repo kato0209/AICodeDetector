@@ -18,7 +18,7 @@ from utils.confusion_matrix import plot_confusion_matrix
 cbm = CustomBertModel()
 #cbm.set_classification_head()
 model = cbm.return_model()
-model_path = 'saved_model/model_20240331_092836.pth' 
+model_path = 'saved_model/model_20240502_101403.pth' 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model.load_state_dict(torch.load(model_path, map_location=device))
 model.to(device)
@@ -26,7 +26,7 @@ model.to(device)
 
 # define the dataset
 #DATASET_PATH = 'datasets/Python/temp_test'
-DATASET_PATH = 'datasets/php/test'
+DATASET_PATH = 'datasets/go/train'
 datasets = CodeDataset(DATASET_PATH, cbm.tokenizer)
 test_dataloader = DataLoader(datasets, batch_size=32, shuffle=False)
 

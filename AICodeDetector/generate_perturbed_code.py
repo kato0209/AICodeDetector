@@ -121,23 +121,28 @@ model_config = {}
 model_config = load_mask_filling_model(args, args.mask_filling_model_name, model_config)
 
 # define the dataset
-DATASET_PATH = 'train2'
+DATASET_PATH = 'datasets/all'
 
-# humanのコードを収集
 human_codes = []
+human_extensions = []
 human_code_dir = os.path.join(DATASET_PATH, 'human')
 for filename in os.listdir(human_code_dir):
     with open(os.path.join(human_code_dir, filename), 'r') as f:
         code = f.read()
+        extension = os.path.splitext(filename)[1]  # ファイルから拡張子を抽出
         human_codes.append(code)
+        human_extensions.append(extension)  # 拡張子をリストに保存
 
-# chatGPTのコードを収集
+# chatGPTのコードを収集し、拡張子を保存
 AI_codes = []
+AI_extensions = []
 AI_code_dir = os.path.join(DATASET_PATH, 'AI')
 for filename in os.listdir(AI_code_dir):
     with open(os.path.join(AI_code_dir, filename), 'r') as f:
         code = f.read()
+        extension = os.path.splitext(filename)[1]
         AI_codes.append(code)
+        AI_extensions.append(extension)
 
 
 def pertubate_code(codes, model_config, args):
@@ -157,38 +162,40 @@ def pertubate_code(codes, model_config, args):
     return masked_codes, perturbed_codes 
 
 batch_size = 16
-file_path = 'train'
-extension = '.go'
+file_path = 'datasets_mask_fill/all'
 
+# 各バッチでの処理、拡張子も動的に適用
 for i in range(0, len(human_codes), batch_size):
     batch_codes = human_codes[i:i + batch_size]
+    batch_extensions = human_extensions[i:i + batch_size]  # 対応する拡張子のバッチ
     human_masked_codes, human_perturbed_codes = pertubate_code(batch_codes, model_config, args)
 
-    for j, code in enumerate(human_masked_codes):
+    for j, (code, ext) in enumerate(zip(human_masked_codes, batch_extensions)):
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_file = f"{file_path}/human/mask-{j}-{timestamp}.{extension}"
+        output_file = f"{file_path}/human/mask-{j}-{timestamp}{ext}"
         with open(output_file, 'w') as file:
             file.write(code)
 
-    for k, code in enumerate(human_perturbed_codes):
+    for k, (code, ext) in enumerate(zip(human_perturbed_codes, batch_extensions)):
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_file = f"{file_path}/human/fill-{k}-{timestamp}.{extension}"
+        output_file = f"{file_path}/human/fill-{k}-{timestamp}{ext}"
         with open(output_file, 'w') as file:
-            file.write(code) 
-    
+            file.write(code)
 
+# AIコードの処理も同様に行う
 for i in range(0, len(AI_codes), batch_size):
     batch_codes = AI_codes[i:i + batch_size]
+    batch_extensions = AI_extensions[i:i + batch_size]
     AI_masked_codes, AI_perturbed_codes = pertubate_code(batch_codes, model_config, args)
 
-    for j, code in enumerate(AI_masked_codes):
+    for j, (code, ext) in enumerate(zip(AI_masked_codes, batch_extensions)):
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_file = f"{file_path}/AI/mask-{j}-{timestamp}.{extension}"
+        output_file = f"{file_path}/AI/mask-{j}-{timestamp}{ext}"
         with open(output_file, 'w') as file:
             file.write(code)
 
-    for k, code in enumerate(AI_perturbed_codes):
+    for k, (code, ext) in enumerate(zip(AI_perturbed_codes, batch_extensions)):
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_file = f"{file_path}/AI/fill-{k}-{timestamp}.{extension}"
+        output_file = f"{file_path}/AI/fill-{k}-{timestamp}{ext}"
         with open(output_file, 'w') as file:
-            file.write(code) 
+            file.write(code)

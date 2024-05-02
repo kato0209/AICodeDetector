@@ -44,6 +44,8 @@ class CustomBertModel(nn.Module):
 
         logits = self.classifier(pooled_output)
 
+        loss = None
+        cos_loss = None
         if labels is not None:
             dist = ((pooled.unsqueeze(1) - pooled.unsqueeze(0)) ** 2).mean(-1)
             mask = (labels.unsqueeze(1) == labels.unsqueeze(0)).float()

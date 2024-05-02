@@ -135,7 +135,7 @@ model_config = {}
 model_config = load_mask_filling_model(args, args.mask_filling_model_name, model_config)
 
 # define the dataset
-DATASET_PATH = 'train'
+DATASET_PATH = 'datasets_mask_fill/all'
 datasets = CodeDataset(DATASET_PATH, model_config, args)
 
 # データセットの全長を取得
@@ -191,34 +191,33 @@ log_path = './logs'
 os.makedirs(log_path, exist_ok=True)
 timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
 logging.basicConfig(filename=os.path.join(log_path, f'test_{timestamp}.log'),
+                    force=True,
                     format='%(asctime)s - %(levelname)s - %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S',
                     level=logging.INFO)
 
 cbm.eval()
-label_list, logit_list = [], []
+label_list, pred_list = [], []
 with torch.no_grad():
     for batch in test_dataloader:
         input_ids = batch['input_ids'].to(device)
         attention_mask = batch['attention_mask'].to(device)
         outputs = cbm(input_ids, attention_mask=attention_mask)
-        labels = batch["labels"].detach().cpu().numpy()
-        logits = outputs[0].detach().cpu().numpy()
+        labels = batch["labels"]
+        logits = outputs[0]
         predictions = torch.argmax(logits, dim=1)
-        label_list.append(labels)
-        logit_list.append(logits)
+        label_list += labels.tolist()
+        pred_list += predictions.tolist()
 
-preds = np.concatenate(logit_list, axis=0)
-labels = np.concatenate(label_list, axis=0)
-accuracy = accuracy_score(labels, preds)
-print(labels)
-print(preds)
+accuracy = accuracy_score(label_list, pred_list)
+print(label_list)
+print(pred_list)
 print(accuracy)
 
 
 target_names = ['ChatGPT','Human']
 logging.info('Confusion Matrix')
-cm = confusion_matrix(labels, preds)
+cm = confusion_matrix(label_list, pred_list)
 plot_confusion_matrix(cm, target_names, title='Confusion Matrix')
 logging.info('Classification Report')
-logging.info(classification_report(labels, preds, target_names=target_names))
+logging.info(classification_report(label_list, pred_list, target_names=target_names))
