@@ -121,7 +121,7 @@ model_config = {}
 model_config = load_mask_filling_model(args, args.mask_filling_model_name, model_config)
 
 # define the dataset
-DATASET_PATH = 'datasets/all'
+DATASET_PATH = 'datasets/Python/train'
 
 human_codes = []
 human_extensions = []
@@ -162,7 +162,7 @@ def pertubate_code(codes, model_config, args):
     return masked_codes, perturbed_codes 
 
 batch_size = 16
-file_path = 'datasets_mask_fill/all'
+file_path = 'datasets_mask_fill/Python'
 
 # 各バッチでの処理、拡張子も動的に適用
 for i in range(0, len(human_codes), batch_size):

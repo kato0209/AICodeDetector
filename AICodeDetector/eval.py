@@ -129,7 +129,7 @@ args = parser.parse_args(input_args)
 
 
 cbm = CustomBertModel()
-model_path = 'saved_model/model_all_20240502_151427.pth' 
+model_path = 'saved_model/model_Python_20240503_131739.pth' 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 cbm.load_state_dict(torch.load(model_path, map_location=device))
 cbm.to(device)
@@ -139,7 +139,7 @@ model_config = load_mask_filling_model(args, args.mask_filling_model_name, model
 
 # define the dataset
 #DATASET_PATH = 'datasets/Python/temp_test'
-DATASET_PATH = 'datasets/php/test'
+DATASET_PATH = 'datasets/Python/temp_test'
 datasets = CodeDataset(DATASET_PATH, model_config, args)
 test_dataloader = DataLoader(datasets, batch_size=32, shuffle=False)
 
@@ -173,10 +173,10 @@ print(accuracy)
 
 target_names = ['ChatGPT','Human']
 logging.info('Confusion Matrix')
-print(111)
+
 cm = confusion_matrix(label_list, pred_list)
 plot_confusion_matrix(cm, target_names, title='Confusion Matrix')
-print(777)
+
 logging.info('Classification Report')
 logging.info(classification_report(label_list, pred_list, target_names=target_names))
-print(222)
+
