@@ -1,0 +1,1 @@
+左の子 print def dfs 通りがけ順の処理 dfs inorder tree dfs node end 右の子 def 左の子 print <extra_id_0> バイナリツリ

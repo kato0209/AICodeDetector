@@ -1,0 +1,1 @@
+Updated query vector docs import numpy def rocchio relevant 元のクエリベクトルに重みを適用 updated return updated np.array <extra_id_0> query vector query original algorithm alpha beta gamma np.mean axis <extra_id_1> rocchio 関連ドキュメントの平均ベクトルを計算し、それに重みを適用 if relevant print import 元のクエリベクトルに重みを適用 関連ドキュメントの平均ベクトルを計算し、それに重みを適用 return vector numpy def

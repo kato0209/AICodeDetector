@@ -1,0 +1,1 @@
+Sorted array 既にソ ー トされた要素は再度チェックする必要がないため、 def bubble arr list sort range bubble Sorted len main <extra_id_0> def 既にソ トされた要素は再度チェックする必要がないため、 テストコ array

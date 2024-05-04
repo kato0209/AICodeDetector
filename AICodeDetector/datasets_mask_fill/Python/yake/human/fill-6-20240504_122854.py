@@ -1,0 +1,3 @@
+index List typing import List sorted import List list middle int def binary 二分探索を実施し、検索対象の値がリスト内に含まれるかどうかの 真偽値を取得する 要素 None
+index SearchList typing True False import List List list True return False True False False False False True
+index SearchList typing bool def binary 二分探索を実施し、検索対象の値がリスト内に含まれるかどうかの 真偽値を取得する typing import return False return True True return return continue return True return continue return True False True bool 値がリスト内に含まれるかどうか Parameters int 検索対象の値 ト済みの整数値を格納したリスト 検索対象の値 Returns exists continue if search len 値がリスト内に含まれるかどうか continue return list of int

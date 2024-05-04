@@ -1,4 +1,3 @@
-from tokenizer import tokenizer
 from masking import tokenize_and_mask
 from preprocessing import preprocess_and_save
 from load_model import load_mask_filling_model
@@ -135,7 +134,7 @@ model_config = {}
 model_config = load_mask_filling_model(args, args.mask_filling_model_name, model_config)
 
 # define the dataset
-DATASET_PATH = 'datasets_mask_fill/Python'
+DATASET_PATH = 'datasets_mask_fill/Python/yake'
 datasets = CodeDataset(DATASET_PATH, model_config, args)
 
 # データセットの全長を取得

@@ -1,0 +1,1 @@
+mid elif arr return mid elif return binary target search def binary def exponential 指数的に増加しながら探索範囲を特定 bound arr elif arr high bound mid elif binary list return low <extra_id_0> mid exponential len <extra_id_1> def min main 指数的に増加しながら探索範囲を特定 特定された範囲でバイナリサ テストコ elif return None mid

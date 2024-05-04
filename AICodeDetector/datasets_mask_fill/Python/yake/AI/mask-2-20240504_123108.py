@@ -1,0 +1,1 @@
+output space dff feed-forward layer ffn model dense layer import tensorflow def feed space dff layer ffn output space Dimensionality feed-forward layer forward network dff feed layer return <extra_id_0> <extra_id_1> ffn.summary dense import ffn tensorflow def usage output space feed-forward

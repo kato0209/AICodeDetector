@@ -1,0 +1,1 @@
+datalist open myfile.txt encoding f.write f.close f.writelines

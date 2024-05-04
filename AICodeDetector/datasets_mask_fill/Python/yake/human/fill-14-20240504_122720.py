@@ -1,0 +1,2 @@
+path def floyd return graph graph def floyd continue path node len path def path length src dst end name return graph graph def floyd continue mid xrange range src end name begin graph graph
+begin setdefault insert list return def mid in graph dst in graph src in graph src,dst main ini float print

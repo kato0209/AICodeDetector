@@ -1,0 +1,1 @@
+start def dfs グラフの例 graph preorder graph dfs <extra_id_0> 行きがけ順の処理 for neighbour neighbour set visited.add print end def 行きがけ順の処理 グラフの例 neighbour in graph

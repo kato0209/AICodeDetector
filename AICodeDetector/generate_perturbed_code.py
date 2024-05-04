@@ -1,4 +1,3 @@
-from tokenizer import tokenizer
 from masking import tokenize_and_mask
 from preprocessing import preprocess_and_save
 from load_model import load_mask_filling_model
@@ -162,13 +161,19 @@ def pertubate_code(codes, model_config, args):
     return masked_codes, perturbed_codes 
 
 batch_size = 16
-file_path = 'datasets_mask_fill/Python'
+file_path = 'datasets_mask_fill/Python/yake'
 
 # 各バッチでの処理、拡張子も動的に適用
 for i in range(0, len(human_codes), batch_size):
     batch_codes = human_codes[i:i + batch_size]
     batch_extensions = human_extensions[i:i + batch_size]  # 対応する拡張子のバッチ
     human_masked_codes, human_perturbed_codes = pertubate_code(batch_codes, model_config, args)
+
+    for c, (original_code, ext) in enumerate(zip(batch_codes, batch_extensions)):
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        output_file = f"{file_path}/human/original-{c}-{timestamp}{ext}"
+        with open(output_file, 'w') as file:
+            file.write(original_code)
 
     for j, (code, ext) in enumerate(zip(human_masked_codes, batch_extensions)):
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -187,6 +192,12 @@ for i in range(0, len(AI_codes), batch_size):
     batch_codes = AI_codes[i:i + batch_size]
     batch_extensions = AI_extensions[i:i + batch_size]
     AI_masked_codes, AI_perturbed_codes = pertubate_code(batch_codes, model_config, args)
+
+    for c, (original_code, ext) in enumerate(zip(batch_codes, batch_extensions)):
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        output_file = f"{file_path}/AI/original-{c}-{timestamp}{ext}"
+        with open(output_file, 'w') as file:
+            file.write(original_code)
 
     for j, (code, ext) in enumerate(zip(AI_masked_codes, batch_extensions)):
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")

@@ -1,0 +1,1 @@
+file path import shutil "ファイルがコピ ー されました 中にエラ ー が発生しました 元のファイルパス source 先のファイルパス destination "ファイルのコピ ー 中にエラ <extra_id_0> source destination source.txt destination.txt shutil.copy import shutil ファイルをコピ されました が発生しました 元のファイルパス 先のファイルパス "ファイルがコピ IOError "ファイルのコピ 中にエラ

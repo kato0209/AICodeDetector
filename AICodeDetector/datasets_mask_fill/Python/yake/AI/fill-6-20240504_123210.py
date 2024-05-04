@@ -1,0 +1,1 @@
+import http.client def http.client def send response request host port path print import http.client def send Status http.client def conn conn.request conn.getresponse response.status response.read decode localhost send conn status.status sendconn http.client def

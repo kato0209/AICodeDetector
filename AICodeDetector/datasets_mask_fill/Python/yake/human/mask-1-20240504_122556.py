@@ -1,0 +1,1 @@
+Write a program user to delete string word Write Enter a string text Enter input <extra_id_0> status words data <extra_id_1> program that input user program True if status False True input a string Enter a word False for word String after deletion present in string word to delete text.split words.remove join deletion present word in words Word not present

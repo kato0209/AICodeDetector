@@ -1,0 +1,1 @@
+add nodes root tree def PrintTree data def insert class Node nodes root parent node add nodes method to add def PrintTree insert method tree def def insert Node Print the tree self.data root.insert elif data data data def self.left Print self.right def Compare Node class init root.PrintTree nodes root parent class elif PrintTree root parent tree method add

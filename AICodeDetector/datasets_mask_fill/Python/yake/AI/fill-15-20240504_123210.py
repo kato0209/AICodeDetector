@@ -1,0 +1,1 @@
+ファイルのパス file path import pygame pygame の初期化 ファイルの読み込みと再生 busy tick file import ファイルのパス の初期化 再生が終了するまで待機 pygame

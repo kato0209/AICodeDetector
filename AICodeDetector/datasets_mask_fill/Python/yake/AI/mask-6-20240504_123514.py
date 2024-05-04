@@ -1,0 +1,1 @@
+Sorted array def bubble arr list sort optimized swapped range bubble False True Sorted len break このパスで交換が行われなかった場合、早期終了 main print <extra_id_0> テストコ array

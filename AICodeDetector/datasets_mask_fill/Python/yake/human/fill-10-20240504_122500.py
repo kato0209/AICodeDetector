@@ -1,0 +1,5 @@
+dataMatrix alpha IOld= float mat alpha
+sys numpy import math import print for key import line in fr.readlines #import sys
+	try: del [value]
+	except KeyError: print data = line.strip split alphaJOld print data print returnData labels
+	alphaJ = data label return continue alpha data,label def selectJrand fxi multiply alpha,labelMatrix selectJrand eta alphaIOld alphapairChanged print data def selectJrand continue main fxj print alpha toler data print label open line.strip split label.append int random.uniform transpose shape maxIter print data print fr.readlines data.append toler and alpha range return data,label def eta alpha copy loadDataSet clipAlpha smoSimple sys numpy math line max data,label min iter return data print def loadDataSet def clipAlpha def smoSimple elif alpha b,alpha print label data,label def iter return b,alpha return b,alpha def return data,label C,alpha def main print label b,alpha b,alpha def testSet.txt print data return b,alpha label b,alpha b,alpha def main continue eta testSet.txt print Ei-Ej sys.exit abs elif d,oairs changed iteration number testSet.txt move return j def print b print d,oairs changed iteration number

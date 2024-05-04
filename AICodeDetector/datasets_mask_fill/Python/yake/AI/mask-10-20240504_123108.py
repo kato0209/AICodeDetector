@@ -1,0 +1,1 @@
+GCNConv class GNN geometric.nn import GCNConv import GCNConv class class GNN def forward return torch.log geometric.nn import num GCNConv class import torch import GCNConv edge index GNN init features classes def <extra_id_0> <extra_id_1> import torch super data data.x data.edge torch.relu softmax dim geometric.nn forward return torch.log class

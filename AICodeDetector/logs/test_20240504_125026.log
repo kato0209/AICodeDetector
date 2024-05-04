@@ -1,0 +1,12 @@
+2024-05-04 12:50:28 - INFO - Confusion Matrix
+2024-05-04 12:50:28 - INFO - Normalized confusion matrix
+2024-05-04 12:50:28 - INFO - Classification Report
+2024-05-04 12:50:28 - INFO -               precision    recall  f1-score   support
+
+     ChatGPT       0.90      0.62      0.74        56
+       Human       0.70      0.92      0.79        52
+
+    accuracy                           0.77       108
+   macro avg       0.80      0.77      0.77       108
+weighted avg       0.80      0.77      0.76       108
+

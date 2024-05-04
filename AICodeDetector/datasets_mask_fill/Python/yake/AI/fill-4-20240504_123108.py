@@ -1,0 +1,1 @@
+tracknumber except Exception audio ファイルのパス file ファイルのメタデ ー タを読み取る title print artist print album print print import path file Exception ファイルのパス ファイルのメタデ "タイトル title "ターイル artist "アルバム album "トラック番号 tracknumber が発生しました タを読み取る

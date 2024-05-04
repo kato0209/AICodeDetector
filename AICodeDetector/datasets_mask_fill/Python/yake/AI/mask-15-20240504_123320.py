@@ -1,0 +1,1 @@
+intersection return list def find 使用例 common elements set common find def return list 使用例

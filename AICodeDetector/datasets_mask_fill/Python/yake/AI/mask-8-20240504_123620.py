@@ -1,0 +1,1 @@
+目的の要素が見つかった場合 elif guess return binary def binary search recursive target list 目的の要素が見つかった場合 elif 要素が見つからない場合 mid return mid elif guess arr high <extra_id_0> return mid low <extra_id_1> len guess 上半分を探索 main def 要素が見つからない場合 目的の要素が見つかった場合 下半分を探索 テストコ elif

@@ -1,0 +1,1 @@
+print distance def dijkstra elif type graph src distance visited.append return distance distance dist path list dict path type <extra_id_0> dist dijkstra pre length <extra_id_1> path distance print visited graph,src len graph.keys float append main def xrange elif visited.append return src while nodes

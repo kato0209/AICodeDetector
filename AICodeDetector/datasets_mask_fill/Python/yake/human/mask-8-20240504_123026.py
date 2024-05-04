@@ -1,0 +1,1 @@
+collections import deque 右側に' e dq.appendleft 右側の要素を取得 dq.popleft 左側の要素を取得 dq.rotate 右回りに要素を回転 dq.rotate <extra_id_0> import deque deque dq.rotate インデックス指定で値取得 bcd dq.append 右側に' dq.appendleft 左側に' dq.pop 右側の要素を取得 dq.popleft 左側の要素を取得 右回りに要素を回転 左回りに要素を回転 collections import

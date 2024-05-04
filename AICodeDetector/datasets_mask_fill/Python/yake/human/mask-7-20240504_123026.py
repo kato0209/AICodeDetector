@@ -1,0 +1,1 @@
+中央の値と一致した場合は位置を返す return mid mid elif data return mid elif def binary 中央の値より大きい場合は探索範囲の左を変える left 見つからなかった場合 data 中央の値と一致した場合は位置を返す return elif data data left search mid elif return mid mid 探索する範囲の右端を設定 while left binary 探索する範囲の中央を計算 if data len print return def <extra_id_0> <extra_id_1> 中央の値と一致した場合は位置を返す 中央の値より大きい場合は探索範囲の左を変える 中央の値より小さい場合は探索範囲の右を変える 見つからなかった場合 elif

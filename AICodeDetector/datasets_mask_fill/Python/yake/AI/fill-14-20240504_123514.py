@@ -1,0 +1,1 @@
+False return True return False return return False char True print False return def compare return True strings False True compare len print return main world compare len zip テストコ

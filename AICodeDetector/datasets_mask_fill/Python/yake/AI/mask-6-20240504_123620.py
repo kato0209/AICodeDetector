@@ -1,0 +1,1 @@
+def find return min 使用例 min element function min minimum find lst def return 使用例

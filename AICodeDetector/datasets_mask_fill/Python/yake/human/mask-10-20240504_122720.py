@@ -1,0 +1,1 @@
+import ftplib ftp true ftp.login import ftplib ftplib ftp open STOR RETR aa.txt bb.zip f.write ADDRESS USER PASSWORD ftplib.FTP ftp.set <extra_id_0> <extra_id_1> ftp.storlines ftp.storbinary b.txt ftp.retrlines ftp.retrbinary import ftp true ftp.login ftplib

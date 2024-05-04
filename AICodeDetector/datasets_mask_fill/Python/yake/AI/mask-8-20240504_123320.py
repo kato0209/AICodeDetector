@@ -1,0 +1,1 @@
+search list def linear 目的の要素が見つかった場合、そのインデックスを返す return target print linear arr len 要素が見つからなかった場合 main def <extra_id_0> 目的の要素が見つかった場合、そのインデックスを返す テストコ return

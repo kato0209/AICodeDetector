@@ -1,0 +1,1 @@
+正しい順序でノ ー ドを訪れることができます def dfs start visited graph iterative stack vertex グラフの例 graph <extra_id_0> stack.pop print end visited.add グラフの隣接リストは逆順にスタックに追加することで、 dfs def 正しい順序でノ ドを訪れることができます neighbour stack.extend グラフの例 neighbour in graph neighbour for neighbour

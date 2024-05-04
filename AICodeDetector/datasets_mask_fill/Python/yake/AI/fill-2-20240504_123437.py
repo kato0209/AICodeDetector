@@ -1,0 +1,1 @@
+True print strings directly def compare False compare True return main world print def テストコ

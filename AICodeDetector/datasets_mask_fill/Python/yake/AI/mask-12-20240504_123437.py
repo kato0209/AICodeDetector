@@ -1,0 +1,1 @@
+ティブ） return binary mid elif arr return mid elif target search 特定された範囲でバイナリサ ー チ（イテレ 指数的に増加しながら探索範囲を特定 bound チ（イテレ ー ティブ） def binary def exponential high elif arr return binary arr ティブ） return bound list mid elif low <extra_id_0> iterative print exponential len mid return binary <extra_id_1> min main return None def 指数的に増加しながら探索範囲を特定 特定された範囲でバイナリサ テストコ elif チ（イテレ ティブ）

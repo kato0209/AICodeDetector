@@ -1,0 +1,1 @@
+path 最終更新日時（エポック秒） mtime 更新日時を取得するファイルのパス file print import datetime modified time file mtime example.txt <extra_id_0> datetime 更新日時を取得するファイルのパス ファイルの最終更新日時を取得 最終更新日時（エポック秒） 日時を読みやすい形式に変換 "ファイルの最終更新日時 FileNotFoundError "ファイルが見つかりません IOError が発生しました import os import

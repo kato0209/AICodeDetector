@@ -129,7 +129,7 @@ args = parser.parse_args(input_args)
 
 
 cbm = CustomBertModel()
-model_path = 'saved_model/model_Python_20240503_131739.pth' 
+model_path = 'saved_model/model_Python_yake_20240504_125025.pth' 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 cbm.load_state_dict(torch.load(model_path, map_location=device))
 cbm.to(device)

@@ -1,0 +1,1 @@
+element return min def find 使用例 min return min loop min element lst element return minimum find return <extra_id_0> def 使用例 element in lst

@@ -1,0 +1,1 @@
+path ファイルに書き込むテキスト text Python <extra_id_0> file writing write file text example.txt print 書き込むファイルのパスを指定 ファイルに書き込むテキスト nWelcome writing "ファイル書き込み中にエラ ー が発生しました nWelcome to file file.write ファイルにテキストを書き込む open "ファイルに書き込みが完了しました IOError が発生しました "ファイル書き込み中にエラ

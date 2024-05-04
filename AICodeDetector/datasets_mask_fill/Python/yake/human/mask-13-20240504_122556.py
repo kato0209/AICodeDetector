@@ -1,0 +1,1 @@
+assert type def kruskal dict nodes distance pre return path <extra_id_0> graph nodes visited.add dict visited kruskal len path continue if graph graph.keys set float main def <extra_id_1> type continue path.append return print

@@ -1,0 +1,1 @@
+arr sort len mid def merge merge list Sorted array 初期化 Sorted main print テストコ ジのプロセス array

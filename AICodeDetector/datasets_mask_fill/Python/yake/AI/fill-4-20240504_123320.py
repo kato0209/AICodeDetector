@@ -1,0 +1,1 @@
+search list def sequential 目的の要素が見つかった場合、そのインデックスを返す return target search list def sequential arr len 要素が見つからなかった場合 main def range 目的の要素が見つかった場合、そのインデックスを返す テストコ return

@@ -1,0 +1,6 @@
+True Threaded function flush rtv print globals Threaded sample thresh nnz cossim topn threads function samples awesome vocab arr ange ange arange tpython asy tpython ntop topn import awesome duplicates timeit printrow function import timeit numpy function directly dtype np data
+from scipy import sparse
+from scipy import numpy
+import pandas row_density = 2.3f
+row_np = 2.4f
+maxlen = 501 # scipy.sparse import coo timeit numpy row density f'nnz pairs size cols data timeit import numpy topn function C.data sparse import print row print function import int f'ntop function directly numpy function topn import import awesome coo python results ntop del import coo import numpy import timeit timeit import import pandas scipy.sparse import calling scipy dot np.full shape len std file compare compare our boosting boosting method method with calling Non-parallelized del numpy thread del C del future noqa pd.DataFrame columns f'threshold f'density f'nr sparse.tocsr return top df.astype df.groupby index sort scipy directly range file compare boosting method calling timeit pandas scipy.sparse matrix from sparse results per row

@@ -1,0 +1,1 @@
+import sys input deque def bfs collections import deque import deque def sys input def bfs は頂点の数、 m は辺の数 import sys collections import deque def import deque input int split append range def def sys input queue def import deque import sys input queue import deque 自分との距離は queue.popleft queue.append print 隣接リスト return を返します # sys は頂点の数、 は辺の数 collections def からの距離の初期化

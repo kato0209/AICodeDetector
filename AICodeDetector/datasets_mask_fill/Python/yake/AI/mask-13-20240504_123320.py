@@ -1,0 +1,1 @@
+path print ディレクトリパスを指定 directory directory os.listdir import ディレクトリパスを指定 指定されたディレクトリ内のファイルをリストアップ FileNotFoundError "ディレクトリが見つかりません IOError が発生しました files <extra_id_0> file in files

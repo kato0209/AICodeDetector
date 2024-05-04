@@ -1,0 +1,3 @@
+similarity = numpy.zeros(len(movies), dtype=numpy.float)
+
+# copy store the original original dataset to the same copy sim distances index movies neighbors len (movies) create nominator predicted number def movie df.iloc neighbors knn df.copy store create the copy brute knn.fit original dataset create recommendation df.values indices tolist copy.pop sum recommender NearestNeighbors metric cosine algorithm knn.kneighbors enumerate df.index movies.index movies.remove distances.pop similarity.copy m,user def knn brute knn.fit list range recommend

@@ -1,0 +1,1 @@
+指定したディレクトリ配下のファイルを探す関数 def filesearch return path 指定したディレクトリ配下のファイルを探す関数 def def filesearch list path dir 内の全てのファイルを取得 list <extra_id_0> file filesearch dir glob.glob ext list.append data 指定したディレクトリ配下のファイルを探す関数 内の全てのファイルを取得 パスリストからファイル名を抽出 return def

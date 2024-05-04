@@ -1,0 +1,1 @@
+index 使用例 removed def remove test sentence. words word remove text text.split len words.pop return join result def 使用例 removed world test sentence test

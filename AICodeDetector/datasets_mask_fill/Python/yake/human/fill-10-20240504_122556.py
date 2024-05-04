@@ -1,0 +1,1 @@
+assert type def prim dict nodes return path print path root distance graph nodes.remove pre dict visited path prim nodes continue if graph not float visited.append main def : if type continue path.append return print

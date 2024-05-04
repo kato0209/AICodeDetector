@@ -1,0 +1,1 @@
+deque class DequeueUsingDeque collections import deque import deque class def dequeue class DequeueUsingDeque collections import return def enqueue import deque deque class item self.queue dequeue def init front rear deque return None def DequeueUsingDeque enqueue <extra_id_0> import class

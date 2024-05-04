@@ -1,0 +1,1 @@
+General Sequential Search def seq Sequential Search search for General Sequential found in the beginning of def seq Works on Unordered Start at position Unordered lists true Sequential False arr list Start Target Unordered ele Target becomes true return found General list found len Works position return lists end match move match if arr true if ele list while pos end of list

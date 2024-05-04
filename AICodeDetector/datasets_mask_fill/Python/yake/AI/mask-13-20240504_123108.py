@@ -1,0 +1,1 @@
+append ファイル名と追加するテキスト file World file text <extra_id_0> がファイル file "テキスト text ファイル名と追加するテキスト ファイルを開き、テキストを追加する with open テキストの後に改行を追加 print file.write ファイルを開き、テキストを追加する open テキストの後に改行を追加 print がファイル "テキスト

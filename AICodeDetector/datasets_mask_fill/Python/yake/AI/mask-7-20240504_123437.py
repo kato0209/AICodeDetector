@@ -1,0 +1,1 @@
+結合した内容を新しいファイルに書き込む with open 連結された内容を格納するための変数 combined 連結するファイル名 file file combined content <extra_id_0> 各ファイルから内容を読み取り、結合する for file file.txt file.read ファイル間に改行を追加 file.write print の内容が 連結するファイル名 連結された内容を格納するための変数 各ファイルから内容を読み取り、結合する 結合した内容を新しいファイルに書き込む "ファイル

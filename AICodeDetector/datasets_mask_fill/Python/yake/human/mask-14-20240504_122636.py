@@ -1,0 +1,1 @@
+なければ False に溜まった要素がなければ True の順番で取得 q.empty タを投入する q.qsize import queue つまで入るキュ ー を生成する に溜まった要素の数を返す q.full <extra_id_0> maxsize range <extra_id_1> False queue.Queue 要素が q.put q.get import つまで入るキュ q.full の順番で取得 q.empty なければ queue を生成する タを投入する に溜まった要素の数を返す に溜まった要素がなければ

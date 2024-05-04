@@ -1,0 +1,1 @@
+def find 使用例 common comprehension set common element in set find return elements element def 使用例 element for element

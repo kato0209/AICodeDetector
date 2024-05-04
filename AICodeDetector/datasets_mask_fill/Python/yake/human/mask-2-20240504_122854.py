@@ -1,0 +1,1 @@
+data open myfile.txt encoding f.read print f.close

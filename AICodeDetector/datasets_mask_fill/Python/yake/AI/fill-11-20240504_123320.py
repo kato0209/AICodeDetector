@@ -1,0 +1,1 @@
+dim class FeedForwardNetwork def forward hidden init input output nn.Linear self.relu FeedForwardNetwork def nn.Module super nn.ReLU with forward return

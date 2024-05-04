@@ -1,0 +1,1 @@
+#右側の残りを追加 return result return data mid Yuya Shimizu def merge 再帰的に分割 left return merge #右側の残りを追加 return left merge sort return result len data mid data return data mid result.append result.extend sorted def #右側を分割 #統合 return return つ取り出して追加 Yuya <extra_id_0> result 並べ替えしながら再構築 #半分の位置を計算 #左側から <extra_id_1> main print ト：リストを半分ずつ分割 再帰的に分割 #左側を分割 #右側を分割 残りをまとめて追加 #左側の残りを追加 #右側の残りを追加

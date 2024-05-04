@@ -1,0 +1,1 @@
+ずらし表の作成 def build len pattern 使用例 text table shift def boyer def build ずらし表の作成 def return shift text shift table char in set moore search result return boyer build def return table.get print ずらし表の作成 set s 使用範囲合 s ンが見つからなかった場合 使用例 ンが見つかった場合、その位置を返す

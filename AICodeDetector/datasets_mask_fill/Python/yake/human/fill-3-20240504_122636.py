@@ -1,0 +1,1 @@
+Python def linearSearch Linear Search Search in Python Python def Element found def linearSearch result Element array sequencially print found at index Element not found array Linear Search Python len return found return i return found at index def sequencially
