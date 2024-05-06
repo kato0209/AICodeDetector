@@ -210,7 +210,7 @@ _, base_model_name, SAVE_FOLDER = preprocess_and_save(args)
 model_config = {}
 model_config = load_mask_filling_model(args, args.mask_filling_model_name, model_config)
 
-print(masked_texts)
+print(masked_texts) 
 raw_fills = replace_masks(masked_texts, model_config, args)
 #print(raw_fills)
 extracted_fills = extract_fills(raw_fills)
