@@ -1,0 +1,1 @@
+return tf.zeros shape queue dtype tf.concat distribution util.prefer static element axis return tf.zeros

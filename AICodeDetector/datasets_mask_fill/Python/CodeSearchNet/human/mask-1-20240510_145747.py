@@ -1,0 +1,1 @@
+def delta delta getattr return beta concentration property True False scope log normalization total def <extra_id_0>

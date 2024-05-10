@@ -1,0 +1,1 @@
+field type mode comment schema cursor.description field in cursor.description fields

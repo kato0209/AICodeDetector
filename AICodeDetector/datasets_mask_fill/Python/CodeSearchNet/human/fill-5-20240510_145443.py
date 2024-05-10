@@ -1,0 +1,1 @@
+Include data self.series add custom tooltip custom tooltip string Include data default condition explicitly with date data self.series add custom called explicitly custom tooltip called specified condition True string self.tooltip self.series Include self.jschart flag json.dumps string in jschart custom self.data add jschart default build date var called explicitly data

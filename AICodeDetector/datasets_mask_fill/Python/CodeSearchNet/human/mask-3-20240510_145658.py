@@ -1,0 +1,1 @@
+bijectors raise ValueError block sizes shape tensorshape sizes elif validate sizes.shape if tensorshape len length <extra_id_0> vector sizes elif util.is <extra_id_1> defined util.rank util.num elements sizes.shape raise ValueError Tensor elif validate format args message return validate elif

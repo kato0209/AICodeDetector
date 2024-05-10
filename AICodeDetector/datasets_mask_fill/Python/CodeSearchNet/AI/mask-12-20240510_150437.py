@@ -1,0 +1,1 @@
+self.processed folder os.makedirs data batch

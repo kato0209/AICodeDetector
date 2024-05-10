@@ -1,0 +1,1 @@
+elif isinstance obj return isinstance elif JavaObject str unicode obj.encode int long float bool bytearray <extra_id_0>

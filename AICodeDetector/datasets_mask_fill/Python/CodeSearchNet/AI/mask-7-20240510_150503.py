@@ -1,0 +1,1 @@
+linear trend model autoregressive coef.shape trend model linear trend matrix <extra_id_0> linear matrix def semilocal semi-local model trend range return transition def semilocal transition matrix matrix def np.zeros coef intercepts return semilocal def

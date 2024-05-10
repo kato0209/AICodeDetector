@@ -1,0 +1,1 @@
+assert vid self.prepare kwargs title output dir merge info assert vid vid self.prepare self.extract <extra_id_0> vid assert self.prepare

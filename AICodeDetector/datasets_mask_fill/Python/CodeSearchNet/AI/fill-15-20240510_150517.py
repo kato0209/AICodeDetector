@@ -1,0 +1,1 @@
+scale diag perturb factor seed dtype bijector tfb.Chain tfb.ScaleAndShift total , size shift identity multiplier tril

@@ -1,0 +1,1 @@
+array shape ops.shape rank ops.rank ops.reshape math ops.reduce prod tail

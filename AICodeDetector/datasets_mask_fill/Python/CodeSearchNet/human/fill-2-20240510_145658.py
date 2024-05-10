@@ -1,0 +1,1 @@
+lambda row batch input dataset def train def eval return train random sample size row tensor slices map shot iterator ROWS input batch INPUT FLATE INPUT lambda IMAGE SHAPE def train eval astype repeat

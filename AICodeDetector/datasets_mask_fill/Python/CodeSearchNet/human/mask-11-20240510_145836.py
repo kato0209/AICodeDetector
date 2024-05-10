@@ -1,0 +1,1 @@
+Target start labels return record images BigDL record data sc.parallelize record Target mnist.read <extra_id_0> location type images.zip return start BigDL

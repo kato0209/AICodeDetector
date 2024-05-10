@@ -1,0 +1,1 @@
+a.scale b.scale pareto Pareto distributions in New York Terminology and a.concentration scope page source shape dtype parameter tf.name corresponds source for Pareto concentration scale distributions return tf.where final batch util.get broadcast common type util.common return tf.where source to source

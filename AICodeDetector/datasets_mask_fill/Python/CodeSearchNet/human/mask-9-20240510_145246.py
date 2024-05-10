@@ -1,0 +1,1 @@
+insert empty documents raise AirflowBadRequest insert empty created database empty documents documents documents.append self.get conn CreateItem collection link self. raise AirflowBadRequest single <extra_id_0> empty document document in documents

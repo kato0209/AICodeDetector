@@ -1,0 +1,1 @@
+task dag args dag.get args.task TaskInstance args.execution date print ti.current state

@@ -1,0 +1,1 @@
+factor RGBA img img.point lambda return img saturation RGBA img img.convert img.mode img if img.mode return

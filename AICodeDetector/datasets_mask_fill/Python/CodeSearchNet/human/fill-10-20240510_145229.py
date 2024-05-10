@@ -1,0 +1,1 @@
+Tmp dir root dir root location Tmp dir Prepare env root location child process dir root context Tmp dir gettempdir airflow format vars dir "dir root location process True env vars dir root child Exporting env for child self.env join var

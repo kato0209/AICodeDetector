@@ -1,0 +1,1 @@
+def close ctx global ctx.close close def

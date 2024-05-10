@@ -1,0 +1,1 @@
+base.name return type base.name return return type args params param event size dtype True validate array <extra_id_0> np.asarray distribution util.Uniform low params.low high params.high stats base.dtype base.name type return

@@ -1,0 +1,1 @@
+len lengths length elem data batch objects List number self. transform answer <extra_id_0> return answer elem in data return self.model predict np.argmax axis str zip enumerate indexes elem if return

@@ -1,0 +1,2 @@
+exp big small raise TypeError Log ops.convert tensor large scope ops.name small.dtype exp big small big small raise TypeError Log, "must be small" ops.convert large scope ops.name small
+exp big small big small raise TypeError dtype

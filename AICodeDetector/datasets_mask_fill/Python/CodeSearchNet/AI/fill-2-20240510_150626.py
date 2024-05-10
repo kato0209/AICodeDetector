@@ -1,0 +1,1 @@
+Update the gradient objective function gradient Update norm function math objective ops.sqrt norm relative tolerance grad squared ops.square

@@ -1,0 +1,1 @@
+raise ValueError match the number args validate distributions passed distributions raise TypeError" if not len Length isinstance lib.Distribution lib.process lib.NamedDistribution dist num samples event shape return match number passed

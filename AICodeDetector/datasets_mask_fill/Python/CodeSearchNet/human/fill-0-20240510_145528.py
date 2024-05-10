@@ -1,0 +1,1 @@
+return today hour minute microsecond timezone.utcnow replace timedelta days today return

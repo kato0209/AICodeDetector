@@ -1,0 +1,1 @@
+Slack Webhook emoji raise AirflowException icon self.icon url alt channel Slack web hook response self.name self.channel text self.text message self.username Webhook enabled raise AirflowException

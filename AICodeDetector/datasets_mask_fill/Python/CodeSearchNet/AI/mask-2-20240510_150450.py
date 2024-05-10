@@ -1,0 +1,1 @@
+return constant return array return event shape op.constant dtype constant scope NumElements ops.shape internal gen <extra_id_0> ops.range sample log prob counts seed ops.name elif array def

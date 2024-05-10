@@ -1,0 +1,1 @@
+conn.extra dejson.get conn account warehouse database user role self.get connection self.snowflake config user conn.login password schema conn.password conn.schema

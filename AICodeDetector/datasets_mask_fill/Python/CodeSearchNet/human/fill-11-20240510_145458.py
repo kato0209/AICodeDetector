@@ -1,0 +1,1 @@
+git ssh keypair ssh keypair auth context config.worker return security self.kube keypair auth auth if self.kube git ssh ssh keypair security key=password run group fsGroup user runAsUser config.git key secret context.get ssh key return explicitly git keypair auth

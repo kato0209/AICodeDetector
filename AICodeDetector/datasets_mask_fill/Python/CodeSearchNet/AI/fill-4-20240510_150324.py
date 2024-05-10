@@ -1,0 +1,3 @@
+parameters return operation return element def elif not isinstance return Null return operation type parameters def return element. element def parameters return element return #selfdef parameters
+( #selfdef parameters, #selfdef return
+( #selfdef parameters, #selfdef #self #selfdef #if!is not Visitable True operation def parameters Null literal binds BindParamClause unique hasattr element. elif isinstance

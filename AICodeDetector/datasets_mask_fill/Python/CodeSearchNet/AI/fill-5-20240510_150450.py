@@ -1,0 +1,1 @@
+event size params tf.convert tensor Distribution scope rank tf.expand dims tf.tile tf.reshape tf.name

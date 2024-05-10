@@ -1,0 +1,1 @@
+return tfd.MultivariateNormalTriL validate args params scale event size tril params scale scope MultivariateNormalTriL tf.convert tensor tfb.ScaleTriL <extra_id_0> shift np.array numpy dtype loc return tfd.MultivariateNormalTriL

@@ -1,0 +1,1 @@
+raise ValueError def validate elif validate tensor message equal dim fully defined tf.shape input validate logits <extra_id_0> a.shape b.shape args assertions.append outcomes def raise ValueError elif

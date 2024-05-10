@@ -1,0 +1,1 @@
+shape raise ValueError return input innermost dimension input tf.TensorShape shape.with rank format <extra_id_0> self.units raise ValueError defined return innermost dimension

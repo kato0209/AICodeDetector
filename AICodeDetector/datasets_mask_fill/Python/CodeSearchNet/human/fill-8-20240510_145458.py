@@ -1,0 +1,2 @@
+calling close method application exit system shuts calling close close method logging
+  if self.local base # # @@ @ self.local base # @@ @ calling method close application shuts handlers closed to prevent storage multiple return logging.shutdown return super return local check if logger prevent uploading uploading the log log to remote remote storage loc self.local base closed multiple times called self.closed super self.upload local check logger prevent uploading log remote storage

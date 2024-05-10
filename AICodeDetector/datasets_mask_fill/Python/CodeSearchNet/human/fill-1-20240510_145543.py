@@ -1,0 +1,1 @@
+raise TypeError torch image tensor .cpu std torch.as dtype device tensor.device raise TypeError return tensor torch tensor.clone tensor.sub div inplace return

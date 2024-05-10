@@ -1,0 +1,1 @@
+dataset def train def eval return train size input num words random sample batch size num tensor slices dataset.batch shot iterator return def train eval str astype repeat range

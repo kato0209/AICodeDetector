@@ -1,0 +1,1 @@
+numerically faithful implementation faithful implementation numerically faithful TODO Evaluating bessel Switch lambda result raise ValueError on large v cache recurrence numerically faithful Evaluating tf.convert tensor wrap numerics besseli format recurrence becomes imprecise imprecise for large lambda float raise ValueError bessel cache recurrence imprecise large

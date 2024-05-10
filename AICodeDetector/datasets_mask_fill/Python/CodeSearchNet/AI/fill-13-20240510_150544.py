@@ -1,0 +1,1 @@
+tensor slices tf.TensorShape num words repeat dataset num output shapes Shuffle the data data if shuffle Shuffle data

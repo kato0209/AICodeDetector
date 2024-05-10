@@ -1,0 +1,1 @@
+strSeed return gGddgPfeaf gzyr prehash upid prehash.encode hexdigest strSeed return

@@ -1,0 +1,1 @@
+raise Exception rdd is empty Exception self.predict rdd predict raise rdd.rdd empty partitions

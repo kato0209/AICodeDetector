@@ -1,0 +1,1 @@
+Exclude optimizer variables Check presence Exclude optimizer raise RuntimeError path variables from saved sess attribute optimizer variables format loading model TensorFlow model model files <extra_id_0> Exclude self. class str self.load path.resolve exists log.info <extra_id_1> hasattr raise RuntimeError attribute loading saved sess TensorFlow presence files optimizer variables

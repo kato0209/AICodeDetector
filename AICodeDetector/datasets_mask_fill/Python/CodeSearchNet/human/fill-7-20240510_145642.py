@@ -1,0 +1,1 @@
+shape return tf.convert sample return tf.convert return self. shape return scope tf.Tensor tensor self.sample shape.as list dtype self. shape tf.convert sample return tf.convert return

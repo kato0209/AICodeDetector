@@ -1,0 +1,1 @@
+return tfd.OneHotCategorical params validate args dtype scope OneHotCategorical event size logits return tfd.OneHotCategorical

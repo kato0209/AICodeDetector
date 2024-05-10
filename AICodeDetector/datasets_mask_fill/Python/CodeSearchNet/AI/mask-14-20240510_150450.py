@@ -1,0 +1,1 @@
+event shape num components tf.convert tensor tf.reshape scope params size tf.transpose tf.name

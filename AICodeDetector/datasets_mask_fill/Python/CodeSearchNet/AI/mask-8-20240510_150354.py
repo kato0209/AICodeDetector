@@ -1,0 +1,1 @@
+log return super remote location self.remote file log.txt os.remove close return super

@@ -1,0 +1,1 @@
+concentration return np.log return tfd.Dirichlet def prior return prior logit prior variables softplus inverse topics return def <extra_id_0> shape num initializer initial clip dirichlet parameters np.log tfd.Dirichlet

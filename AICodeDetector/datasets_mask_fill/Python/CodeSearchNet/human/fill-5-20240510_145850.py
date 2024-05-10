@@ -1,0 +1,1 @@
+return predicts.map lambda predict predict callBigDlFunc self.bigdl type distributedImageFrameToPredict self.value predict ndarray return predicts.map lambda predicts

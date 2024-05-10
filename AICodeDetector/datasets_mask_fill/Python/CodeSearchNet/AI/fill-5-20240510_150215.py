@@ -1,0 +1,1 @@
+task State.SHUTDOWN job dag and dag.has job ti.state ti.job ids State.RUNNING task ids ti.task dag.get tis State.SHUTDOWN dag.has dag

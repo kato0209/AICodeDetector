@@ -1,0 +1,1 @@
+args def wrapper return func arg varnames session session func kwargs params wraps func. code params.index len def wrapper varnames return func arg session session in func session in kwargs kwargs if session kwargs or session

@@ -1,0 +1,1 @@
+raise TypeError dist integer type dist.values scope hot ops.SparseTensor integer <extra_id_0> <extra_id_1> raise TypeError type Note sparse vectors sparse result math ops.to float sparse variable coefficient vectors condition variable product correct handling

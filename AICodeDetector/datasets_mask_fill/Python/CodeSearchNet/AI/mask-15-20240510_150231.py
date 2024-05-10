@@ -1,0 +1,1 @@
+raise ValueError instance of Database isinstance aggregate mongo raise ValueError Database collection dict query instance instance of Collection self.mongo <extra_id_0>

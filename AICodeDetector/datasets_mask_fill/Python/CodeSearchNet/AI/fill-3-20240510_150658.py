@@ -1,0 +1,1 @@
+enum elif isinstance elif isinstance DTYPE enum elif arg list isinstance return dtype dtypes.DType dtypes.Array datatype dtypes.DTypeSpec dtypes.L enum

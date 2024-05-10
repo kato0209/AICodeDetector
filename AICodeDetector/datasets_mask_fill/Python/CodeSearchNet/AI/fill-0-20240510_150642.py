@@ -1,0 +1,1 @@
+alpha return gamma beta variable VARIABLES collections shape min ops.convert tensor gamma scope trainable concentration scale beta beta_vars_variable_list var_var_tensor accumulators utils.get ops.name return

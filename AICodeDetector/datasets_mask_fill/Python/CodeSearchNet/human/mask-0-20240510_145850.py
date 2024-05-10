@@ -1,0 +1,1 @@
+return cls assert isinstance return None assert ndarray type return np.ndarray ndarray.shape ndarray.size bigdl isinstance input <extra_id_0> assert

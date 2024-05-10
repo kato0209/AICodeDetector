@@ -1,0 +1,2 @@
+k-fold cross device support k-fold cross Remove this hack cross device TODO support k-fold k-fold cross return arg Remove result result arg device tensors hack support k-fold cross
+//k-fold cross spec inspect.getfullargspec spec.defaults spec.varargs spec.keywords

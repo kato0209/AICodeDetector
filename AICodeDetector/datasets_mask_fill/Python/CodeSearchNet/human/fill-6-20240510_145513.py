@@ -1,0 +1,1 @@
+submit env self. spark env cmd self. env. command application env.update kwargs subprocess.Popen stdout subprocess.PIPE hasattr

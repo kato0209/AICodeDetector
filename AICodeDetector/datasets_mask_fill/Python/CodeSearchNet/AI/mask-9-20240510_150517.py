@@ -1,0 +1,1 @@
+<extra_id_0> variable scope shared across multiple variables. with tf.variable tf.AUTO scope tf.variable multiple models model non-model variables. variable shared multiple non-model variables. variables models

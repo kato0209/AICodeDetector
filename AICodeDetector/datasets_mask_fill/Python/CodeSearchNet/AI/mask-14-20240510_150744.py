@@ -1,0 +1,1 @@
+Encoder outputs scope Decoder True initializer reuse tf.variable <extra_id_0> att size activation kernel tf.random normal stddev prob

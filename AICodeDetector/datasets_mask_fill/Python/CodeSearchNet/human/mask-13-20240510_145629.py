@@ -1,0 +1,1 @@
+Build a static count pretend dataset data sample eagerly <extra_id_0> <extra_id_1> Build tf.executing Define a closure prob tfd.Poisson rate default graph tau static pretend dataset joint Define Initialize def unnormalized return text tf.cast tf.concat axis dtype data.numpy data.eval posterior messages tf.function closure def unnormalized return text

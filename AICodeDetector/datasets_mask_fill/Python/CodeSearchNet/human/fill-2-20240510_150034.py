@@ -1,0 +1,1 @@
+DIR extracted hash extracted elif isinstance Path cache dir extract url paths False if cache download extracted hash file False else Path cache download extracted hash file or Path list os.getenv url.encode hexdigest arch elif isinstance path in extract

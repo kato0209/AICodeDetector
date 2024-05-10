@@ -1,0 +1,1 @@
+вершина ещё stack index ещё не обрабатывалась обрабатывалась colors white colors len color order stack.append <extra_id_0> trie grey вершина ещё обрабатывалась child

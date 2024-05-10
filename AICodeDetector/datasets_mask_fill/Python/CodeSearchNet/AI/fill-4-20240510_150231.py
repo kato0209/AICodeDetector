@@ -1,0 +1,1 @@
+conn hook SparkSqlHook jdbc self.jdbc query hook.run self.sql kill hook.kill def

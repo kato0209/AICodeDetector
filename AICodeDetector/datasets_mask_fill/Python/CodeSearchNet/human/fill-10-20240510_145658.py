@@ -1,0 +1,1 @@
+user provided extra shape provided extra kwargs keys. with tf.control list user provided event shape self. extra kwargs extra kwargs static Note dependencies runtime assertions tensor self.event tf.concat . For inputs, unexpanded axis result tf.reshape tf.control dict user provided keys.

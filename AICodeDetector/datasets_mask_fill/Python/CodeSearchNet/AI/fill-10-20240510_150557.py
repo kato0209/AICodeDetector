@@ -1,0 +1,1 @@
+pred Note cond true false scalar constant scalar constant static scalar scalar static scalar array scalars function valid tf.select shape semantics are arguably true if pred static shape ops.identity semantics arguably tf.cond implement tf.select to implement ops.shape args static

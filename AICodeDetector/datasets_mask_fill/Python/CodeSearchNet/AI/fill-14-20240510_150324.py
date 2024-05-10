@@ -1,0 +1,1 @@
+local file handles def return self. self. handles path row in cursor row SELECT cursor.execute self.name table self.local . write cursor def return

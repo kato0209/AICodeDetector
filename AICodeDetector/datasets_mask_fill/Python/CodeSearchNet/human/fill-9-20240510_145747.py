@@ -1,0 +1,1 @@
+raise Exception tval return tf.where elif isinstance return cls cond fval isinstance return cls Exception :raise Invalid tuple type val TypeError tf.where elif zip raise

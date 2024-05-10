@@ -1,0 +1,1 @@
+user provided extra provided extra kwargs sample shape key. with tf.control user provided self. provided extra extra kwargs Note extra kwargs dependencies runtime assertions validate arg static tf.concat or static tf.concat static dict user provided key.

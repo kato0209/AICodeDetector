@@ -1,0 +1,1 @@
+вершина ещё stack index ещё не обрабатывалась обрабатывалась colors white colors len color order stack.append ("\n        \n\n\n\n\n        a équipment è входящих ф ваш в trie grey вершина ещё обрабатывалась child

@@ -1,0 +1,1 @@
+inputs attention state scope strides VALID att size padding tf.variable

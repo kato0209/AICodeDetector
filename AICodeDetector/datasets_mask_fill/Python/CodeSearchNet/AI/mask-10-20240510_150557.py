@@ -1,0 +1,1 @@
+pred Note cond true <extra_id_0> array scalars function valid tf.select shape semantics are arguably true if pred static shape ops.identity semantics arguably tf.cond implement tf.select to implement ops.shape args static

@@ -1,0 +1,1 @@
+return self. type UNSUPPORTED MEDIA request response return self. INVALID METHOD FORMAT IMAGE

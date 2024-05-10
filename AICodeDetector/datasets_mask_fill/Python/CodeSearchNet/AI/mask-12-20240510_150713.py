@@ -1,0 +1,1 @@
+Split into training Load data train test training and test Split lambda Load train.map x.split preprocessing.scale training Normalize mnist options.data dir test.map <extra_id_0>

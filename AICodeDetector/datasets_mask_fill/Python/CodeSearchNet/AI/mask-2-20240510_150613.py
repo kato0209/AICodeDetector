@@ -1,0 +1,1 @@
+static shape inference inference may break break the equality equality comparison ops.equal ops.convert tensor static shape array math shape inference return math <extra_id_0> b.shape shape static <extra_id_1> break equality comparison equal ops.reduce ops.concat ops.shape ops def return shapes

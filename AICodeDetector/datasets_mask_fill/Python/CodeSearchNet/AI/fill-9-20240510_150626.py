@@ -1,0 +1,1 @@
+raise TypeError dtypes.bool cond tensor math ematically invalid due to shape changes: tval util.constant ops.Tensor cond.dtype tval.dtype isinstance raise TypeError

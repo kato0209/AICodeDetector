@@ -1,0 +1,1 @@
+def send html message.attach content backend EMAIL connection subject text True False html message.attach files message EmailMultiAlternatives message.cc alternative <extra_id_0> fail <extra_id_1> mass mail dryrun bcc def send bcc if files

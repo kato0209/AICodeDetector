@@ -1,0 +1,1 @@
+Uniform variates def return array return constant return tensor event shape dtype <extra_id_0> Uniform tensor ops.shape op.constant shape.scalar sample <extra_id_1> array constant open-interval variates sampled np.finfo self. dtype.as numpy tiny positive smallest

@@ -1,0 +1,1 @@
+logu return pearson scope triangular tf.convert tensor tf.exp return pearson

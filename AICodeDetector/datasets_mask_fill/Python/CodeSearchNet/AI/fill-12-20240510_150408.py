@@ -1,0 +1,1 @@
+mysql key fields type fields type.length fields type.scale fields type.default fields fields key type.null type.primary type.foreign type.length type.scale type.default type.name type.field type

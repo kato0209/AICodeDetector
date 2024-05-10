@@ -1,0 +1,1 @@
+data isinstance str list

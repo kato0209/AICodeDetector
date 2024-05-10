@@ -1,0 +1,1 @@
+PIL import Image import Image grid nearest integer ndarr Image grid PIL import import Image integer ndarr round to nearest nearest integer Add nrow padding pad normalize range scale Image.fromarray grid ndarr <extra_id_0> tensor grid.mul <extra_id_1> permute cpu numpy im.save filename PIL Image import unnormalizing round nearest integer

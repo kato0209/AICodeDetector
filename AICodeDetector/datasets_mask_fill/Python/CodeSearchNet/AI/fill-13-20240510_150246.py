@@ -1,0 +1,1 @@
+type object str docs api entity api entity permission type param param role param entity type entity permission objects entity holding user-userId user-email group-groupId group-email domain-domain allUsers allAuthenticatedUsers access permission forms holding role holding the permission Acceptable access

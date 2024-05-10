@@ -1,0 +1,1 @@
+dtype probs grid return grid probs grid tensor tf.convert True quadrature util.as numpy <extra_id_0> keepdims scope process deg grid.astype probs.astype tuple <extra_id_1> tf.norm axis def static event size tf.name return

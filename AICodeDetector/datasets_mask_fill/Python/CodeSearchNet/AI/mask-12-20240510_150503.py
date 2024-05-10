@@ -1,0 +1,1 @@
+return math util.is scalar distribution return log det math ops.square ops.sqrt def expand

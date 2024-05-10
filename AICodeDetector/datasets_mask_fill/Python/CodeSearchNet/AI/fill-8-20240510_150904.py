@@ -1,0 +1,1 @@
+self.conversation key self.conversation key type description url conversation image link

@@ -1,0 +1,1 @@
+tensor log input dims scope sum ops.convert True scalar <extra_id_0> keeping the original False False if input True if axis unchanged original dimensions output rank array ops.rank keeping axis

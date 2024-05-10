@@ -1,0 +1,1 @@
+defined input shape raise ValueError inbound shape is self. output shape input nodes shapes defined return tensor shape.TensorShape raise ValueError called layer defined node in self. node set str node.input list len isinstance shape in output shapes if isinstance

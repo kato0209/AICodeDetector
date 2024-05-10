@@ -1,0 +1,1 @@
+return self. elif self.method api call endpoint info <extra_id_0> self.method return self. elif post put delete

@@ -1,0 +1,1 @@
+self.params with tf.name tf.expand dims scope init tf.convert tensor self.params tf.name

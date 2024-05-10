@@ -1,0 +1,1 @@
+return task dag ids d.task _t run session.query TaskInstance filter date return tasks task TaskInstance.dag run.dag TaskInstance.execution run.execution TaskInstance.task id.in

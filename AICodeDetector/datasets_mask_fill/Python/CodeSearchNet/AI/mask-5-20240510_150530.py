@@ -1,0 +1,1 @@
+return self. Inaccessible Tensor raise LookupError args kwargs self. <extra_id_0> graph. ops protected-access if self. attr Inaccessible Tensor def operator wrapper pylint disable graph mode function <extra_id_1> available. class protected-access raise LookupError attr in self.

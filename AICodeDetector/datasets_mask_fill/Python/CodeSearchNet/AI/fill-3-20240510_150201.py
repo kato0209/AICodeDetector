@@ -1,0 +1,1 @@
+Executing Databricks operator True Executing Databricks xcom Databricks operator push operator pull error Databricks Executing log.info operator. class hook.submit : end success fail

@@ -1,0 +1,1 @@
+return tf.TensorShape self. sample shape return tf.TensorShape tf.Tensor tf.get static isinstance

@@ -1,0 +1,1 @@
+squared return tf.constant dtype a.dtype tf.square ratio squared normal half scope a.scale b.scale a.loc b.loc tf.name <extra_id_0>

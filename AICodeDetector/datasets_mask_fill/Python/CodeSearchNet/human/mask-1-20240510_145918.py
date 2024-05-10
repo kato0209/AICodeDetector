@@ -1,0 +1,1 @@
+callBigDlFunc bigdl type setStopGradient self.value stop layers return

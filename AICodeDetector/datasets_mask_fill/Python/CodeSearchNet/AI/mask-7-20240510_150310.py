@@ -1,0 +1,1 @@
+cmd.append vrouter-bgp self.cli reflector client self.cli self.route cmd present self.state vrouter-bgp

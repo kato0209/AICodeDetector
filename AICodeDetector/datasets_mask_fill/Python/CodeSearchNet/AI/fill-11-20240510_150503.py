@@ -1,0 +1,1 @@
+return param Lagrange multiplier raise ValueError rank return param Lagrange raise ValueError scalar. multiplier

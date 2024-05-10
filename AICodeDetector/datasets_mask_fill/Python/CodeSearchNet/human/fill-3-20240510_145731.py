@@ -1,0 +1,3 @@
+return make shape tensor return tf.TensorShape return tf.convert def make raise ValueError broadcast from partially return make tf.TensorShape def isinstance tensorshape return None def scope dtype tf.get static util.is shape method
+tf.TensorShape static def make static util.isTensorShape method
+tf.TensorShape new static def new static util.as util.as list tf.name tf.convert raise ValueError partially broadcast

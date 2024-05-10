@@ -1,0 +1,1 @@
+Generate synthetic data data synthetic data synthetic def main Load images Generate synthetic <extra_id_0> plt.imshow plt.savefig fname plt.close Plot def main Generate generated images generated Load the synthetic data.sample Plot the generated data.generated images.png

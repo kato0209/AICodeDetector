@@ -1,0 +1,1 @@
+folder filename return makedir process and save self.raw path exist download files gzip True exists makedir download check <extra_id_0> url.rpartition root self.extract <extra_id_1> finished url in self.urls url self. return self.urls process file save files files for url

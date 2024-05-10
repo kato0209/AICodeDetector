@@ -1,0 +1,1 @@
+constant op.constant squared normal half math ops.square scope a.op b.op c.op b.sigma ratio ops.name

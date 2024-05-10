@@ -1,0 +1,1 @@
+Checks presence path loading model model files files if self.load Checks self.load path.exists str path.resolve log.info " self. net.load loading model presence files

@@ -1,0 +1,1 @@
+DROP DATABASE DATABASE IF EXISTS self.db database engine DROP EXISTS self.database innodb cursor.execute sqlite collection <extra_id_0> cursor self.collection

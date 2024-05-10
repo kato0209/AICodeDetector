@@ -1,0 +1,1 @@
+inputs lambda dist average reconstruction reconstruct visualize True static input tf.reduce _mean axis scope dist.mean axis scope val functools.partial model.reconstruct prior dynamic samples avg over samples lambda dist avg sample

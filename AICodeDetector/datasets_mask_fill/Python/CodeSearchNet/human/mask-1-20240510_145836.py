@@ -1,0 +1,1 @@
+return lambda return dist dist return args <extra_id_0> distribution def kwargs dict zip makers lambda tuple make <extra_id_1> len kwargs.pop convert util.is instance sequential. required pylint disable makers.items order joint protected-access

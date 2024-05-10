@@ -1,0 +1,2 @@
+Deleting all records logging.info records related def logging.INFO
+delete all records setting.Session settings.Session session.query ing table.DagRun delete session.close DagRun dag session qry pool Dag deleted dag session Pool.pool records related def pool DagRun.dag args.dag delete session.commit find pool full args args.pool logging.warning deleted def find

@@ -1,0 +1,1 @@
+self.dimension scope return multi digamma self.df math.log self. self.scale operator.log abs determinant

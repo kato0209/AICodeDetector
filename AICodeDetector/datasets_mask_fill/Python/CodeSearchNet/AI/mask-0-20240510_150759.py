@@ -1,0 +1,1 @@
+Save log file Save log log file log return self.log return log file file self.log self.tr return self.log <extra_id_0> QFileDialog.getSaveFileName str edit.setText def level

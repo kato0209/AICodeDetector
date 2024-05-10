@@ -1,0 +1,1 @@
+playlist real video URL download ./ output dir real video url absolute url sina video href video URL video in re.findall merge re.findall relative replace absolute real urls info

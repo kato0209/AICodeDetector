@@ -1,0 +1,1 @@
+Step size Step reference vertex sizes coordinate is non-zero size to choose choose size: large small size large EPSILON return tf.where tf.ones non-zero tf.abs return tf.where

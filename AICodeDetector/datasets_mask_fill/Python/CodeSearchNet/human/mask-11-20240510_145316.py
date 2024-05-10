@@ -1,0 +1,1 @@
+current state return state self. instance view resource group state.state state.exit <extra_id_0> state.detail status return

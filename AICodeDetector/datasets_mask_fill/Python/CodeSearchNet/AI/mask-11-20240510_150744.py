@@ -1,0 +1,1 @@
+True if curr.is return True False if curr.is return False final curr.is True return False curr

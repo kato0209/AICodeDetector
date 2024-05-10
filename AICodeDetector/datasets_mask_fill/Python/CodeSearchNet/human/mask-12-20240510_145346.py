@@ -1,0 +1,1 @@
+endpoint host info url self.databricks conn.extra dejson auth method https <extra_id_0> self. parse conn.host token token auth info url basic auth TokenAuth conn.login conn.password basic

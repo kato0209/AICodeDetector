@@ -1,0 +1,1 @@
+Sample latents sample size latents inputs.shape batch shape latent self.sample Sample the latents

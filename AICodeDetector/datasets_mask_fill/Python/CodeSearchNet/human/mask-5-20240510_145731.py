@@ -1,0 +1,1 @@
+rightmost transposed integer type raise TypeError ndims util.rank raise ValueError <extra_id_0> integer raise scope validate assertions util.is ndims.dtype ndims.shape tf.name dtype TypeError type format ValueError scalar rank

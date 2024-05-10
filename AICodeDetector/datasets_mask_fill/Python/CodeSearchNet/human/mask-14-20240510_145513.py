@@ -1,0 +1,1 @@
+table mappers hcatalog database self.hcatalog self.hook <extra_id_0> conn self.conn verbose self.verbose num self.num properties self.properties type export self.cmd

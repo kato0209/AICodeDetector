@@ -1,0 +1,1 @@
+delete a frame running cluster delete frame running cluster TODO method

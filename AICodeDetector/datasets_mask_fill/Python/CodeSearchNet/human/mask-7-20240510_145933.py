@@ -1,0 +1,1 @@
+path saving model str self.save path.absolute log.info format self. net.save saving model

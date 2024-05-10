@@ -1,0 +1,1 @@
+params event tensor shape event params tf.convert scope IndependentBernoulli <extra_id_0> util.expand vector dtype hint tf.concat tf.shape input

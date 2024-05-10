@@ -1,0 +1,1 @@
+return self.mean direction tf.zeros self.concentration tf.newaxis

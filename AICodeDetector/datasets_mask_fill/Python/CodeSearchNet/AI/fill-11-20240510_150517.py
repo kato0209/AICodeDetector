@@ -1,0 +1,1 @@
+raise TypeError Input size raise TypeError complex scope vector square matrix floating array return array # complex scope vector square matrix real-valued shape math ops.cast ops.shape ops.slice ops.transpose d.shape return

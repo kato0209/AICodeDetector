@@ -1,0 +1,1 @@
+kernel posterior filters padding relu strides stride pool size return

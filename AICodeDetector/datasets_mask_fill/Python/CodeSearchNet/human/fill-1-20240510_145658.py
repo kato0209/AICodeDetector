@@ -1,0 +1,1 @@
+closed form otherwise. del labels raise NotImplementedError form otherwise. closed form params analytic mixture components encoder make activation decoder config if params latent size base depth del labels  raise :not_implemented :form => otherwise. supported closed form

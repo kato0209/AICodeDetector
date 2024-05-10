@@ -1,0 +1,1 @@
+Input raise TypeError raise ValueError , format dimensions rank raise return assertions floating float dtype args assertions.append message assertions TypeError ValueError elif validate return

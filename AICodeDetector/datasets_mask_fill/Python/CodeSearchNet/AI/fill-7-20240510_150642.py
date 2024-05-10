@@ -1,0 +1,1 @@
+half normal Calculate logits a.logits b.logits C Calculate the logits between both tensors in name ops.name distributions True math shape original shape return math Broadcast ops.matmul transpose ops.Tensor array ops.expand dims ops.reduce sum original isinstance logits.get ndims return

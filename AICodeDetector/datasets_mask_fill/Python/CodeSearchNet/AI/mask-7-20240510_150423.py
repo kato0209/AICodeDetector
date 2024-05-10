@@ -1,0 +1,1 @@
+self.socket keepalive timeout socket self.shard options interval connection conn self.connection pool.get count <extra_id_0> connect

@@ -1,0 +1,1 @@
+context ti.hostname self.pid date self.try number self.hostname ti.pid self.executor config self.local instance self.task loglevel self.executor local template ti.executor timeout ti.get self.task instance date number self.executor config loglevel <extra_id_0> ti.task <extra_id_1> ti.try ti.local self.execution self.try self.hostname ti.hostname self.pid ti.pid self.local

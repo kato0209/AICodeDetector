@@ -1,0 +1,1 @@
+video return self. def create intelligence credentials info self. client VideoIntelligenceServiceClient self.client GoogleBaseHook.fallback default project parent input uri content config return video def

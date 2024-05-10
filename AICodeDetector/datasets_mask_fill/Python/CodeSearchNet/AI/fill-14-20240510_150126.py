@@ -1,0 +1,1 @@
+logger.addHandler handler logging.StreamHandler handler.setLevel logging.DEBUG handler.setFormatter logging.Formatter asctime levelname message handler in logger.handlers logger.handlers isinstance

@@ -1,0 +1,1 @@
+shape override raise TypeError empty dynamic raise ValueError return self. elif validate shape override scalar tensor assertions util.rank shape.shape tensorshape dtype integer raise dynamic if util.is shape.dtype static args assert util.is rank TypeError tf.get return self. empty ValueError vector elif validate

@@ -1,0 +1,1 @@
+Expected rightmost raise ValueError received shape rightmost transposed ndims dims.shape dims Expected args scope ops.convert tensor validate return ops.name raise ValueError rank ed shape

@@ -1,0 +1,1 @@
+raise RuntimeError path sess attribute saving model format self. var list TensorFlow model class str <extra_id_0> path.resolve log.info saveable variables exclude <extra_id_1> saver saver.save self.sess hasattr raise RuntimeError attribute saving sess model TensorFlow

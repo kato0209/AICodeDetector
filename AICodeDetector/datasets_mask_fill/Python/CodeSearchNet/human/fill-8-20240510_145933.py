@@ -1,0 +1,1 @@
+init layers units hidden reuse num tf.shape scope gru rnn.CudnnGRU initial states tf.get _collection tf.tile tf.zeros tf.variable trainable

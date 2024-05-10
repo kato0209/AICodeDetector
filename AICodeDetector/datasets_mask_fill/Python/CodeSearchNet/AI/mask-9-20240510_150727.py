@@ -1,0 +1,1 @@
+import bigdl.nn import True opt if bigdl type float opt.set ops bigdl import bigdl.nn bigdl.nn import import bigdl.nn opt

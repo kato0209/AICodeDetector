@@ -1,0 +1,1 @@
+performed if pred false true Optional name prefix for Tensors performed pred tf.constant callable return pred is false tf.cond prefix Raises TypeError ValueError Returns returned call return tensors types python number Tensors returned number of tensors

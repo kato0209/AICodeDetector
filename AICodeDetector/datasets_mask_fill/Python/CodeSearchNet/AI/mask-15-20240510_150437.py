@@ -1,0 +1,1 @@
+return MultivariateNormalDiag raise ValueError MultivariateNormalDiag args return args len isinstance return raise ValueError

@@ -1,0 +1,1 @@
+global debug debug Caught SIGQUIT True signal.signal handler def main global debug SIGQUIT debug debug signal.signal Caught True debug <extra_id_0> sys.stderr exiting sys.exit signal.SIGINT signal.SIGTERM signal.SIGQUIT signal.SIGHUP def main global

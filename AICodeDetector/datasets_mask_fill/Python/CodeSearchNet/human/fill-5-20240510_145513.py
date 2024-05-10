@@ -1,0 +1,1 @@
+instance fqdn return self.task ensure termination termination if processes processes are created hostname self.task created later self.task fqdn runner.terminate task fqrun process ti.pid os.getpid State.RUNNING self.terminating ensure return instance ti.hostname ti.state termination processes created

@@ -1,0 +1,1 @@
+kernel padding posterior VALID fixed filters stride

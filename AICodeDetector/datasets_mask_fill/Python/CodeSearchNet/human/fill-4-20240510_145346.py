@@ -1,0 +1,1 @@
+self. sql conf conn total executor cores hook SparkSqlHook

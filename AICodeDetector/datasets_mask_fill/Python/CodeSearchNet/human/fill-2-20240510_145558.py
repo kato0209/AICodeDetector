@@ -1,0 +1,1 @@
+return np.prod return tf.reduce event shape shape event const tensor return scope size tf.convert dtype tf.get _shape_as_tensor prod input np.prod tf.reduce

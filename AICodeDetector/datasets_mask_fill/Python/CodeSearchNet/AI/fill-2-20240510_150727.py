@@ -1,0 +1,1 @@
+image feature self.image size RGB feature.resize Image.ANTIALIAS feature.convert

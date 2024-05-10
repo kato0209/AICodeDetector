@@ -1,0 +1,1 @@
+Synthesizing input return client.synthesize data voice audio config retry timeout input Synthesizing client self.get conn speech return <extra_id_0>

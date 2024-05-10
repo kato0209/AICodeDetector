@@ -1,0 +1,1 @@
+return pre dir path pre items open download glove <extra_id_0> sd.txt dim info encoding f.readlines line.split float f.close sys.version return line

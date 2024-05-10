@@ -1,0 +1,1 @@
+self.schema or conn.schema return conn conn self.get connection self.mssql pymssql.connect server conn.host user conn.login password conn.password database port conn.port self.schema ) or self.schema return

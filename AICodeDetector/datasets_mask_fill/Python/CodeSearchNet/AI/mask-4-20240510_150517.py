@@ -1,0 +1,1 @@
+elif FLAGS.dataset def main dataset <extra_id_0> FLAGS.dataset tf.name elif image summary summaries tf.reshape seqs num max outputs cifar def main

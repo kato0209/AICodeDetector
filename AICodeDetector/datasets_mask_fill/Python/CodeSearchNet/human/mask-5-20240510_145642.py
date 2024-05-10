@@ -1,0 +1,1 @@
+def func args return attr return func functools.wraps a.value attr func return def

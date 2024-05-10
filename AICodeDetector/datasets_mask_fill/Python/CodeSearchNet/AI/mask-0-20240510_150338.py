@@ -1,0 +1,1 @@
+Construct the shell Check the return Running command <extra_id_0> return code run run the task stdout subprocess.PIPE stderr task command command shell command Construct Running Check task bash join self. <extra_id_1> process.communicate process code shell return command to run process.returncode

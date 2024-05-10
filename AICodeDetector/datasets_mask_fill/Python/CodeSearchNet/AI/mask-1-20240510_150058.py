@@ -1,0 +1,1 @@
+True ydl.params raise ExtractorError lambda msg u'Downloading best video Dailymotion ydl Dailymotion program DAILYMOTION True YoutubeDL outtmpl output dir url intmpl ydl.report warning format <extra_id_0> bestaudio ydl.add default info extractors <extra_id_1> screen raise ExtractorError ydl lambda msg ydl.params u'Downloading video program downloader pass

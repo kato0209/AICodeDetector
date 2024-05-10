@@ -1,0 +1,1 @@
+return self. return math dim log prob return self. return x def def seed  astype x.reshape unnormalized normalization ops.exp math

@@ -1,0 +1,1 @@
+del inputs return tfd.MultivariateNormalDiag scope self. self.loc self.scale diag del inputs unused return tfd.MultivariateNormalDiag

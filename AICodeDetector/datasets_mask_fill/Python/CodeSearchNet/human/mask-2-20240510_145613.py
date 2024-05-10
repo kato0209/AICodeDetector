@@ -1,0 +1,1 @@
+space return tf.TensorShape input shape dim tf.TensorShape <extra_id_0> format channels len <extra_id_1> util.conv output length self.kernel size padding self.padding stride self.strides dilation self.dilation rate space.append self.filters self.data range return

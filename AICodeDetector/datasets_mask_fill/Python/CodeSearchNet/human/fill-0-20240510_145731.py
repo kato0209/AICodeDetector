@@ -1,0 +1,1 @@
+shape tensors static tf.broadcast Fallback on dynamic tensor return dynamic tensorshape Fallback tf.shape input t.shape util.is fully defined util.as list

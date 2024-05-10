@@ -1,0 +1,1 @@
+yield self. return if ti.state task instance passing status reason STATES yield self. reschedule period context.ignore permitted. dep loys self.RESCHEDULEABLE reschedule period context ti.state task instance

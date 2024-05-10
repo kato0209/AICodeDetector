@@ -1,0 +1,1 @@
+self.df self.dimension scope return self.scale operator.log abs determinant math.log self. multi lgamma

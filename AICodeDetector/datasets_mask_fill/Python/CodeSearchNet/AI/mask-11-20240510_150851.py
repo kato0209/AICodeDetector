@@ -1,0 +1,1 @@
+rate self.learning schedule schedule.learning schedule.momentum if self.learning init if self.learning self.momentum class <extra_id_0> kwargs type constant schedule.momentum init

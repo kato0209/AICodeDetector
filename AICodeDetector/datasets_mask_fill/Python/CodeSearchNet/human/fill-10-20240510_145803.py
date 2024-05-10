@@ -1,0 +1,1 @@
+static return tf.rank expect return tf.rank static return ndims return ndims static return tf.rank

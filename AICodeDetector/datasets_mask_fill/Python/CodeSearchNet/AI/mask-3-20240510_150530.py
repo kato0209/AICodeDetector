@@ -1,0 +1,1 @@
+return math Psi return self. math def self. return ops.log digamma <extra_id_0> ops.reduce sum ops.digamma entropy multi val variance

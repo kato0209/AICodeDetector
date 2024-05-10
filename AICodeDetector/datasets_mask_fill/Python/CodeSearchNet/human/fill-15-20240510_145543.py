@@ -1,0 +1,1 @@
+tfd.MultivariateNormalDiag Faster tfd.Normal args kwargs reinterpreted batch ndims return tfd.Independent return tfd.Independent

@@ -1,0 +1,1 @@
+return inputs def kernel initializer bias regularizer return inputs inputs def constraint dropout inputs size filters strides padding data format channels <extra_id_0> tf.zeros activity kwargs return def

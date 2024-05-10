@@ -1,0 +1,1 @@
+self.hook SlackWebhookHook self.http <extra_id_0> self.webhook token self.message self.attachments self.channel self.username self.icon emoji self.link self.proxy

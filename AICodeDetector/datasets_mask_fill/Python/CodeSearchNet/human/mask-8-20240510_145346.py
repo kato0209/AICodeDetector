@@ -1,0 +1,1 @@
+self.database self.result execution location self.query self.query context configuration query status status in AWSAthenaHook.FAILURE Database STATES self.result self.hook self.get hook conn OutputLocation self.output self.client request <extra_id_0> self.max self.database location AWSAthenaHook.FAILURE

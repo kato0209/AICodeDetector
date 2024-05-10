@@ -1,0 +1,1 @@
+raise ValueError batch shape size static tensorshape util.rank shape.shape dist util.num elements raise ValueError format 'rank' and `size` do not satisfy distribution.batch vector rank match

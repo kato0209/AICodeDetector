@@ -1,0 +1,1 @@
+gitpython not found <extra_id_0> git version sha logger.warning import git git version compute the git git.Repo repo compute return git repo import ImportError gitpython found git except ImportError Exception format dirty return except Exception dirty format repo.is return if repo

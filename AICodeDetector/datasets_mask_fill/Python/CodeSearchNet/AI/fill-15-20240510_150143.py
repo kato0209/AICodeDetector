@@ -1,0 +1,1 @@
+elif isinstance return obj.isoformat obj isinstance return elif list dict v tuple v.to obj.isoformat Model Query datetime.datetime zip datetime.time obj.items

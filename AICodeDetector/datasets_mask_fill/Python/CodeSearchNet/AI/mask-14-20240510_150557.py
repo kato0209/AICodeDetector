@@ -1,0 +1,1 @@
+return constant return array raise TypeError return ops.Tensor op.constant dtype <extra_id_0> shape isinstance Tensor tensorshape tensorshape.as np.arange ops.rank def indexed shape.ndims raise TypeError array

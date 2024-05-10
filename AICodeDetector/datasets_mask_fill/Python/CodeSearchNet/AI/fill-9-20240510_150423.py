@@ -1,0 +1,1 @@
+elif sql.lower sql startswith self.parse sql.lower elif select insert update parameters sql.strip params delete

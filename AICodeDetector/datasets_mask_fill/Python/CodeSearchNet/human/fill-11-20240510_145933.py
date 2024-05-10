@@ -1,0 +1,1 @@
+lstm dropout outputs self.word word kl.Bidirectional True kl.Dropout kl.LSTM units in vocabular sequences self.lstm range

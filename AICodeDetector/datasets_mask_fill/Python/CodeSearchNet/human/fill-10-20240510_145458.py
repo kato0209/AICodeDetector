@@ -1,0 +1,1 @@
+pair in six.iteritems obj key secret worker env self.kube var secrets.append secrets config.kube pair.split config.env for in six.iteritems ref ref in self.kube ref.split

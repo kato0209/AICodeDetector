@@ -1,0 +1,1 @@
+environment variable GOOGLE APPLICATION environment variable CREDENTIALS raise AirflowException GOOGLE generate a default variable GOOGLE environment default <extra_id_0> os.environ generate set set the environment self.credentials raise AirflowException user gcp variable is missing missing

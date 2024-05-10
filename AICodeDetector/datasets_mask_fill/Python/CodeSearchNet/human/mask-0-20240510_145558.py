@@ -1,0 +1,1 @@
+stddevs def unnormalized def unnormalized stddevs def effects treatment tf.constant dtype avg treatment effects schools school <extra_id_0> num posterior log prob standard unnormalized stddev def effect

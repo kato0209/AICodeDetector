@@ -1,0 +1,1 @@
+return cls.generate value. cls.convert getattr data dict fields return cls.generate

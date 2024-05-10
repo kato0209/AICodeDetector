@@ -1,0 +1,1 @@
+return image feature callBigDlFunc bigdl type transformImageFeature self.value image return

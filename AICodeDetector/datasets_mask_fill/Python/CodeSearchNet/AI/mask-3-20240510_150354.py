@@ -1,0 +1,1 @@
+allowed file size minimum allowed file maximum allowed file File size return False allowed file size minimum allowed maximum allowed File self.filesize False False if size size is greater return allowed self.filesize if size <extra_id_0> minimum maximum

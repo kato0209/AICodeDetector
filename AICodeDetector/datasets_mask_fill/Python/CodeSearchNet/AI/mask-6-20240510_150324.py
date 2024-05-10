@@ -1,0 +1,1 @@
+type string field return float return int return bool return elif FLOAT INTEGER BOOLEAN TIMESTAMP DATE <extra_id_0> bool

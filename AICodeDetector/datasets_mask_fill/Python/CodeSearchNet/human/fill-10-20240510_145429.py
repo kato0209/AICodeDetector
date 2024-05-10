@@ -1,0 +1,1 @@
+job Send query configuration  reply data Send query retries jobReference location wait wait for reply jobReference jobId query and wait jobReference location insert projectId self.project body execute num self.num self.running jobId

@@ -1,0 +1,1 @@
+process return raise OSError as err sig return raise ESRCH if e.errno.number!= 7 then on pid def reap group os.killpg errno.ESRCH err err.errno process return OSError raise

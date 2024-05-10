@@ -1,0 +1,1 @@
+elif isinstance raise ValueError Nested structures return tuple tensor conversion between tf.Tensor struct Nested isinstance convert elif tuple return dtype <extra_id_0> struct.dtype dict array substructure dtype.is <extra_id_1> ValueError support conversion substructure in struct structures tf.Tensor

@@ -1,0 +1,1 @@
+struct return tf.convert tensor dtype return structure wholesale tf.convert <extra_id_0> shallow nested convertible <extra_id_1> return nest.map wholesale converting Eager Graph error type ValueError TypeError type pass mode agree error convert children converting the structure nest.map lambda

@@ -1,0 +1,1 @@
+make summaries ret adagrad slot summaries ret v.name make summaries vars grads make a dict slot dict of variable strategy opt.get <extra_id_0> grads.items continue make variable adagrad tf.trainable ret vname dict summaries grad variables

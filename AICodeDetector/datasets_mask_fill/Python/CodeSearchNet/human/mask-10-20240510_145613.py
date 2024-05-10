@@ -1,0 +1,1 @@
+flat continue flat Checks str <extra_id_0> namedtuple field continue fields continue if isinstance values.extend getattr list tuple return pass tensor hasattr value. isinstance field in value.

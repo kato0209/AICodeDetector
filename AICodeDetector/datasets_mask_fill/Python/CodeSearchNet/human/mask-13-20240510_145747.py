@@ -1,0 +1,1 @@
+size not-callable kernel return kernel results step assign kernel update self.step self. impl.bootstrap <extra_id_0> state pylint disable results. replace extra HamiltonianMonteCarloExtraKernelResults not-callable return

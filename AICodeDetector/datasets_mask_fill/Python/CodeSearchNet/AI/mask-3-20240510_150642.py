@@ -1,0 +1,1 @@
+image BGR Read the image Read image size filepath <extra_id_0> size and convert convert summary Note bail images jpeg f.read channels tf.cast scaling materialize the images materialize string write serialized proto serialized proto images without scaling

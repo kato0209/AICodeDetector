@@ -1,0 +1,1 @@
+Running Sqoop job Output Sqoop job <extra_id_0> Running Sqoop Output Sqoop job conn Sqoop self.aws Running Output hook SqoopHook aws hook.create template self.task

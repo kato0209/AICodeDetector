@@ -1,0 +1,1 @@
+return array params size components num component array ops.shape def shape return scope tensor shape.TensorShape ops.concat ops.expand dims batch self. dim ops.name

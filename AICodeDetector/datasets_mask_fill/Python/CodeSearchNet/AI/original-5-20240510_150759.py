@@ -1,0 +1,3 @@
+
+    if len(proba)!= len(classes):
+        raise ValueError("Proba2onehot expects a list of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of

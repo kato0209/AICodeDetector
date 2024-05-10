@@ -1,0 +1,1 @@
+assert len img size int numbers.Number crop isinstance assert len dimensions is flip vflip hflip vertical return

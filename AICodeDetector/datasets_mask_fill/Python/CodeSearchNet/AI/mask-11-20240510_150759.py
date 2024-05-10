@@ -1,0 +1,1 @@
+embeddings self.word size normalize tf.get variable word shape initializer self.initializer prob

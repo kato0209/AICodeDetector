@@ -1,0 +1,1 @@
+Greedily unroll nonterminal symbols based raise ValueError linear sequence unroll the nonterminal axis self.start rhs Greedily unroll nonterminal symbols symbols based symbols iteration if lhs production production in tf.unstack input rules tf.argmax input tf.unstack raise ValueError occurrence sequence iteration begin unroll nonterminal based linear symbol index symbols.index

@@ -1,0 +1,1 @@
+raise ValueError tensor nrow ncol raise ValueError np.max tensor.shape is not normalize list np.array np.abs isinstance tensor.ndim

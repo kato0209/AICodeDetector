@@ -1,0 +1,1 @@
+TensorFlow versions consistent behavior behavior across TensorFlow raise TypeError structure sequence TypeError type isinstance nest.is raise versions # consistent behavior TensorFlow True changing the structure tuple nest.assert expand composites ValueError

@@ -1,0 +1,1 @@
+batch size contents def build fake data filenames range FLAGS.test tmpdir input _filenames contents.append np.array reshape yield dir def build

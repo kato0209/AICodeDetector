@@ -1,0 +1,1 @@
+return result.map lambda data result callBigDlFunc self.bigdl type modelPredictRDD self.value rdd batch size data.to ndarray <extra_id_0> return result.map lambda

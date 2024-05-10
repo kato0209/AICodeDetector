@@ -1,0 +1,1 @@
+image retry return client.search Optional def translate timeout additional properties str max results language <extra_id_0> client self.get conn detection GoogleCloudBaseHook.fallback <extra_id_1> project source target float return client.search translate def

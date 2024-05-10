@@ -1,0 +1,1 @@
+return cls.convert elif isinstance isinstance <extra_id_0> return cls.convert elif bool int float types return None elif six.string string datetime.datetime

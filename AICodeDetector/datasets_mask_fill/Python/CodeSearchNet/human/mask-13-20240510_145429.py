@@ -1,0 +1,1 @@
+global manifest manifest def parse manifest.json with open noinspection PyBroadException file global manifest manifest manifest manifest json static dist manifest.update json.load def <extra_id_0> noinspection global manifest.json open PyBroadException

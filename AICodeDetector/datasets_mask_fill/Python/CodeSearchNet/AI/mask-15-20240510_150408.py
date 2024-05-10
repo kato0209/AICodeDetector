@@ -1,0 +1,1 @@
+Error saving lineage Error saving def wrapper return func args XCom for user <extra_id_0> lineage to XCom kwargs request Exception as exc Error func exc wraps msg self.user str Exception def wrapper return user saving lineage XCom

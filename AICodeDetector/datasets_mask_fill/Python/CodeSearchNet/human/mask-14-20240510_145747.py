@@ -1,0 +1,1 @@
+kernel posterior shortcut filters stride padding relu strides x.shape projection return

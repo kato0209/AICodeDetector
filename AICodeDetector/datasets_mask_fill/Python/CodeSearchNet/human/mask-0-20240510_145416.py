@@ -1,0 +1,1 @@
+path file files temp mode fileobj tempfile.TemporaryFile os.listdir tarfile.open tar

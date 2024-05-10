@@ -1,0 +1,1 @@
+jresults callBigDlFunc self.bigdl type predictLocal self.value self. jtensors

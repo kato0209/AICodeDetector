@@ -1,0 +1,1 @@
+tf.ones dtype x.dtype return

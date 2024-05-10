@@ -1,0 +1,1 @@
+return inputs inputs return answer mask shape inputs return inputs tensors if dropout func kl.Lambda tiling inputs inputs dropout return answer kb.ones <extra_id_0> kb.shape kb.ndim kb.tile arguments output <extra_id_1> keras kl.Multiply adapt tensors lambda

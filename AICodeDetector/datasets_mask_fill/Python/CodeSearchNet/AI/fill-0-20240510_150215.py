@@ -1,0 +1,1 @@
+attachments self.attachments emoji message user return channel self.channel username self.username icon self.icon text self.text created time.time count len

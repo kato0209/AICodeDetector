@@ -1,0 +1,1 @@
+lines line line in lines line.split info file f.readlines open

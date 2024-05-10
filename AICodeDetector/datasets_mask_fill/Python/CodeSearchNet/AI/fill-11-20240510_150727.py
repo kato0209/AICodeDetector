@@ -1,0 +1,1 @@
+add validation method weighted add validation methods.append self.val metric validation method TODO method methods add validation method if self.val

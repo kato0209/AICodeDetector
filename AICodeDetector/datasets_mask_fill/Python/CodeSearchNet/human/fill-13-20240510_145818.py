@@ -1,0 +1,1 @@
+vector return tf.squeeze dense return tf.squeeze vector return sparse vector matrix validate args scope matvecmul tf.convert tensor dtype hint float tf.newaxis kwargs axis tf.squeeze return

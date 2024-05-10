@@ -1,0 +1,1 @@
+manager import operators sys from airflow.plugins module globals manager import import sys import operators operators module. module modules import sys.modules airflow.plugins manager globals sys manager import import sys manager import module in operators

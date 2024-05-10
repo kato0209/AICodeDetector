@@ -1,0 +1,1 @@
+raise AuthenticationError raise AuthenticationError user return user session.query PasswordUser Log password username successfully authenticated PasswordUser.username log.info user.authenticate authenticated return successfully

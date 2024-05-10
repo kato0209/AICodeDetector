@@ -1,0 +1,1 @@
+number return filename return filename template jinja context number return filename number return parse string ti.get template.render template.format dag ti.dag task ti.task <extra_id_0> date ti.execution date.isoformat

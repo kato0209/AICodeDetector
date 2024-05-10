@@ -1,0 +1,2 @@
+tensor log input dims scope sum ops.convert True scalar dim.1 dim.1 dim.3 axis op.convert rank array dim.2 dim.1 rankarray dim.1 rankarray.dim 1 output dim output rankarray
+  array input: rank array tensor.rank keeping the original False False if input True if axis unchanged original dimensions output rank array ops.rank keeping axis

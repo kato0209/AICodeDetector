@@ -1,0 +1,1 @@
+scope Linspace self. scalars return seq <extra_id_0> tf.linspace tf.constant dtype self.dtype tf.cast tf.expand dims add offset return

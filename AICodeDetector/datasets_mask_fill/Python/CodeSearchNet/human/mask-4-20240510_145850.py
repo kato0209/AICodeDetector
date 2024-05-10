@@ -1,0 +1,1 @@
+self.value callBigDlFunc bigdl type transformImageFrame transformer return

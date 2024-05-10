@@ -1,0 +1,1 @@
+logu Tensor <extra_id_0> function function makes <extra_id_1> prefixed to Ops Ops created Ops numerically unstable Args float representing log makes calculations str Returns triangular numerically unstable Raises ValueError Default shape prefixed created

@@ -1,0 +1,1 @@
+like. format shape raise ValueError raise TypeError dtype message elif validate shape.dtype <extra_id_0> message.format args assertions.append assert util.assert <extra_id_1> integer int util.name assertions util.rank shape.shape ValueError elif validate tensorshape TypeError like. format rank sum tf.rank tf.get static elements tf.reduce input tensor tf.cast tf.equal

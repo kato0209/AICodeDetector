@@ -1,0 +1,1 @@
+message elif validate assertions args raise ValueError lower Input rhs.shape validate Input rhs upper assertions.append reconstruct perm dimensions rank raise ValueError elif equal tf.shape

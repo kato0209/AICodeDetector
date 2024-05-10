@@ -1,0 +1,1 @@
+self.get connection getattr self.conn attr return host <extra_id_0> port db.port username db.login schema db.schema

@@ -1,0 +1,1 @@
+global logical dag for global logical node create perm logical dag self.DAG VMS perm dag perm in self.DAG self. merge permission view menu create perm for global global logical dag for dag PERMS

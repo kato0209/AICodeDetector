@@ -1,0 +1,1 @@
+full path Transferring file Local file raise AirflowException local path.endswith remote file Transferring raise AirflowException exist

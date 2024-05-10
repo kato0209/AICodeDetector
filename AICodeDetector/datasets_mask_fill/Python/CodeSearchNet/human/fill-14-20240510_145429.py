@@ -1,0 +1,1 @@
+handle return handle lambda schema write if cursor.rowcount tmp handle return return handle tuple filename schema True file , map cursor.description row def NamedTemporaryFile delete len create handle return return handle return handle return return handle set handle lambda cursor.rowcount return write create a file

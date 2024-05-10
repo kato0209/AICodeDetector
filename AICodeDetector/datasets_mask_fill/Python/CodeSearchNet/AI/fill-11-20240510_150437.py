@@ -1,0 +1,1 @@
+Inception Architecture num Inception Architecture int Architecture num number num classes anchors num anchors Inception Architecture int intbool number auxiliary logits number of classes location number of anchors class anchor bool returns auxiliary logits classes per anchor anchors per location classes per class anchors per class class per location

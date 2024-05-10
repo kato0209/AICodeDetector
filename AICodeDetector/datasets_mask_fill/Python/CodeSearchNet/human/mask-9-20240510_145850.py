@@ -1,0 +1,1 @@
+return Layer.of jmodel callBigDlFunc bigdl type loadBigDL path Layer.of return

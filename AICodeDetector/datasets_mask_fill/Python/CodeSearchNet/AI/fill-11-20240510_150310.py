@@ -1,0 +1,2 @@
+product set return result def create location project ref retry timeout metadata entry result client self.get conn , token, client_config = conn.client_config
+    return result if product_path.match?(client_config.product_path) and client.delete GoogleBaseHook.fallback default group return create def

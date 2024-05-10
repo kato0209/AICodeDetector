@@ -1,0 +1,1 @@
+False self.finished False self.result runnable self.started state self.task task return False self.result runnable self.task state self.task state return False state runnable self.task task return False def state runnable self.task init repr s.finished self.runnable self.started self.finished self.result self.exception self.traceback cls

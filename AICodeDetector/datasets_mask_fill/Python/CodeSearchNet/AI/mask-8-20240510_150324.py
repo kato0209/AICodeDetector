@@ -1,0 +1,1 @@
+import QueryJobConfig job import QueryJobConfig return QueryJobConfig return QueryJobConfig def test import QueryJobConfig config self.assertIsInstance QueryJobConfig job QueryJobConfig return return QueryJobConfig job service <extra_id_0> ctor config QueryJobConfig import def test self.service project self.project self.get self.assertEqual config.job self.assertIsInstance return

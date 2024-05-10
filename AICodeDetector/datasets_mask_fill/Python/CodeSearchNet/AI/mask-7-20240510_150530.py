@@ -1,0 +1,1 @@
+raise NotImplementedError sample def counts return self. shape prob raise NotImplementedError implemented scope self.name log tensor ops.name call seed ops.convert return <extra_id_0>

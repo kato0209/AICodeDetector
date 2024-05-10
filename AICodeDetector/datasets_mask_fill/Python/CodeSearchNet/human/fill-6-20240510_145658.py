@@ -1,0 +1,3 @@
+batch static shape input size implicit rank batch dynamic shape shape output size input size output size return value reduce broadcast
+
+reduce reduction shape original tf.reduce prod tensor static shape dynamic shape tensorshape Assumes ndims util.constant util.is fully defined return scope calculate reshape tf.equal tf.maximum tf.shape expanded tf.where tf.name tf.fill validations pylint disable assert util.assert rank message vector validate

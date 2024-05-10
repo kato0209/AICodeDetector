@@ -1,0 +1,1 @@
+schema def run dataset return tables schema def def run resource view table tables projectId self.project datasetId tableId execute grant access <extra_id_0> project return schema run def

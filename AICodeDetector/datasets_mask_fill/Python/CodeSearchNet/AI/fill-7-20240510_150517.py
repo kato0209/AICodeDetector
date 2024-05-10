@@ -1,0 +1,1 @@
+log det math scope ops.log square convert tensor dist.mean dist.logits  array ops.name dist.probs ops.reduce sum axis ops.where ops.greater ops.zeros

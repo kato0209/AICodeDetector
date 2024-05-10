@@ -1,0 +1,1 @@
+return self.start symbol return self.end self.start symbol if self.end self.end return start end symbol if self.start

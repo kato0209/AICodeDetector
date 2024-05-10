@@ -1,0 +1,1 @@
+model config file raise Exception config file Check model config Exception Check that algo ModelBuilder training algo Train file Check key model valid algoName frame custom model training algoName config Check that training model training valid custom model valid algo algo is valid frame.key parameters pass custom frame.key if training

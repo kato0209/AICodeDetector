@@ -1,0 +1,1 @@
+gamma Result scope pylint disable return tf.name derivation

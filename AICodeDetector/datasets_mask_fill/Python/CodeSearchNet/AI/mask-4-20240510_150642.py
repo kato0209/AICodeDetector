@@ -1,0 +1,1 @@
+POSITION character IMAGE VELOCITY ROTATION SCALE skin hair top pants character.sprite sprite.Sprite

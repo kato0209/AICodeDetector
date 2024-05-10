@@ -1,0 +1,1 @@
+samples np.rollaxis samples.ndim np.asarray

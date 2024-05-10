@@ -1,0 +1,1 @@
+log target probs.dtype num prob inverse states state replica exchanged sampled temp probs prob s Tensor scope self.num field results self.inverse temperatures , self.temp tf.stack axis dtype parts len range probs.dtype num replica in range

@@ -1,0 +1,1 @@
+memory logits scope att prob mask weights axis  tf.variable False res tf.unstack tf.shape noise shape size activation bias softmax tf.squeeze tf.expand dims tf.reduce sum return

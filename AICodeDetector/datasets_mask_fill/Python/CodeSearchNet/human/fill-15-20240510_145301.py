@@ -1,0 +1,1 @@
+c.name obj table columns getattr datetime value.isoformat return obj. type

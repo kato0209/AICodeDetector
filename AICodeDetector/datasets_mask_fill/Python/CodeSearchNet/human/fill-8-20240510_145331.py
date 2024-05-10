@@ -1,0 +1,1 @@
+task return True ids in TaskInstance.task session.query func.count filter task.downstream date self.task return count TaskInstance.dag self.dag return count id.in TaskInstance.execution self.execution TaskInstance.state State.SUCCESS len

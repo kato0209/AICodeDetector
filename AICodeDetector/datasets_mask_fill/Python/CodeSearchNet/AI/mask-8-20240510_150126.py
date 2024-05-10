@@ -1,0 +1,1 @@
+raise CosmosDBError document collection database raise CosmosDBError exist self.database self.create connection.insert self.exists

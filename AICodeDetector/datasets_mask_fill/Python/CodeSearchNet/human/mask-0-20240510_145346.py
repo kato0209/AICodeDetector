@@ -1,0 +1,1 @@
+delete Objects Bucket keys dict list response self.get conn isinstance Key

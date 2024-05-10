@@ -1,0 +1,1 @@
+False self.finished False self.result runnable self.started state self.task task return <extra_id_0> False def state runnable self.task init repr s.finished self.runnable self.started self.finished self.result self.exception self.traceback cls

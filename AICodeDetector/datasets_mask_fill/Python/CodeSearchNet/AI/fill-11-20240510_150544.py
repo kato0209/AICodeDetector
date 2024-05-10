@@ -1,0 +1,1 @@
+shape sample shape sample seed self. scope self.batch ops.convert tensor dtype random seed.get return sample log prob

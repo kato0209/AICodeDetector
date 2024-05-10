@@ -1,0 +1,1 @@
+return self. elif bigdl type transform image frame transformer _ self. bigdl elif float int uint

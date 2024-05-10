@@ -1,0 +1,1 @@
+ops.convert tensor samples ndims event broadcast return samples event samples return broadcast the samples rank of samples return broadcast the event simplicity fact

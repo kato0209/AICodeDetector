@@ -1,0 +1,1 @@
+static Static worked dtype Cheap tf.convert tensor tf.get <extra_id_0> bring return return list raise ValueError tf.zeros values.dtype worked ndim dim format shape raise ValueError np.zeros list

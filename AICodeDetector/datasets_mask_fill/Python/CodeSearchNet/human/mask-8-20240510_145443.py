@@ -1,0 +1,1 @@
+method buildjschart defined defined here self.buildjschart buildjschart defined method buildjs method buildjschart method defined chart subclass method method defined self.buildcontainer self.htmlcontent self.template subclass called call <extra_id_0> buildjs this method method is entered buildjs entered buildjschart

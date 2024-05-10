@@ -1,0 +1,1 @@
+version self.collection Version for CosmosDB description Collection for CosmosDB CosmosDB collection database self.database type url http

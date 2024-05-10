@@ -1,0 +1,1 @@
+job.add uris options uri conn job file hook DataFlowHook gcp self.gcp delegate self.delegate hook.create template self.task <extra_id_0> job.set python <extra_id_1> query self.query variables self.variables jar self.jar archive self.archive

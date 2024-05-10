@@ -1,0 +1,2 @@
+int tf.cast dtype return int size float Vector length Vector dependencies np.ndarray shape (int size) string name
+int tf.cast(V) type V isinstance raise ValueError triangular number. scope square matrix raise ValueError number. return tf.name tf.sqrt length triangular args dependencies assert util.assert equal validate tf.control

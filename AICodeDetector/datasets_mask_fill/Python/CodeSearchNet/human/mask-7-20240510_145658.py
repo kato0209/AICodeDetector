@@ -1,0 +1,1 @@
+raise ValueError batch shape size static tensorshape util.rank shape.shape dist util.num elements raise ValueError format <extra_id_0> distribution.batch vector rank match

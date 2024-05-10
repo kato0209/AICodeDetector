@@ -1,0 +1,1 @@
+raise AirflowBadRequest database collection None. self.get conn DeleteContainer link self. raise AirflowBadRequest

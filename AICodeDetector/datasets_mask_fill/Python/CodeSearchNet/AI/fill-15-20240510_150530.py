@@ -1,0 +1,1 @@
+dtype shape probs seed shape probs tf.convert tensor random scope bernoulli sample seed.get return def uniform shape probs maxval tf.name

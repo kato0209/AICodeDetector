@@ -1,0 +1,1 @@
+format elif format axis self.axislist format elif elif format tickFormat axis format label <extra_id_0> Add new axis axisLabel custom self.axislist format if label elif list list of axis axis to list format and format

@@ -1,0 +1,1 @@
+type audio Optional <extra_id_0> latest speech gapic types.html <extra_id_1> retry object type param audio object param timeout requests param retry type retry timeout retry requests amount of time retried google.api request time complete individual attempt timeout applies Note attempt amount wait request to complete applies individual

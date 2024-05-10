@@ -1,0 +1,1 @@
+return collection.insert collection mongo self.get docs kwargs return collection.insert

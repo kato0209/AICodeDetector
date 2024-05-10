@@ -1,0 +1,1 @@
+code self.generate charts html css

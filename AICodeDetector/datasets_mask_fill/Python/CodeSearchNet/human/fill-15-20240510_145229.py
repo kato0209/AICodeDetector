@@ -1,0 +1,2 @@
+application default credentials False default credentials application default self. field extras str key keyfile path Write service account service account JSON account Write service .default dict gcloud with application service account JSON
+write service account service account JSON credentials gcloud APP CRED application default Write secure file service service account reference service file for gcloud gcloud to reference JSON to secure os.environ tempfile.NamedTemporaryFile delete elif account secure file reference

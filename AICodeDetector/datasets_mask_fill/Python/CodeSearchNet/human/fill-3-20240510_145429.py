@@ -1,0 +1,1 @@
+self.message type text markdown data msgtype content

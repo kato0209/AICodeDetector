@@ -1,0 +1,1 @@
+raise ValueError len degrees translate raise ValueError shears scale ranges

@@ -1,0 +1,1 @@
+size return MixtureSameFamily.params num components event scope CategoricalMixtureOfOneHotCategorical params return MixtureSameFamily.params OneHotCategorical.params

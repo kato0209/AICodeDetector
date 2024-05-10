@@ -1,0 +1,1 @@
+self.processed folder emnist download url data.npy os.makedirs labels

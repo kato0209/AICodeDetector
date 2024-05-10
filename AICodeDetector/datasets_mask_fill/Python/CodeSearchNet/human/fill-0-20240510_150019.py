@@ -1,0 +1,1 @@
+settings return res True path force and dest.exists default continue res dest src in list return res False path.glob json src.relative parents exist shutil.copy src list from src src list in dest list source/dest to dest.src.dest; continue force res for src

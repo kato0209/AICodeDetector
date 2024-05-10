@@ -1,0 +1,1 @@
+raise ValueError raise TypeError positive integer. element of perm perm isinstance raise element tuple ValueError tuple. list list or tuple. int return TypeError len <extra_id_0> positive

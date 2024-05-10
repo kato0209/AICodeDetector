@@ -1,0 +1,1 @@
+Create input placeholder Create the optimizer Create the model <extra_id_0> Create the saver model <extra_id_1> Create the loss loss scope visualize qualitative analysis tf.variable placeholder inputs optimizer train saver tf.placeholder samples length input tf.reduce model.losses learning rate optimizer.minimize

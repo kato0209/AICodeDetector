@@ -1,0 +1,1 @@
+self. learning rate cur impatience data validation drop event patience

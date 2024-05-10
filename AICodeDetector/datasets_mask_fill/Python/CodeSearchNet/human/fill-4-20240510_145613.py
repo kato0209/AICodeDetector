@@ -1,0 +1,1 @@
+sample last-dimension return distribution assert util.assert message last-dimension must sum positive args util.with dependencies tf.ones dtype self.dtype : input tensor axis return sum self.validate distribution samples sample return x return last-dimension

@@ -1,0 +1,1 @@
+elif bigdl Unsupported bigdl type raise ValueError return model.predict return model bigdl defPath float model.load state dict torch.load int model if bigdl elif return Unsupported format torch.tensor raise ValueError match model.predict <extra_id_0>

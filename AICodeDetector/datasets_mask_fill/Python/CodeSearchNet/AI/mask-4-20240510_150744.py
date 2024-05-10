@@ -1,0 +1,1 @@
+return data def data.map x.split lambda imdb.target data return data data def data read imdb.data imdb.target return def

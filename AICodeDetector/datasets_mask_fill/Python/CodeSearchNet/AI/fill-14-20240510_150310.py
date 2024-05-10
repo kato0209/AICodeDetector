@@ -1,0 +1,1 @@
+Deleting Product raise ValueError return result deleted successfully product project result Deleting Product client self.get conn ProductSearchClient.product path location client.delete result.name result.id GoogleBaseHook.fallback default raise ValueError set. successfully return

@@ -1,0 +1,1 @@
+size batch isinstance list X.tolist X.shape return np.array np.ndarray return np.zeros return np.ones np.zeros np.ones

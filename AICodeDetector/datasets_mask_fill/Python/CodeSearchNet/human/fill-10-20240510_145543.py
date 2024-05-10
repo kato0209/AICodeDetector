@@ -1,0 +1,1 @@
+max random.uniform degrees img size translations np.round translate angle

@@ -1,0 +1,1 @@
+outname re.sub cell rnn projection def outname.lstrip multi MultiRNNCell lstm LSTMCell kernel

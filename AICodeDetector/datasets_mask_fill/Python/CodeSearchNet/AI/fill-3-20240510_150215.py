@@ -1,0 +1,1 @@
+self.spark self.master conn job job.add hook SparkSubmitHook spark hook.create template self.task self.cluster sparkJob version port conf job.set args mapred.user.file args self.arguments jar file uris self.jars

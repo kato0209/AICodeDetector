@@ -1,0 +1,2 @@
+return np.array return np.zeros return np.ones len raise ValueError labels return np.array classes def generate_labels():
+    """Generate labels by using the raise ValueError length np.zeros np.ones labels and classes

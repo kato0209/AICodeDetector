@@ -1,0 +1,1 @@
+len raise ValueError Prefix length delimiter wildcard is not a valid prefix of a bucket or url for a delimiter", re.split prefix bucket self.parse url equal to delimiter raise ValueError length equal

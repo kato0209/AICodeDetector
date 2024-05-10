@@ -1,0 +1,1 @@
+txt num len filenames batch start num yield filenames end random batch size data train-data train-input txt unused range random Yields yield random.randint min big Yields a batch list size if end

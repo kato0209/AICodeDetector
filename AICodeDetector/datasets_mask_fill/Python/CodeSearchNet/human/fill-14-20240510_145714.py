@@ -1,0 +1,1 @@
+tensor ndims shape tensor.shape elements lambda tf.size input hasattr num util.num ranks util.rank pylint disable callable shape and hasattr

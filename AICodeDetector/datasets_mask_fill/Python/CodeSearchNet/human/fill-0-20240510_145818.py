@@ -1,0 +1,1 @@
+Log exponentiated term small term small exponentiated term stop gradient put stop final result putting stop gradient Max im centered put stop gradient result small stop final exponentiated term exp putting stop put stop eliminate unnecessary computation unnecessary computation canceled putting change eliminate unnecessary computation tf.stop sample put eliminate unnecessary

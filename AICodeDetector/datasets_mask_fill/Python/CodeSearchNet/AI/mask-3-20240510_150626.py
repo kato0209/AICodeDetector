@@ -1,0 +1,1 @@
+return math size array ops.size type dims math True scope norm ops.cast ops.sqrt <extra_id_0> sum ops.square axis order ops.name return

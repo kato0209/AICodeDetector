@@ -1,0 +1,1 @@
+support sparse matmul Numpy backend raise NotImplementedError sparse matmul support sparse transpose adjoint sparse Numpy matrix conjugate .  support sparse transpose adjoint Numpy backend raise NotImplementedError matmul backend support return np.matmul

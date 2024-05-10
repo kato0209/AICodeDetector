@@ -1,0 +1,1 @@
+jvalue elif isinstance return jvalue elif elif isinstance return jvalue jvalue elif jvalue isinstance return elif <extra_id_0> JavaObject float int str bool

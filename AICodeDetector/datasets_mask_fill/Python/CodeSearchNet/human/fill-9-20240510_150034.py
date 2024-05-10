@@ -1,0 +1,1 @@
+cert lifetime validated lifetime expiration amazon chain id signature url lifetime expiration self.valid validated certificates.keys verify timedelta self.config datetime.utcnow ValidatedCert certificates

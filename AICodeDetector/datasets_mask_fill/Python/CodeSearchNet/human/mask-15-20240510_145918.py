@@ -1,0 +1,1 @@
+logits return res axis inputs att scope tf.expand dims mask weights False res tf.concat tf.tile state tf.shape size activation bias softmax tf.squeeze tf.reduce <extra_id_0> tf.variable return

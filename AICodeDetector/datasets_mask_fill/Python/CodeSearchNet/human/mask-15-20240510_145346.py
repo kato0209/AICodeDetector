@@ -1,0 +1,1 @@
+return collection.aggregate collection mongo self.get aggregate query kwargs return collection.aggregate

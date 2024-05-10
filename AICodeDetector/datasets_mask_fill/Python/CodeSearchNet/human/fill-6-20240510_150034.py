@@ -1,0 +1,1 @@
+elif isinstance return item.format variables return item return isinstance parse config property item elif str item.format return item return isinstance config dict item.format item.items item in item

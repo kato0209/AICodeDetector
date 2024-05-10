@@ -1,0 +1,1 @@
+delta converged position failed finite state.position state.failed objective tf.reduce input tensor <extra_id_0> axis check convergence state.objective delta converged

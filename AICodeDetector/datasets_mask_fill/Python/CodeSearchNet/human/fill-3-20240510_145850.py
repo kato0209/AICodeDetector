@@ -1,0 +1,1 @@
+return callBigDlFunc bigdl type writeParquet path output partition num return callBigDlFunc

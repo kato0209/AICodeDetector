@@ -1,0 +1,1 @@
+keras.datasets import imdb keras.preprocessing import sequence train test import imdb keras.preprocessing import keras.datasets import import sequence import <extra_id_0> maxlen imdb.load data words imdb sequences keras.preprocessing keras.datasets sequence from keras.datasets sequence return

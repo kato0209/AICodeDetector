@@ -1,0 +1,1 @@
+return model model url urls SqueezeNet version kwargs model.load state dict zoo.load pretrained return

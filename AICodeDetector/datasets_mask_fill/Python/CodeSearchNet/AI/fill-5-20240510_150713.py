@@ -1,0 +1,1 @@
+Calculate the batchwise gamma Calculate scope ops.name batchwise

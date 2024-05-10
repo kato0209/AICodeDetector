@@ -1,0 +1,1 @@
+shape util.rank tensorshape sample ndims x.shape self.event batch event tf.size input self.batch tf.rank tensor self. unexpanded <extra_id_0> static ndims if isinstance isinstance

@@ -1,0 +1,1 @@
+TaskInstance tis session.query filter date <extra_id_0> state tis TI.dag self.dag TI.execution self.execution six.string types tis.filter TI.state isinstance

@@ -1,0 +1,1 @@
+shape = array tensor input input tensor ops.shape return array ops.reshape dimensions ops.tile ops.concat def squeeze axis return

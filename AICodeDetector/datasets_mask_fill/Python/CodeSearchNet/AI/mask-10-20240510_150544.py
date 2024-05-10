@@ -1,0 +1,1 @@
+running in eager graph mode event shape eager mode event shape event shape inference mode <extra_id_0> <extra_id_1> fully defined graph self.event batch batch norm running eager shape inference static perform a reshape mode or graph inference batch and event eagerly shape.as norm and event perform reshape norm context.executing return shape in static

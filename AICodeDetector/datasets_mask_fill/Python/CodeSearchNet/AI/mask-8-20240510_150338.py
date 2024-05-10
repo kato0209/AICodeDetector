@@ -1,0 +1,1 @@
+Juqery on ready ready self.content Juqery self.juqery

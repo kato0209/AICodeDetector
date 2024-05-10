@@ -1,0 +1,1 @@
+probs return tf.cast random shape uniform dtype seed scope bernoulli tf.convert tensor probs.dtype tf.less return <extra_id_0>

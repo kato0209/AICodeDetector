@@ -1,0 +1,1 @@
+raise ConfigError data batch len fit self. size , list zip args self.save method set parameter int num max avg loss raise ConfigError order

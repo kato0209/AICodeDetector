@@ -1,0 +1,1 @@
+mssql.connect host self.host port self.port database self.database user self.user password self.password ssl self.ssl self. conn

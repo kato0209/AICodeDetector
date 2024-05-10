@@ -1,0 +1,1 @@
+Mixing params raise ValueError elif validate util.rank param.shape rank tensorshape Mixing <extra_id_0> check assertions vector format args assertions.append assert util.assert tf.name raise ValueError batch one. elif validate params

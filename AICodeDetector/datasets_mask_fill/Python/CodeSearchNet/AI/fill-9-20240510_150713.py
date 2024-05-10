@@ -1,0 +1,1 @@
+return x.map raise TypeError RDD batch size Expected isinstance self.evaluate len distribution # x.map lambda raise TypeError def func self. type min def func

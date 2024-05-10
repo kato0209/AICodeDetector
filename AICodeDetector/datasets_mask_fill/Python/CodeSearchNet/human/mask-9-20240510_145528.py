@@ -1,0 +1,1 @@
+return cur.fetchone cur.execute sql closing self.get conn.cursor conn cur return cur.fetchone parameters

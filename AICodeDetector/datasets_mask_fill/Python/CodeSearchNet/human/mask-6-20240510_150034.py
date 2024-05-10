@@ -1,0 +1,1 @@
+elif isinstance return item.format variables return item return isinstance parse config property item elif str <extra_id_0> dict item.format item.items item in item

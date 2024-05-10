@@ -1,0 +1,1 @@
+return tf.reduce seq scope multi gamma sequence sum input tensor axis self. return tf.reduce

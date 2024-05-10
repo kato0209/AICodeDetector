@@ -1,0 +1,1 @@
+author self.author payload self.discord self.name description <extra_id_0> image self.image url self.url thumbnail self.thumbnail duration self.duration

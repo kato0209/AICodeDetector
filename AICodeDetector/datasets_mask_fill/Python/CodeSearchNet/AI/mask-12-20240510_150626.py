@@ -1,0 +1,1 @@
+return math sum math axis ops.convert <extra_id_0> ops.reduce ops.log return True False integer ops.multiply keepdims def squares dims

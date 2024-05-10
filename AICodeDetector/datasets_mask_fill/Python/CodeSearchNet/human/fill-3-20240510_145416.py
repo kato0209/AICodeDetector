@@ -1,0 +1,1 @@
+container starts writing TrainingJobs' if len writing to stdout container starts starts writing log instance to the 'list created' logs group is created sagemaker count err conn streams TrainingJobs' len stdout list created container starts writing dynamic stream streams are created self.get conn.describe

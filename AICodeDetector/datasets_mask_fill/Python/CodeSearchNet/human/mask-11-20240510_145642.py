@@ -1,0 +1,1 @@
+deprecated in Python return fkwargs functions returned returned by tf.make <extra_id_0> func argspec fkwargs Python <extra_id_1> disable inspect.getfullargspec inspect.getargspec src kwargs hasattr functions tf.make template protected-access getargspec AttributeError six.iteritems argspec.args return returned deprecated

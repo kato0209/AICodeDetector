@@ -1,0 +1,1 @@
+dumps BigQuery compatible make dumps BigQuery file Append newline BigQuery compatible dict newline to make make dumps dumps BigQuery handle <extra_id_0> row True Append handle.write handles row in cursor <extra_id_1> delete self.generate data row. fields json.dumps encode cursor compatible newline make dumps BigQuery handle.tell

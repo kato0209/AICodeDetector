@@ -1,0 +1,1 @@
+directory airflowignore if ignore ignore True patterns root file paths return elif dirs followlinks open split <extra_id_0> airflowignore f.read files in os.walk files

@@ -1,0 +1,1 @@
+Recognised speech return response config audio retry timeout response Recognised client self.get conn client.recognize <extra_id_0> return

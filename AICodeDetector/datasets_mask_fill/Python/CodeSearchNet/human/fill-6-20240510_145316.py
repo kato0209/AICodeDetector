@@ -1,0 +1,1 @@
+raise AirflowException long to start pod curr dt.now time time if delta.seconds resp self.run _id not already running or started delta startup timeout time.sleep self.pod delta.seconds raise AirflowException start long

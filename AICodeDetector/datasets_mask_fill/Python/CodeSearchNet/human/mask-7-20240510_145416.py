@@ -1,0 +1,1 @@
+<extra_id_0> bin beeline jdbc host port schema hive conn cmd extra url format conn.host conn.port conn.schema core security kerberos template conn.extra dejson.get self.conn self.use

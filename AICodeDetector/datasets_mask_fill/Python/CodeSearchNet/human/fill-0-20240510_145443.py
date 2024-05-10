@@ -1,0 +1,1 @@
+cmd command full run True args else self. full Running join self. command proc pipe stdout subprocess.PIPE stderr subprocess.STDOUT universal newlines close fds args

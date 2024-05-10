@@ -1,0 +1,1 @@
+axis keepdims on input tensor astuple return special.logsumexp scipy NotImplementedError True offer version case installed logsumexp max mask finite np.exp np.log np.sum

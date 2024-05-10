@@ -1,0 +1,1 @@
+Creating cluster snapshot with cluster type single node response self.log Creating identifier self.ecs client.create snapshot format cluster cluster snapshot ClusterIdentifier SnapshotIdentifier ClusterType single-node created. response.name

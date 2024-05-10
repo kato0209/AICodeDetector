@@ -1,0 +1,1 @@
+return self. conn credentials self. VideoIntelligenceServiceClient return

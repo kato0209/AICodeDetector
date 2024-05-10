@@ -1,0 +1,1 @@
+a.scale b.scale pareto Pareto distributions <extra_id_0> Terminology <extra_id_1> a.concentration scope page source shape dtype parameter tf.name corresponds source for Pareto concentration scale distributions return tf.where final batch util.get broadcast common type util.common return tf.where source to source

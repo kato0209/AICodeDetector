@@ -1,0 +1,1 @@
+obj class BatchedSerializer def dumps return pickle.dumps def loads return pickle.loads serializer self.red class AutoBatchedSerializer PickleSerializer rdd. batched True return def self class AutoBatchedSerializer class rdd reserialize # serialize rdd/collect maprdd init reducers self.batched dumps pickle.dumps loads pickle.loads BatchedSerializer self.red

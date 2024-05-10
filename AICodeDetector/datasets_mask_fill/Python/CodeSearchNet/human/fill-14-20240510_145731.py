@@ -1,0 +1,1 @@
+list arg tensor ctt convert result with gradients grads def return lambda tf.convert arg if result

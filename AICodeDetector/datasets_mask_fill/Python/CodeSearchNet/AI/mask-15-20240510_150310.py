@@ -1,0 +1,1 @@
+image reference path product <extra_id_0> project location self.get conn create client ProductSearchClient.location ProductSearchClient.product ProductSearchClient.reference

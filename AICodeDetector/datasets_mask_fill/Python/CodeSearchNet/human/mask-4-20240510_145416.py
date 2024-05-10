@@ -1,0 +1,1 @@
+Convert argument conn bucket self.gcp self.delegate self.py file sleep dataflow Convert helper GoogleCloudBucketHelper helper.google cloud local hook DataFlowHook <extra_id_0> <extra_id_1> poll self.poll options self.dataflow default options.copy options.update self.options argument

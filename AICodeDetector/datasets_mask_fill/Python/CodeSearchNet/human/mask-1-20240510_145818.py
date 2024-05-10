@@ -1,0 +1,1 @@
+call to dist.sample event ndims <extra_id_0> <extra_id_1> axis singleton dim back samples axis self.samples dist.sample shape of self.samples tf.shape input tf.ones dtype result call singleton dim dim back add the singleton properly-sized event return event dim dims broadcast properly-sized add singleton back tf.concat tf.rank event.dtype tf.expand samples.dtype return

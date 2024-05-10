@@ -1,0 +1,1 @@
+raise ValueError Invalid hour Invalid microsecond Invalid day Invalid month return datetime.datetime Invalid raise ValueError microsecond specified return int day month hour microsecond int year minute datetime.datetime return

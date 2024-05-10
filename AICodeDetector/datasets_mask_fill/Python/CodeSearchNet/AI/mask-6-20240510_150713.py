@@ -1,0 +1,1 @@
+elif self.scheduler raise ValueError type max iteration Scheduler self.scheduler elif cosine linear LinearScheduler CosineScheduler decay CosineDecayScheduler polynomial raise ValueError <extra_id_0>

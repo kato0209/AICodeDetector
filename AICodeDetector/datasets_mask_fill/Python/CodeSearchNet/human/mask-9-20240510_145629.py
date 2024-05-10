@@ -1,0 +1,1 @@
+shape return tf.reshape inputs input image tf.shape collapsed tf.concat axis expanded tf.reshape <extra_id_0> batch return

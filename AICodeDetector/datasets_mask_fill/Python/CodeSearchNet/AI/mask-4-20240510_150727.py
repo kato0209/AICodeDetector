@@ -1,0 +1,1 @@
+return self. elif bigdl type transform image frame transformer <extra_id_0> self. bigdl elif float int uint

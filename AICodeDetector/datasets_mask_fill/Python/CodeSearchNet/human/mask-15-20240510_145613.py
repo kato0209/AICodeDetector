@@ -1,0 +1,1 @@
+optimizer def train loop lambda step def train <extra_id_0> return tf.tuple return minimize optimizer def loss train step True build minimize return optimizer optimizer.minimize eagerly tensors <extra_id_1> control inputs cond num vars tf.constant structure tf.executing tf.tuple lambda return a single single op. return def single steps

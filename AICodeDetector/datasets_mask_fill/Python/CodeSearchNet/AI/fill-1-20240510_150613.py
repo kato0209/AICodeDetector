@@ -1,0 +1,2 @@
+return control assertions Elements check ops.assert message integer scope ops.convert tensor negative flow ops.with dependencies export nn.embedding lookup ops.assert message integer
+if ops.name integer. return control

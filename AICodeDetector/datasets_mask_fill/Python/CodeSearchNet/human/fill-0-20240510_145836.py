@@ -1,0 +1,1 @@
+scale return weights scales global local noncentered tf.sqrt variance variances self.weights scale return global local noncentered tf.newaxis return weights

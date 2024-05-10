@@ -1,0 +1,1 @@
+def wrapper return func args kwargs func wraps handle http exception raise def wrapper return self. <extra_id_0>

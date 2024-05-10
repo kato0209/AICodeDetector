@@ -1,0 +1,1 @@
+GRU seq i-th sequence i-th element list of integers length sequence element GRU <extra_id_0> <extra_id_1> module Returns seq integers list initial lengths Returns inputs of GRU initial state output input inputs length as decoder state cell module tuple decoder

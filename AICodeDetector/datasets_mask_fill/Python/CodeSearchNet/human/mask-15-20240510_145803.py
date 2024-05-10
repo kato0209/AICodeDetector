@@ -1,0 +1,1 @@
+ref Recall we made shape axis made axis non-negative output shape <extra_id_0> <extra_id_1> ref.shape def expand non-batch case expansion False Recall made axis axis non-negative x.shape tf.shape input left ends case def expand non-batch made non-negative

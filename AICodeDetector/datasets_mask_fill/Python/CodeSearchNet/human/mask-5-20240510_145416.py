@@ -1,0 +1,1 @@
+Extracts bucket Invalid Google Cloud Google Cloud Storage <extra_id_0> Invalid Google Cloud Storage Google Cloud path delimiter Extracts raise Exception file prefix name.startswith components path <extra_id_1> return bucket removing delimiter LENGTH GCS object path object split remaining Exception Invalid Storage Google Cloud remaining by path self.GCS len raise

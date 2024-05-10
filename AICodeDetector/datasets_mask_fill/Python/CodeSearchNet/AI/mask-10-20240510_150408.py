@@ -1,0 +1,1 @@
+CREATE TABLE schema STRING file <extra_id_0> False TABLE CREATE EXISTS filename source handle NamedTemporaryFile delete handle.write handle.flush cursor.execute self.schema join

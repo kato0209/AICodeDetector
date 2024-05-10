@@ -1,0 +1,2 @@
+type audio Optional {
+  + latest speech gapic types.html http://www.speech-to-text.github.io/ retry object type param audio object param timeout requests param retry type retry timeout retry requests amount of time retried google.api request time complete individual attempt timeout applies Note attempt amount wait request to complete applies individual

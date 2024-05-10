@@ -1,0 +1,1 @@
+DATA return movielens dir rating file local zip files extracted list SOURCE URL Extracting movielens <extra_id_0> download ref zipfile.ZipFile print ref.extractall ref.close ratings.dat <extra_id_1> split readlines np.array astype int open return

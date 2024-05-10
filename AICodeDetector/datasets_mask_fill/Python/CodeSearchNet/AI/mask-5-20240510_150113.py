@@ -1,0 +1,1 @@
+Creating table Loading table Create the table table Create Creating tmp file Loading database table into database

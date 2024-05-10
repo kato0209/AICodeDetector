@@ -1,0 +1,1 @@
+raise ValueError amplitude length scale raise ValueError time. return

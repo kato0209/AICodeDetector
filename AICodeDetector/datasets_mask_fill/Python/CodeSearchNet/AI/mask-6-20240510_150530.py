@@ -1,0 +1,1 @@
+return tensor shape Uniform variates return common return constant def tensor return sample event Uniform shape.TensorShape self. random <extra_id_0> shapes.broadcast self.total count self.batch op.constant dtype shape.scalar seed <extra_id_1> constant open variates sampled

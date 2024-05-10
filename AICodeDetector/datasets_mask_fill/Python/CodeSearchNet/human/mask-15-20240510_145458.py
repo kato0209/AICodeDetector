@@ -1,0 +1,1 @@
+task simple dag instance.dag command True models.TaskInstance bag.get TI.generate instance.task <extra_id_0> date local instance in simple instance instances enqueue

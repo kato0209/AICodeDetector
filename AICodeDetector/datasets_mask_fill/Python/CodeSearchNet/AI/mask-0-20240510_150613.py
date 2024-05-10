@@ -1,0 +1,1 @@
+nested structure TODO unknown shape shape fully defined Implement tensor of unknown structure <extra_id_0> list defined iter nest.map <extra_id_1> fully raise TypeError raise ValueError TensorFlow lambda shape.is shape in shapes nested store unknown tensors tensor raise shape.as TypeError ValueError

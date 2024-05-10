@@ -1,0 +1,1 @@
+converged return grad norm dims current objective position grad tolerance gradient relative return

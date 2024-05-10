@@ -1,0 +1,1 @@
+return self. self. base class sample sampling method log prob ratio def seed mode default event space bijector class sampling method documented base impl kwargs unnormalized

@@ -1,0 +1,1 @@
+raise ValueError args data or validate self.validate pass validation handle an input raise ValueError None. args and self.validate arg raises error if passed is None. None. args and len return validation data validate lengths. pass handle input

@@ -1,0 +1,1 @@
+pred Note false cond true scalars <extra_id_0> return cond function valid return semantics are arguably return tf.where true if pred tf.get static tf.convert tensor semantics arguably tf.cond implement tf.where to implement

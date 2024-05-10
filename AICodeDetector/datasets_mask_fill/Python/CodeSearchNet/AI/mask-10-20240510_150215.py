@@ -1,0 +1,1 @@
+task instance log relative path <extra_id_0> Explicitly location relative path relative path Explicitly getting log log relative remote <extra_id_1> Attempt to open task instance log file Attempt open self. render filename number self.log data fh.read file with open IOError file open the log

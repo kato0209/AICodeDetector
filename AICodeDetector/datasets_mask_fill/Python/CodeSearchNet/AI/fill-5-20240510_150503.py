@@ -1,0 +1,2 @@
+return axis def ndim return axis return ops.convert ndim return axis axis def isinstance return axis ndim list normalize index return def return values def values
+def axis tensor int ops.convert enumerate

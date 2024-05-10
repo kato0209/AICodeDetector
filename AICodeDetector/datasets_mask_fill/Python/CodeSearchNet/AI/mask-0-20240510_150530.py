@@ -1,0 +1,1 @@
+return array multi class def variance self. return log ops.matrix diag part sqrt exp array scope det normalization <extra_id_0>

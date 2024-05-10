@@ -1,0 +1,1 @@
+signature check timestamp request timestamp timestamp failed certificate request str body signature url signature signature alexa bytes dict check timestamp request timestamp chain datetime signature check timestamp timestamp body url alexa bytes dict verify return error datetime.strptime datetime.utcnow delta self. failed certificate check datetime else timestamp

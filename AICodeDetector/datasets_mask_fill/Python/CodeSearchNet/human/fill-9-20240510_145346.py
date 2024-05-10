@@ -1,0 +1,1 @@
+Convert if needed file in schema tmp dict True handle schema needed row map tuple row handles Convert list replace cursor.description NamedTemporaryFile import self.convert types zip json.dumps sort keys lambda cursor row in cursor needed

@@ -1,0 +1,1 @@
+Make this function previous kernel results things are settled function public public once things self. TODO Make this function previous kernel.BootstrapResults state self. settled function public things init state

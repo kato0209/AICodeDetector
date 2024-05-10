@@ -1,0 +1,1 @@
+shape raise ValueError Check find input shape ValueError <extra_id_0> return tensor shape.as fully defined <extra_id_1> shape is compatible compatible return Tensor. tensor shape.is find input Shape is unknown TypeError return None def unknown TensorShape find input autopacking helper list tuple dtype def

@@ -1,0 +1,1 @@
+attributes message attributes message arn message sqs arn queue queue self.queue arn list self.message attributes.get

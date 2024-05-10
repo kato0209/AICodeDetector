@@ -1,0 +1,1 @@
+cloud storage conn type hook GoogleCloudStorageHook google self.google delegate self.delegate hook.upload bucket self.bucket object self.dst mime self filename self.src gzip self.gzip

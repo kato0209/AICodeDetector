@@ -1,0 +1,1 @@
+return callBigDlFunc elif len self.bigdl type dataset return self elif args len callBigDlFunc <extra_id_0> evaluate self.value batch size val methods isinstance ImageFrame elif

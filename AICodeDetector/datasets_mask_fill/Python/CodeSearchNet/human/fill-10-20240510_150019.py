@@ -1,0 +1,1 @@
+return DecayType raise NotImplementedError label norm norm in cls. label.replace members upper cls. return DecayType raise NotImplementedError

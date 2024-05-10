@@ -1,0 +1,1 @@
+raise ValueError static <extra_id_0> target tensorshape util.is fully defined required shape infer target shape raise ValueError tf.TensorShape dynamic required found infer target target shape dynamic shape format util.as list return infer

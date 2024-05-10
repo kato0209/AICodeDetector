@@ -1,0 +1,1 @@
+Total size Received results return query query results conn Querying Received Results from Conn %s is %s in Total %s% self.get conn.query totalSize objects size return

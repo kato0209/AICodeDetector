@@ -1,0 +1,1 @@
+session def run State.SUCCESS session.merge State.RUNNING session.merge elif self.state session def def run self.end date datetime.now self.state State.RUNNING State.SUCCESS session.merge <extra_id_0> provide elif session run def

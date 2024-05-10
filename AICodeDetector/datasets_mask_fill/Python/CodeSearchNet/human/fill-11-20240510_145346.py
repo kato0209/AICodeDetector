@@ -1,0 +1,1 @@
+split subsystem group line proc cgroup f.readlines line.rstrip open lines line in lines

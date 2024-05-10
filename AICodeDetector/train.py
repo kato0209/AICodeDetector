@@ -134,7 +134,7 @@ model_config = {}
 model_config = load_mask_filling_model(args, args.mask_filling_model_name, model_config)
 
 # define the dataset
-DATASET_PATH = 'datasets_mask_fill/Python/yake'
+DATASET_PATH = 'datasets_mask_fill/Python/CodeSearchNet'
 datasets = CodeDataset(DATASET_PATH, model_config, args)
 
 # データセットの全長を取得

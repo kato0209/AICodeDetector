@@ -1,0 +1,1 @@
+return dummy mvndiag dtype dummy tfd.MultivariateNormalDiag scale diag tf.ones mvndiag.covariance lambda mvndiag.variance tf.newaxis return

@@ -1,0 +1,1 @@
+return Layer.of jmodel callBigDlFunc bigdl type loadCaffeModel defPath modelPath Layer.of return
