@@ -1,0 +1,1 @@
+if not obj: <extra_id_0> None d = {} for c in obj.__table__.columns: value = getattr(obj, c.name) if type(value) == datetime: value = value.isoformat() d[c.name] = value <extra_id_1> d

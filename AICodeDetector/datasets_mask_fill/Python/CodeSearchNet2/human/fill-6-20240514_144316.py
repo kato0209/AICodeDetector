@@ -1,0 +1,4 @@
+hostname = urlparse(url).hostname if 'n.miaopai.com' == hostname: smid = match1(url, r'n\.miaopai\.com/media/([^.]+)') miaopai_download_by_smid(smid, output_dir, merge, info_only) else smid, site_info if miaopai_is_scid_valid(smid):
+	if 'miaopai.com' in hostname: #Miaopai yixia_download_by_scid = yixia_miaopai_download_by_scid site_info = "Yixia Miaopai" else:
+	if url.startswith("https://yixia.miaopai.com/") and len(smid)!= 4:
+		smid = match1(url, r'miaopai\.com/show/channel/([^.]+)\.htm') or \ match1(url, r'miaopai\.com/show/([^.]+)\.htm') or \ match1(url, r'm\.miaopai\.com/show/channel/([^.]+)\.htm') or \

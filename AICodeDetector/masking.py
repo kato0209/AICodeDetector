@@ -13,8 +13,10 @@ def yake_code(code):
     keywords = custom_kw_extractor.extract_keywords(code)
 
     keyword_list = []
+    code_words = set(code.split())  # 元のコードの単語セットを作成
     for kw in keywords:
-        keyword_list.append(kw)
+        if kw[0] in code_words:  # キーワードが元のコード内にあるか確認
+            keyword_list.append(kw)
     return keyword_list
 
 # 確率に基づいてワードを選択する関数
@@ -30,7 +32,7 @@ def choose_word(words, probabilities):
         if rand_value <= prob:
             return words[i]
 
-def tokenize_and_mask(code, buffer_size, span_length, pct, ceil_pct=False, mask_threshold = 0.4):
+def tokenize_and_mask(code, buffer_size=1, span_length=2, pct=0.3, ceil_pct=False, mask_threshold = 0.4):
     probability_list = yake_code(code)
     tokens = code.split()
 
@@ -41,11 +43,13 @@ def tokenize_and_mask(code, buffer_size, span_length, pct, ceil_pct=False, mask_
         n_spans = np.ceil(n_spans)
     n_spans = int(n_spans)
 
+    if len(probability_list) == 0:
+        return code
+
     n_masks = 0
     while n_masks < n_spans:
         words, probabilities = zip(*probability_list)
         selected_word = choose_word(words, probabilities)
-    
         for idx, token in enumerate(tokens):
             if token == selected_word:
                 tokens[idx] = mask_string
@@ -65,3 +69,4 @@ def tokenize_and_mask(code, buffer_size, span_length, pct, ceil_pct=False, mask_
 
     text = ' '.join(tokens)
     return text
+

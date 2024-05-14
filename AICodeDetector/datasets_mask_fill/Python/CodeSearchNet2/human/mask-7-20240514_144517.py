@@ -1,0 +1,1 @@
+try: files = self.connection.glob(file_path, details=False, invalidate_cache=True) <extra_id_0> len(files) == 1 except FileNotFoundError: return False

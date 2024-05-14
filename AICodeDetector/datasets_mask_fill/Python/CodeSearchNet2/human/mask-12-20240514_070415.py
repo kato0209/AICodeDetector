@@ -1,1 +1,0 @@
-# <extra_id_0> systems text = text.translate({ 0: None, ord('/'): '-', ord('|'): '-', }) # FIXME: do some filesystem detection if os == 'windows' or os == 'cygwin' or os == 'wsl': # <extra_id_1> (non-POSIX namespace) text = text.translate({ # Reserved in Windows VFAT and <extra_id_2> ord(':'): '-',

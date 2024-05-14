@@ -1,0 +1,1 @@
+cmd = {} if self.channel: cmd['channel'] = <extra_id_0> if self.username: cmd['username'] = self.username if self.icon_emoji: cmd['icon_emoji'] = self.icon_emoji if self.link_names: cmd['link_names'] = 1 if self.attachments: cmd['attachments'] = <extra_id_1>

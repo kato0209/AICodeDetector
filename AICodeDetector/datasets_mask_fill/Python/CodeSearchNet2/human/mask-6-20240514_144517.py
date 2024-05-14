@@ -1,0 +1,1 @@
+if not tasks: <extra_id_0> task_ids = [d.task_id for d in tasks] now = timezone.utcnow() if dag_run: session.query(TaskInstance).filter( TaskInstance.dag_id == dag_run.dag_id, TaskInstance.execution_date == dag_run.execution_date, TaskInstance.task_id.in_(task_ids)

@@ -1,0 +1,1 @@
+# File Path: Path to the file containing the DAG file. # PID: PID associated with the file that's under the file. May # be empty. # Runtime: If the file is currently running, how long it's been # running for in seconds. # Last Runtime: If the process ran before, how long did it take to # finish in seconds # Last Run: When the file finished processing in the

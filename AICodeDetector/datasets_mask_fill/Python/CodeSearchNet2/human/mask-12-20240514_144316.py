@@ -1,0 +1,1 @@
+# POSIX <extra_id_0> <extra_id_1> = text.translate({ 0: None, ord('/'): '-', ord('|'): '-', }) # FIXME: do some filesystem detection if os == 'windows' or os == 'cygwin' or os == 'wsl': # Windows (non-POSIX namespace) text = text.translate({ # Reserved in Windows <extra_id_2> and NTFS ord(':'): '-',

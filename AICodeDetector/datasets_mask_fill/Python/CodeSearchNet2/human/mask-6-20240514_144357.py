@@ -1,0 +1,1 @@
+if collection_name is None: <extra_id_0> AirflowBadRequest("Collection name cannot be None.") # We need to check to see if this <extra_id_1> already <extra_id_2> so we don't try # to create it twice existing_container = list(self.get_conn().QueryContainers( get_database_link(self.__get_database_name(database_name)), { "query": "SELECT * FROM r WHERE r.id=@id", "parameters": [
