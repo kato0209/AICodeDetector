@@ -1,0 +1,3 @@
+def _ucas_get_url_lists_by_resourceID(resourceID):
+    try:
+        html = get_content(url) # first part at index 0 is UUID resourceID = re.findall( r'resourceID":"([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', html)[0] assert resourceID != '', 'Cannot find resourceID!' title = match1(html, r'<div class="bc-h">(.+)</div>') url_lists = _ucas_get_url_lists_by_resourceID(resourceID) assert url_lists, 'Cannot find any URL of such class!' for k, part in enumerate(url_lists): part_title = title + '_' + str(k) print_info(site_info, part_title, 'flv', 0) if not info_only: download_urls(part, part_title, 'flv', total_size=None, output_dir=output_dir, merge=merge)

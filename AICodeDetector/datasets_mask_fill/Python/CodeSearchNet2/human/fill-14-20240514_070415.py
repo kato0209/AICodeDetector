@@ -1,0 +1,3 @@
+export default function upload(files, extension, stream, config){
+  ext = config.output_ext + '.' + ext if not (output_dir == '.'): ext = output_dir + '/' + ext
+  if stream: print('Downloading streaming content with FFmpeg, press q to stop recording...') if stream: ffmpeg_params = [FFMPEG] + ['-y', '-re', '-i'] else: ffmpeg_params = [FFMPEG] + ['-y', '-i'] ffmpeg_params.append(files) #not the same here!!!! if FFMPEG == 'avconv': #who cares? ffmpeg_params += ['-c', 'copy', output] else: ffmpeg_params += ['-c', 'copy',
