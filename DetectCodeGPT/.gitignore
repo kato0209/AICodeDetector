@@ -143,3 +143,5 @@ tmp_results/
 *.pt
 *.png
 *.pdf
+
+!data/CodeSearchNet/python/final/jsonl/test
