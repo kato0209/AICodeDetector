@@ -1,0 +1,3 @@
+# Assign id if defined to document or create a new document
+# Generate new document ID if one isn't provided if document_id is None: document_id = str(uuid.uuid4()) if document is None: raise AirflowBadRequest("You cannot insert a None document") # Add document id if isn't a document id
+# If provided document is set with an id: if 'id' in document: if document['id'] is None: document['id'] = document_id

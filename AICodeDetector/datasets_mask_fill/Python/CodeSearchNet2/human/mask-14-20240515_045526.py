@@ -1,0 +1,1 @@
+_logger = logger while _logger: for handler in _logger.handlers: try: handler.set_context(value) except AttributeError: # Not all handlers need to have <extra_id_0> passed in so we <extra_id_1> # the error when handlers do not have set_context defined.

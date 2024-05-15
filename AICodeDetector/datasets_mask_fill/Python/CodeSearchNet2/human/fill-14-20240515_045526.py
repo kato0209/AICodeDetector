@@ -1,0 +1,1 @@
+_logger = logger while _logger: for handler in _logger.handlers: try: handler.set_context(value) except AttributeError: # Not all handlers need to have set_context defined, but they have an explicit set_context function passed in so we can easily identify # the error when handlers do not have set_context defined.

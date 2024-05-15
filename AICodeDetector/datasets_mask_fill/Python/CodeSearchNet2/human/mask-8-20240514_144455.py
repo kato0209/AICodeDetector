@@ -1,1 +1,0 @@
-task = <extra_id_0> if not task.downstream_task_ids: return True ti = session.query(func.count(TaskInstance.task_id)).filter( TaskInstance.dag_id == self.dag_id, TaskInstance.task_id.in_(task.downstream_task_ids), TaskInstance.execution_date == self.execution_date, TaskInstance.state == State.SUCCESS, ) <extra_id_1> = ti[0][0] return count == len(task.downstream_task_ids)

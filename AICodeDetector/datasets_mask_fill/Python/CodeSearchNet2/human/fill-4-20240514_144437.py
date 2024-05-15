@@ -1,1 +1,0 @@
-if not model['name']: raise ValueError("Model name must be provided and " "could not be an empty string") project = 'projects/{}'.format(project_id) specified, = self._mlengine.projects().models().create( parent=project, body=model) return request.execute()

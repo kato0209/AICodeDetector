@@ -1,1 +1,0 @@
-<extra_id_0> <extra_id_1> cursor = self.get_cursor() try: cursor.execute(self._strip_sql(hql), parameters) data = cursor.fetchall() except DatabaseError as e: raise PrestoException(self._get_pretty_exception_message(e)) column_descriptions = cursor.description if data: df = pandas.DataFrame(data) df.columns = [c[0] for c

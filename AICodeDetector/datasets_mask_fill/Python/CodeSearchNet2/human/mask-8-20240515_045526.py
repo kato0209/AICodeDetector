@@ -1,0 +1,1 @@
+# Assign <extra_id_0> ID if one isn't provided if document_id is None: document_id = str(uuid.uuid4()) if document is None: <extra_id_1> AirflowBadRequest("You cannot insert a None document") # Add document id if isn't <extra_id_2> if 'id' in document: if document['id'] is None: document['id'] = document_id

@@ -1,1 +1,0 @@
-from airflow.models.taskinstance <extra_id_0> TaskInstance # Avoid <extra_id_1> import tis = session.query(TaskInstance).filter( TaskInstance.dag_id == self.dag_id, TaskInstance.execution_date == self.execution_date, ) if state: if isinstance(state, six.string_types): tis = tis.filter(TaskInstance.state == state) else:

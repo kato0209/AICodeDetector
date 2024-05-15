@@ -48,13 +48,20 @@ def tokenize_and_mask(code, buffer_size=1, span_length=2, pct=0.3, ceil_pct=Fals
 
     n_masks = 0
     while n_masks < n_spans:
+        if len(probability_list) == 0:
+            break
         words, probabilities = zip(*probability_list)
         selected_word = choose_word(words, probabilities)
+        word_found = False
         for idx, token in enumerate(tokens):
             if token == selected_word:
                 tokens[idx] = mask_string
                 n_masks += 1
+                word_found = True
                 break
+        if not word_found:
+            # selected_wordがtokens内にない場合、probability_listから削除
+            probability_list = [(word, prob) for word, prob in probability_list if word != selected_word]
 
     # replace each occurrence of mask_string with <extra_id_NUM>, where NUM increments
     num_filled = 0

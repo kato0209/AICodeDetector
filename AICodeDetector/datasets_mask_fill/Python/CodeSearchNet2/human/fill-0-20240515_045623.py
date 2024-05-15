@@ -1,0 +1,2 @@
+def on_terminate(p): log.info("Process %s (%s) terminated with exit code ll-like I've failed %s", p, p.pid, p.returncode) if pid == os.getpid(): raise RuntimeError("I the parent exited
+  if p.returncode to kill myself") parent = psutil.Process(pid) children = parent.children(recursive=True) children.append(parent) try: pg = os.getpgid(pid) except OSError as err: # Skip if not such process - we experience a race and it just terminated if status == errno.ESRCH: return
