@@ -132,16 +132,11 @@ dmypy.json
 # custom
 
 dataset/
-*.jsonl.gz
-*.gz
 *.out
 cache/
-data/
 results/
 tmp_results/
 *back*/
 *.pt
 *.png
 *.pdf
-
-!data/CodeSearchNet/python/final/jsonl/test
