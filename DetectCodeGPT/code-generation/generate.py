@@ -19,7 +19,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # device = torch.device('cpu')
 
 
-def load_data(path='data/CodeSearchNet', language='python', max_num=10000):
+def load_data(path='data/CodeSearchNet', language='python', max_num=1000):
 
     all_prompts = []
     all_solutions = []
@@ -286,7 +286,7 @@ if __name__ == "__main__":
     parser.add_argument('--path', type=str, default="data/CodeSearchNet")
     parser.add_argument('--max_num', type=int, default=100000)
     parser.add_argument('--temperature', type=float, default=0.2)
-    parser.add_argument('--model_name', type=str, default='codeparrot/codeparrot')
+    parser.add_argument('--model_name', type=str, default='codellama/CodeLlama-7b-hf')
     parser.add_argument('--batch_size', type=int, default=32)
     parser.add_argument('--max_length', type=int, default=128)
     args = parser.parse_args()
