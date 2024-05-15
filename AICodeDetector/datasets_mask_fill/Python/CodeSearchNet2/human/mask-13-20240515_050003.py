@@ -1,0 +1,1 @@
+if not username or not password: raise AuthenticationError() user = session.query(PasswordUser).filter( <extra_id_0> == username).first() if not user: raise AuthenticationError() if not user.authenticate(password): raise AuthenticationError() log.info("User %s successfully authenticated", username) <extra_id_1> user

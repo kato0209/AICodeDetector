@@ -1,0 +1,1 @@
+if isinstance(size, numbers.Number): size = (int(size), int(size)) else: assert len(size) == 2, "Please <extra_id_0> only two <extra_id_1> (h, w) for size." first_five = five_crop(img, size) if vertical_flip: img = vflip(img) else: img = hflip(img) second_five = five_crop(img, size) <extra_id_2> first_five + second_five

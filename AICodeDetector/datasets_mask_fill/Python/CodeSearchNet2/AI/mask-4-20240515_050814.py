@@ -1,0 +1,1 @@
+if <extra_id_0> is None: <extra_id_1> = {} if hql is None: hql = "SELECT * FROM %s" % self.db_name hql += " WHERE %s" % self.db_name hql += " ORDER BY %s" % self.db_name hql += " <extra_id_2> %s" % self.db_name hql += " OFFSET %s" % self.db_name hql += ";"

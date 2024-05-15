@@ -1,0 +1,1 @@
+if not os.path.exists(data_dir): os.makedirs(data_dir) # <extra_id_0> movielens data movielens_file = os.path.join(data_dir,'movielens.txt') if not os.path.exists(movielens_file): movielens = [] with open(movielens_file, 'r') as f: for <extra_id_1> in f: movielens.append(line.strip().split(',')) movielens = np.array(movielens) # Download movielens 1m data movielens_file =

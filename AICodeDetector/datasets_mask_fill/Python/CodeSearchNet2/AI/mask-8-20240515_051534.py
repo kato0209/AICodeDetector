@@ -1,0 +1,1 @@
+<extra_id_0> = Sequential() model.add(Conv2D(32, (3, 3), padding='same', input_shape=(3, 32, 32))) model.add(Activation('relu')) model.add(MaxPooling2D(pool_size=(2, 2))) model.add(Dropout(0.25)) model.add(Flatten()) model.add(Dense(64)) model.add(Activation('relu')) model.add(Dropout(0.5)) model.add(Dense(1)) model.add(Activation('sigmoid'))

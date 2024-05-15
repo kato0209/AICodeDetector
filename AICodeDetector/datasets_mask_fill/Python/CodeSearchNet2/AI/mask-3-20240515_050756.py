@@ -1,0 +1,1 @@
+conn_params = {} conn_params['host'] = self.host conn_params['port'] = self.port conn_params['db'] = <extra_id_0> conn_params['password'] = <extra_id_1> conn_params['port_used'] = self.port_used conn_params['ssl'] = self.ssl conn_params['ssl_options'] = self.ssl_options return conn_params def _get_uri(self): conn_params = self._get_conn_params() conn_uri = "Driver={driver}

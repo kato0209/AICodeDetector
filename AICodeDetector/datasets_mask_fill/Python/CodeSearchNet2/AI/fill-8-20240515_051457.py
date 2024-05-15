@@ -1,0 +1,1 @@
+with ops.name_scope(name, "kl_deterministic_distribution", values=[a.logits, b.logits]): # Compute the KL(a || b) a_ = a ||! b b_ = a _ # Calculate KL(a) kl_a = a_ - b_ # Calculate KL(b) kl_b = b_ - a_ # Calculate KL(a || b) kl_a_minus_b = a_ - b_ # Calculate KL(a) kl_a_minus_b

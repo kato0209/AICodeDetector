@@ -1,0 +1,1 @@
+# TODO(b/1414741686): Remove this once we have a better way to <extra_id_0> # the <extra_id_1> where we have a <extra_id_2> target. if target_log_prob is None: target_log_prob = tf.constant(0.0) if volatility_fn is None: volatility_fn = tf.constant(0.0) if grads_target_log_prob is None: grads_target_log_prob = tf.constant(0.0) if volatility is None: volatility = tf.constant(0.0

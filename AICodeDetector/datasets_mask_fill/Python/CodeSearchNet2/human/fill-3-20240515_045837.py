@@ -1,0 +1,1 @@
+log_group = '/aws/sagemaker/TrainingJobs' if len(stream_names) < instance_count: # Log streams are dynamic whenever a container starts writing to stdout/err, so this  # may be dynamic until we have a stream for every instance. logs_conn = self.get_log_conn() try: streams = logs_conn.describe_log_streams(

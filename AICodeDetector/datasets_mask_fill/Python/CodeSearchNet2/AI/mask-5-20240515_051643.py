@@ -1,0 +1,1 @@
+if request.get("intent") is None: <extra_id_0> self._error( "intent", "Missing <extra_id_1> parameter in request", "intent" ) intent = request.get("intent") if intent is None: return self._error( "intent", "Missing intent parameter in request", "intent" )

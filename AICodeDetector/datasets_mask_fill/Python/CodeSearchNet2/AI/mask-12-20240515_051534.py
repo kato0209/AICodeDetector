@@ -1,0 +1,1 @@
+if isinstance(X, list): X = np.array(X) if isinstance(X, np.ndarray): X = X.tolist() if batch_size == -1: batch_size = X.shape[0] if batch_size == 0: <extra_id_0> np.zeros((0, 1)) if batch_size == 1: <extra_id_1> np.ones((batch_size, 1))

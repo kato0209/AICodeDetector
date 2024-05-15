@@ -1,0 +1,11 @@
+
+        self.build_network()
+        self.build_loss()
+        self.build_accuracy()
+        self.build_accuracy_graph()
+        self.build_loss_graph()
+        self.build_accuracy_graph_with_summaries()
+        self.build_accuracy_graph_with_summaries_with_summaries()
+        self.build_loss_graph_with_summaries_with_summaries()
+        self.build_accuracy_graph_with_summaries_with_summaries_with_summaries()
+        self.build_loss_graph_with_summaries_with_summaries_with_summaries()

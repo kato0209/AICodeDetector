@@ -1,0 +1,1 @@
+ar_function(logu=logu, u=u) = 0.5 kl_forward + 0.5 kl_reverse + 0.5 kl_reverse + 0.5 kl_forward = symmetrized_csiszar_function(logu=logu, u=u) Args: logu: `float`-like `Tensor` representing `log(u)` from above. name: <extra_id_0> `str` name prefixed to <extra_id_1> created by this function. Default value: `None` (i.e., `'kl_forward'`). <extra_id_2>

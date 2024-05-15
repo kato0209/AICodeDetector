@@ -1,0 +1,2 @@
+if rate_limit_exception is None:  if not isinstance(rate_limit_exception, (int, float)): # this should always be valid. should never happen
+        raise TypeError("rate_limit_exception must be an int or float.") if rate_limit_exception < 0: raise ValueError("rate_limit_exception must be >= 0.") if rate_limit_exception > 60: raise ValueError("rate_limit_exception must be <= 60.") if rate_limit_exception % 60!= 0:

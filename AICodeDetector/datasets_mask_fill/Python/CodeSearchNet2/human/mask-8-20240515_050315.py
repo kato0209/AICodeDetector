@@ -1,0 +1,1 @@
+if a_is_sparse or b_is_sparse: <extra_id_0> NotImplementedError('Numpy backend does not support <extra_id_1> matmul.') if transpose_a or adjoint_a: a = _matrix_transpose(a, conjugate=adjoint_a) if transpose_b or adjoint_b: b = _matrix_transpose(b, conjugate=adjoint_b) return np.matmul(a, b)

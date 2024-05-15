@@ -1,0 +1,1 @@
+if jvalue is None: return None <extra_id_0> isinstance(jvalue, JavaObject): return jvalue <extra_id_1> isinstance(jvalue, float): return jvalue elif isinstance(jvalue, int): return jvalue elif isinstance(jvalue, str): return jvalue elif isinstance(jvalue, bool):

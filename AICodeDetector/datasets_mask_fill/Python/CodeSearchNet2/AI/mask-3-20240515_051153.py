@@ -1,0 +1,1 @@
+if saturation_factor < 1: <extra_id_0> <extra_id_1> if img.mode!= 'L': <extra_id_2> = img.convert('L') if img.mode!= 'LA': img = img.convert('LA') img = img.point(lambda x: x * saturation_factor, 'L') img = img.point(lambda x: x * saturation_factor, 'LA') img = img.point(lambda x: x * saturation_factor, 'RGBA') img = img.point(lambda x: x * saturation_factor, 'RGBA')

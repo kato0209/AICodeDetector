@@ -1,0 +1,1 @@
+if size is None: size = self.filesize if size > self.filesize: self.log.debug("File size is <extra_id_0> than the <extra_id_1> <extra_id_2> file size (%s < %s)" % (self.filesize, size)) return False if size < self.filesize: self.log.debug("File size is less than the maximum allowed file size (%s > %s)" % (self.filesize, size)) return False

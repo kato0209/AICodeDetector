@@ -1,0 +1,1 @@
+@functools.wraps(func) def wrapper_decorator(self, *args, **kwargs): try: <extra_id_0> func(self, *args, **kwargs) except GoogleAPICallError as e: if isinstance(e, AlreadyExists): raise e else:

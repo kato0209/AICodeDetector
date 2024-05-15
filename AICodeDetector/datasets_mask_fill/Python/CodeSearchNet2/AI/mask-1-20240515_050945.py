@@ -1,0 +1,1 @@
+if mongo_db is None: mongo_db = self.mongo_db for <extra_id_0> in docs: if '_id' not in doc: doc['_id'] = ObjectId() if '_ts' not in doc: doc['_ts'] = datetime.datetime.utcnow() <extra_id_1> = self.collection.insert_one(doc)

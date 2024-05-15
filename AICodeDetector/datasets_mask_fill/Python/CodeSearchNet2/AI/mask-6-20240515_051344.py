@@ -1,0 +1,1 @@
+# Shuffle the <extra_id_0> np.random.seed(1234) np.random.shuffle(mnist_data) np.random.seed(1234) # Shuffle the <extra_id_1> np.random.seed(1234) np.random.shuffle(heldout_data) np.random.seed(1234) # Shuffle the data np.random.seed(1234) np.random.shuffle(mnist_data) np.random.seed(1234) # Shuffle the data np.random.seed(1234) np.random.shuffle(

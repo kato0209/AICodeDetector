@@ -1,0 +1,3 @@
+# Returns a list of local files to be added to. local_files = [] for all files. Files are sorted by the local path. For example, if the file in your database is 'hello.txt' then it's saved as 'hello.txt' but not 'hello.txt.json'.
+def _make_local_files(self, cursor):
+  "Returns in cursor.connection.files.keys(): local_files.append(filename) local_files.append(self._write_local_file(cursor, filename)) # Write the local files to the file. for local_file in local_files: cursor.execute("INSERT INTO files (filename, local_path) VALUES (?,?)",

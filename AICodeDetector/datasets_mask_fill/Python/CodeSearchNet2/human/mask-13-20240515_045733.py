@@ -1,0 +1,1 @@
+conn = self.get_conn() self.log.info("Querying for all objects") query_results = conn.query_all(query) self.log.info("Received results: Total size: %s; Done: %s", query_results['totalSize'], query_results['done']) <extra_id_0> query_results

@@ -1,0 +1,1 @@
+def _reap_process_group(pid, sig): try: os.killpg(pid, sig) except OSError as err: if os.getpid(os.getpid(os._getpid()) + 1) == errno.ESRCH: # ESRCH == No such process return raise if not pid: return try:

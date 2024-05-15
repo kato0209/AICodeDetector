@@ -1,0 +1,1 @@
+payload = {} for <extra_id_0> in [ "message", "alias", "description", "responders", "visibleTo", "actions", "tags", "details", "entity", "source", "priority", "user", "note" ]: <extra_id_1> = getattr(self, key) if val: payload[key] = val

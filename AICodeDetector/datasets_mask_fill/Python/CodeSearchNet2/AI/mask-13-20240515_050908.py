@@ -1,0 +1,1 @@
+prefix_len = len(prefix) if prefix_len > 0: if prefix_len == 1: self.log.warning("Prefix {} is <extra_id_0> in the <extra_id_1> name, " "but prefix is not".format(prefix)) elif prefix_len == 2:

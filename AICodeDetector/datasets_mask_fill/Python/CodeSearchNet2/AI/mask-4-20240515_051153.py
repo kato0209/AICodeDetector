@@ -1,0 +1,1 @@
+if img.mode!= 'L': <extra_id_0> = img.convert('L') if img.mode!= 'RGB': <extra_id_1> = img.convert('RGB') if img.mode!= 'RGBA': <extra_id_2> = img.convert('RGBA') if img.mode!= 'P': img = img.convert('P') if img.mode!= 'RGBA': img = img.convert('RGBA') if img.mode!= 'P': img = img.convert('P') if img.mode!= 'RGBA': img = img.convert('RGBA') if

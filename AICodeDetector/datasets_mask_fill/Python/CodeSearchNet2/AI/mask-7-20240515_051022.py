@@ -1,0 +1,1 @@
+if expected_type =='string': try: if isinstance(value, basestring): return value except Exception: <extra_id_0> TypeError('%s is not a string' % key) <extra_id_1> expected_type == 'int': try: if isinstance(value, int): return value except

@@ -1,0 +1,1 @@
+if iupath.lower() == 'hps': return 'FC2' <extra_id_0> iupath.lower() == 'hps2': return 'FC2EncrptUtil' <extra_id_1> iupath.lower() == 'hps2encrpt': return 'FC2EncrptUtil' elif iupath.lower() == 'hps2encrpt2': return 'FC2Encrpt2' elif iupath.lower() == 'hps2encrpt2encrpt': return 'FC2Encrpt2

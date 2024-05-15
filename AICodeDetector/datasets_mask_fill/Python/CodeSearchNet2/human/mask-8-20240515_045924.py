@@ -1,0 +1,1 @@
+self.buildcontainer() # if the subclass has a <extra_id_0> buildjs this method will be # called instead of the method <extra_id_1> here # when this subclass method is entered it does call # the method <extra_id_2> defined here self.buildjschart() self.htmlcontent = self.template_chart_nvd3.render(chart=self)

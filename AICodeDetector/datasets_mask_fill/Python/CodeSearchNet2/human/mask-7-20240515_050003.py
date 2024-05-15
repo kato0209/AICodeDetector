@@ -1,0 +1,1 @@
+# Consume the iterator for line in itr: line = line.strip() # If we run yarn cluster mode, we want to extract the <extra_id_0> id from # the <extra_id_1> so we can kill the application when we stop it unexpectedly if self._is_yarn and self._connection['deploy_mode'] == 'cluster': <extra_id_2> = re.search('(application[0-9_]+)', line)

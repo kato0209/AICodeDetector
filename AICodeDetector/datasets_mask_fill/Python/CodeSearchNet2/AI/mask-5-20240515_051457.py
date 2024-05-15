@@ -1,0 +1,1 @@
+# Note: the <extra_id_0> Mises <extra_id_1> is only <extra_id_2> on positive integers. # We assume that the inputs are of the form: # x = log(x) - log(x + 1), # for x > 0, # so our <extra_id_3> expansion is: # x = log(1 + exp(-x)) - exp(-exp(-x) - x) # The <extra_id_4> expansion is equivalent to: # log(exp(-x)) - exp(exp(-x) - x) + exp(-x) - x + exp(-x) # We first compute the

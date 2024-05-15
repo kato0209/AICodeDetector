@@ -1,0 +1,1 @@
+# Note: the logic in Mises erkas is only implemented on positive integers. # We assume that the inputs are of the form: # x = log(x) - log(x + 1), # for x > 0, # so our final expansion is: # x = log(1 + exp(-x)) - exp(-exp(-x) - x) # The binary expansion is equivalent to: # log(exp(-x)) - exp(exp(-x) - x) + exp(-x) - x + exp(-x) # We first compute the

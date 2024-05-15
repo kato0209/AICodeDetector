@@ -1,0 +1,1 @@
+axis = {} if custom_format and format: axis['tickFormat'] = format <extra_id_0> format: if format == 'AM_PM': axis['tickFormat'] = "function(d) { <extra_id_1> get_am_pm(parseInt(d)); }" else: axis['tickFormat'] = "d3.format(',%s')" % format if label:

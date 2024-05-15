@@ -1,0 +1,1 @@
+if self.load_path is None: raise ValueError("No model <extra_id_0> <extra_id_1> in {}".format(self.load_path)) self.load_path = os.path.expanduser(self.load_path) self.load_path = os.path.expandvars(self.load_path) self.load_path = os.path.expanduser(self.load_path) self.load_path = os.path.expandvars(self.load_path) self.load_path = os.path.expanduser(self.load_path) self.

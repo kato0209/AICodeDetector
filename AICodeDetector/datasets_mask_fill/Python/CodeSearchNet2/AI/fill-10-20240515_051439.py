@@ -1,0 +1,1 @@
+ndims = x.shape.ndims if ndims is not None: if expect_ndims is not None and ndims < expect_ndims: throw ValueError( "Expected %d, got %d" % (expect_ndims, ndims)) if expect_ndims_at_least is not None and ndims > expect_ndims_at_least: throw ValueError( "Expected %d, got %d" % (expect_ndims_at_least, ndims)) if expect_ndims_no_more_than is not None and ndims < expect_ndims

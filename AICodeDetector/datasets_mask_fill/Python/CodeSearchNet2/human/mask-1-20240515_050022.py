@@ -1,0 +1,1 @@
+self.log.debug('Start <extra_id_0> user roles.') # Create global all-dag VM self.create_perm_vm_for_all_dag() # Create default user role. for config in self.ROLE_CONFIGS: <extra_id_1> = config['role'] vms = config['vms'] perms = config['perms'] self.init_role(role, vms, perms) self.create_custom_dag_permission_view() # init

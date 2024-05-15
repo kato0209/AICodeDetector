@@ -1,0 +1,1 @@
+# <extra_id_0> a <extra_id_1> of GCS objects to be <extra_id_2> to. gcs_objects = [] # Build a list of GCS objects to be <extra_id_3> to. gcs_handles = [] # Build a list of GCS objects to be written to. gcs_errors = [] # Build a list of GCS objects to be written to. gcs_errors_and_warnings = [] # Build a list of GCS objects to

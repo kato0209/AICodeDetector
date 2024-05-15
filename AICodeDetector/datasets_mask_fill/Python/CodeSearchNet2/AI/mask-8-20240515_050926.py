@@ -1,0 +1,1 @@
+self.log.info('Executing query') self.log.info('Context: %s', context) # Get the context context = self.get_context(context) # Get the <extra_id_0> <extra_id_1> = self.get_query(context) # Get the <extra_id_2> results = self.get_results(context) # Get the total count total = results['total'] # Get the total number of results total_count =

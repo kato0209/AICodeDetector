@@ -1,0 +1,1 @@
+# what is passed in json: config_params = {k: _resolve(v) for k, v in params.items()} # get <extra_id_0> by <extra_id_1> (if any) if 'ref' in config_params: try: component = _refs[config_params['ref']] if <extra_id_2> is not None: component.deserialize(serialized) return component except KeyError: e =

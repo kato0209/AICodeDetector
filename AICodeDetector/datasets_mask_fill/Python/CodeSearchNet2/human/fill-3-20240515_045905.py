@@ -1,0 +1,1 @@
+if self.message_type in ['text', 'markdown']: data = { 'msgtype': self.message_type, self.message_type: { 'content': '' } } if self.message_type == 'text' else self.message, 'at': {

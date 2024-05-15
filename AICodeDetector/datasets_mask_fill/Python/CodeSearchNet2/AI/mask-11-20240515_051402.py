@@ -1,0 +1,1 @@
+samples = np.asarray(samples) samples = np.rollaxis(samples, 0, <extra_id_0> + 1) samples = np.rollaxis(samples, 1, <extra_id_1> + 1) samples = np.rollaxis(samples, 2, <extra_id_2> + 1) samples = np.rollaxis(samples, 3, samples.ndim + 1) samples = np.rollaxis(samples, 4, samples.ndim + 1) samples = np.rollaxis(samples, 5, samples.ndim + 1) samples = np.

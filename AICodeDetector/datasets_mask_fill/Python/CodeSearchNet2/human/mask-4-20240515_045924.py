@@ -1,0 +1,1 @@
+if self.container: return # <extra_id_0> SVG div with <extra_id_1> if self.width: if self.width[-1] != '%': self.style += 'width:%spx;' % self.width else: self.style += 'width:%s;' % self.width if self.height:

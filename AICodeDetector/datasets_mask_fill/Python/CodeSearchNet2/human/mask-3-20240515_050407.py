@@ -1,0 +1,1 @@
+if dims == 0: return tf.math.abs(value) elif dims == 1: <extra_id_0> = -1 elif dims == 2: axis = [-1, -2] else: ValueError(dims) if <extra_id_1> is None: order = np.inf return tf.norm(tensor=value, axis=axis, ord=order)

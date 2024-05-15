@@ -1,0 +1,4 @@
+samples = ops.convert_to_tensor(samples) event = ops.convert_to_tensor(event) samples = ops.convert_to_tensor(samples) event_ndims = ops.convert_to_tensor(event_ndims) # We do not know the number of samples, so we need to broadcast # the samples. if event_ndims.shape.ndims is None: event, samples, event # We can broadcast the samples. # This means we need to broadcast the event samples. # For simplicity, we use the event samples are in. We can get those numbers.
+    samples, event = that the next(i) # We also have the indices of the event samples, so we can broadcast.
+
+  return samples, event # Returns the number of event samples, broadcast from the channels of

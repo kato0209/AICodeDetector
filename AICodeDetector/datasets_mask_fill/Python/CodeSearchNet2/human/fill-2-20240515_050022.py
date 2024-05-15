@@ -1,0 +1,2 @@
+# create perm for global view
+# return false if no permissions to add to global dag for dag_vm in self.DAG_VMS: for perm in self.DAG_PERMS: self._merge_perm(permission_name=perm, view_menu_name=dag_vm)

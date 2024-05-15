@@ -1,0 +1,1 @@
+if value is None: return None <extra_id_0> isinstance(value, six.string_types): return cls.convert_string_type(value) <extra_id_1> isinstance(value, bool): return cls.convert_bool_type(value) elif isinstance(value, int): return cls.convert_int_type(value) elif isinstance(value, float): return cls.convert_float_type(value) elif isinstance(value, datetime.datetime):

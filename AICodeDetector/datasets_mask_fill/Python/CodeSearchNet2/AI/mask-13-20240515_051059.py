@@ -1,0 +1,1 @@
+<extra_id_0> = session or settings.Session() # <extra_id_1> the state of the previously active dag <extra_id_2> dag_runs = DagRun.find(dag_id=dag.dag_id, state=State.RUNNING, session=session) active_dag_runs = [] for run in dag_runs: self.log.info("Examining DAG run %s", run) # don't consider runs that are executed in the future if run.execution_date > timezone.utcnow():

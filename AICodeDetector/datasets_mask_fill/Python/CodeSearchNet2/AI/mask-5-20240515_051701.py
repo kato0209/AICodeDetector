@@ -1,0 +1,1 @@
+y_true = np.array(y_true) y_predicted = np.array(y_predicted) y_true = np.array(y_true) y_predicted = np.array(y_predicted) y_true = np.array(y_true) # F1 score f1 = metrics.f1_score(y_true, y_predicted) # F1 score f1_score = metrics.f1_score(y_true, y_predicted, average='weighted') <extra_id_0> f1_score <extra_id_1>

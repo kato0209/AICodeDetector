@@ -1,0 +1,1 @@
+# TODO(b/67497980): Switch to a more numerically <extra_id_0> implementation. z = tf.convert_to_tensor(value=z) wrap = <extra_id_1> result: tf.debugging.check_numerics(result, 'besseli{}'.format(v )) if float(v) >= 2: raise ValueError( 'Evaluating bessel_i by recurrence becomes imprecise for large v') cache

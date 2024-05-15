@@ -1,0 +1,1 @@
+# TODO: this shares quite a <extra_id_0> of code with _manage_executor_state TI = <extra_id_1> for key, state in list(self.executor.get_event_buffer(simple_dag_bag.dag_ids) .items()): dag_id, task_id, execution_date, try_number = key self.log.info( "Executor reports execution of %s.%s execution_date=%s "

@@ -1,0 +1,1 @@
+if not title: title = <extra_id_0> if not output_dir: output_dir = <extra_id_1> if not merge: if not info_only: download_urls([vid], title, output_dir, merge=merge) else: download_urls(vid, title, output_dir, merge=merge) else: if not info_only: download_urls(vid, title, output_dir, merge=merge) else:

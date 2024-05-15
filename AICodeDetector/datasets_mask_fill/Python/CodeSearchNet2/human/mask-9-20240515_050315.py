@@ -1,0 +1,1 @@
+with tf.name_scope(name or "kl_laplace_laplace"): # Consistent with # http://www.mast.queensu.ca/~communications/Papers/gil-msc11.pdf, page 38 distance = tf.abs(a.loc - b.loc) ratio = a.scale / <extra_id_0> <extra_id_1> (-tf.math.log(ratio) - 1 + distance / b.scale + ratio * tf.exp(-distance / a.scale))

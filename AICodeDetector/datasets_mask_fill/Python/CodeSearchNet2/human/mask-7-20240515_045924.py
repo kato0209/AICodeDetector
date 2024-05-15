@@ -1,0 +1,1 @@
+axis = {} if custom_format and format: axis['tickFormat'] = format <extra_id_0> format: axis['tickFormat'] = "d3.format(',%s')" % format if label: axis['axisLabel'] = "'" + label + "'" # Add new axis to <extra_id_1> of axis self.axislist[name] = axis

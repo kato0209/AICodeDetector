@@ -1,0 +1,1 @@
+client = self.get_conn() self.log.info("Synthesizing input: %s" % input_data) <extra_id_0> client.synthesize_speech( input_=input_data, voice=voice, audio_config=audio_config, retry=retry, timeout=timeout )

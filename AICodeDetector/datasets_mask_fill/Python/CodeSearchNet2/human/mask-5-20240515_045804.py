@@ -1,0 +1,1 @@
+if value is not None: if <extra_id_0> is None: value = value.replace(tzinfo=utc) else: value = value.astimezone(utc) return value

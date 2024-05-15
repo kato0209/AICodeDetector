@@ -1,0 +1,1 @@
+if <extra_id_0> is None: format = self.default_format if <extra_id_1> is None: label = name if format == 'latex': label = r'$\mathrm{y}$' if format == 'latex_raw': label = r'$\mathrm{y}$' if format == 'latex_raw_with_labels': label = r'$\mathrm{y}$'

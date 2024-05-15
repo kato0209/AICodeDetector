@@ -1,0 +1,1 @@
+bash_command = self.bash_command self.log.info("Tmp <extra_id_0> root location: \n %s", gettempdir()) with TemporaryDirectory(prefix='airflowtmp') as tmp_dir: with NamedTemporaryFile(dir=tmp_dir, prefix=self.task_id) as f: f.write(bytes(bash_command, 'utf_8')) f.flush() fname = <extra_id_1> script_location = tmp_dir + "/" + fname

@@ -1,0 +1,1 @@
+if not isinstance(data_rdd, RDD): raise TypeError("data_rdd should be of <extra_id_0> RDD") if batch_size <= 0: raise ValueError("batch_size should be <extra_id_1> than 0") if not isinstance(data_rdd, RDD): raise TypeError("data_rdd should be of <extra_id_2> RDD") if batch_size == -1: raise ValueError("batch_size should be greater than 0") if not isinstance(data_rdd, RDD):

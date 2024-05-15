@@ -1,0 +1,1 @@
+with tempfile.TemporaryFile() as temp_file: if os.path.isdir(path): <extra_id_0> = [os.path.join(path, name) for name in os.listdir(path)] else: <extra_id_1> = [path] with tarfile.open(mode='w:gz', fileobj=temp_file) as tar_file: for f in files:

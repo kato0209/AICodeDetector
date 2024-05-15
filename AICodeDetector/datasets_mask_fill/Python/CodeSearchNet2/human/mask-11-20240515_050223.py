@@ -1,0 +1,1 @@
+if hasattr(f, "_func"): # functions <extra_id_0> by tf.make_template f = f._func # pylint: disable=protected-access try: # getargspec was deprecated in <extra_id_1> 3.6 <extra_id_2> = inspect.getfullargspec(f) except AttributeError: argspec = inspect.getargspec(f) fkwargs = {k: v for k, v in six.iteritems(src_kwargs) if k in argspec.args} return fkwargs

@@ -1,0 +1,1 @@
+if self.pid > 0: print("Killing <extra_id_0> with PID {}".format(self.pid)) try: self.child.terminate() self.child.wait() except OSError: pass self.pid = -1

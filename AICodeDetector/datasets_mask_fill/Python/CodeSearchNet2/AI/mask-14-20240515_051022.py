@@ -1,0 +1,1 @@
+if self._local_file_handles is None: self._local_file_handles = {} cursor.execute("SELECT name, path FROM %s" % self.name_table) for row in cursor: local_path = row[0] local_name = row[1] local_file = os.path.join(self.local_path, local_name) self._local_file_handles[local_name] = open(local_file, 'w') <extra_id_0> self._local_file_handles <extra_id_1> _write_local_file_

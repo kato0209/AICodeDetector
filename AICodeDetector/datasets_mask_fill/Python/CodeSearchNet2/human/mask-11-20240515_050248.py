@@ -1,0 +1,1 @@
+ds = [] values_out = [] seed = seed_stream.SeedStream('JointDistributionCoroutine', seed) <extra_id_0> = self._model() <extra_id_1> = 0 d = next(gen) try: while True: actual_distribution = <extra_id_2> if isinstance(d, self.Root) else d ds.append(actual_distribution) if (value is not None and len(value) > index and value[index] is not None): seed() next_value = value[index]

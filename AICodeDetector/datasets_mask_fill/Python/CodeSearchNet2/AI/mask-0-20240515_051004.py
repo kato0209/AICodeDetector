@@ -1,0 +1,1 @@
+if not bucket: raise ValueError("Must provide bucket") if not key: raise ValueError("Must provide key") if not os.path.exists(path): raise ValueError("Local <extra_id_0> does not exist") if not os.path.isdir(path): raise ValueError("Local <extra_id_1> does not exist") if not os.path.exists(os.path.join(path, key)): raise

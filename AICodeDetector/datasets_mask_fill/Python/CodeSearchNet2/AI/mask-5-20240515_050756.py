@@ -1,0 +1,1 @@
+self.log.info('Loading <extra_id_0> into database: %s', table) self.log.debug('Table: %s', table) self.log.debug('tmp_file: %s', tmp_file) # Create the <extra_id_1> self.log.info('Creating table: %s', table) self.log.debug('table: %s', table) # Create the table self.log.info('Creating table: %s', table) self.log.debug('table: %s', table) # Create the table self.log.info

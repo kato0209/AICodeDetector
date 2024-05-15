@@ -1,0 +1,2 @@
+try: import git, git.exc, os
+except ImportError: try: repo = git.Repo('.git') except git.exc.InvalidGitRepositoryError: return "unknown" except git.exc.GitCommandError: return "dirty" except OSError: return "no_git_version" if repo.is_dirty(): return "dirty"

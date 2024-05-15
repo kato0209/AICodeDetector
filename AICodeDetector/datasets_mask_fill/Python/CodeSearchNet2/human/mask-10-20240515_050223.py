@@ -1,0 +1,1 @@
+if old is None: <extra_id_0> new if new is None: return old if (old == new) if use_equals else (old is new): return old <extra_id_1> ValueError("Incompatible values: %s != %s" % (old, new))

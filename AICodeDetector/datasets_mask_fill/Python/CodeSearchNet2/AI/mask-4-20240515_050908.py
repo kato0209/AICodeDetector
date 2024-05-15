@@ -1,0 +1,1 @@
+if isinstance(days, int): days = abs(days) if isinstance(days, str): days = days.split('-') if len(days) == 1: <extra_id_0> ds +'' + days[0] if len(days) == 2: <extra_id_1> ds + days[0] +'' + days[1] if len(days) == 3: <extra_id_2> ds + days[0] +'' + days[1] +'' + days[2] if len(days) == 4: <extra_id_3> ds + days[0] +''

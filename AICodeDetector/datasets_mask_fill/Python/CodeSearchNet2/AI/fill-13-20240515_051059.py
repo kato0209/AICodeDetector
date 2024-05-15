@@ -1,0 +1,3 @@
+job = self.model.find_one(dag_id=dag_name)
+        dag = self.model.find_one(dag_name=dag_name)  # find the dag
+        dag.state = session or settings.Session() # determine the state of the previously active dag  dag_runs = DagRun.find(dag_id=dag.dag_id, state=State.RUNNING, session=session) active_dag_runs = [] for run in dag_runs: self.log.info("Examining DAG run %s", run) # don't consider runs that are executed in the future if run.execution_date > timezone.utcnow():

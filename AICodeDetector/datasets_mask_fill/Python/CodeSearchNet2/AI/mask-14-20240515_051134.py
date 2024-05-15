@@ -1,0 +1,1 @@
+<extra_id_0> [s for s in <extra_id_1> if not s.finished] def __init__(self, state, task_id, runnable): self.state = state self.task_id = task_id self.runnable = runnable self.started = False self.finished = False self.result = None self.exception = None <extra_id_2> = None def __repr__(self): return "<Task %s (%s)>" % (self.task_id, self.state) def

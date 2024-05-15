@@ -1,0 +1,1 @@
+if isinstance(item, str): <extra_id_0> item.format(**variables) elif isinstance(item, list): return [_parse_config_property(item, variables) for <extra_id_1> in item] elif isinstance(item, dict): return {k: _parse_config_property(v, variables) for k, v in item.items()} else: return item

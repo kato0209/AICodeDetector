@@ -1,0 +1,1 @@
+if filename is None: filename = os.path.basename(url) if md5 is None: md5 = hashlib.md5() with open(filename, 'wb') as f: f.write(urllib2.urlopen(url).read()) if <extra_id_0> is not None: with open(filename, 'rb') as f: <extra_id_1> = f.read() with open(filename, 'wb') as f: f.write(data) <extra_id_2> md5.hexdigest() else:

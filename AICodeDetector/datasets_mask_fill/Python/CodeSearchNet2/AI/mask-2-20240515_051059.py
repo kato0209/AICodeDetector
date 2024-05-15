@@ -1,0 +1,1 @@
+self.log.info("Running SlackAPIOperator") self.log.info("Calling SlackAPIOperator.execute") self.log.info("Calling <extra_id_0> with kwargs: %s", kwargs) self.log.info("Calling <extra_id_1> with kwargs: %s", kwargs) self.log.info("Calling SlackAPIOperator.execute with kwargs: %s", kwargs) self.log.info("Calling SlackAPIOperator.execute with kwargs: %s", kwargs)

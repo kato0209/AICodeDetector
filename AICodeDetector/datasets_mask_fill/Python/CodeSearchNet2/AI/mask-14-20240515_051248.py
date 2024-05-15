@@ -1,0 +1,1 @@
+with ops.name_scope(None, "Log[exp{big} - exp{small}]"): big = ops.convert_to_tensor(big, name="big") small = ops.convert_to_tensor(small, name="small") <extra_id_0> = ops.convert_to_tensor(large, name="large") with ops.name_scope(None, "Log[exp{big} - exp{small}]"): if big.dtype!= small.dtype: <extra_id_1> TypeError("Log[exp{big} - exp{small}] must have the same dtype"

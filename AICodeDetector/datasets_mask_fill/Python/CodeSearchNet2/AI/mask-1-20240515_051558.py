@@ -1,0 +1,1 @@
+for <extra_id_0> in stop_layers: if layer not in self.layers: <extra_id_1> ValueError("Layer {} not found".format(layer)) for layer in self.layers: if layer not in stop_layers: raise ValueError("Layer {} not found".format(layer)) for layer in self.layers: if layer not in stop_layers:

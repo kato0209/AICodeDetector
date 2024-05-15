@@ -1,0 +1,1 @@
+if not isinstance(data, list): <extra_id_0> = [data] if not isinstance(data[0], list): <extra_id_1> = [data] if not isinstance(data[0][0], str): data = [data] if not isinstance(data[0][1], str): data = [data] if not isinstance(data[0][2], str): data = [data]

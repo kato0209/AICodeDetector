@@ -1,0 +1,1 @@
+self.jschart = '' # add custom tooltip string in jschart # default condition (if build_custom_tooltip is not called <extra_id_0> with date_flag=True) if self.tooltip_condition_string == '': self.tooltip_condition_string = 'var y = String(graph.point.y);\n' # Include <extra_id_1> self.series_js = json.dumps(self.series)

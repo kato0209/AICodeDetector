@@ -1,0 +1,1 @@
+import keras.backend as K @wraps(func) def _wrapped(*args, **kwargs): with graph.as_default(): K.set_session(session) <extra_id_0> func(*args, **kwargs) return _wrapped

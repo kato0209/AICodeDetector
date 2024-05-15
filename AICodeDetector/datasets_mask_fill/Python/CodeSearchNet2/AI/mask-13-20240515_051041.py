@@ -1,0 +1,1 @@
+try: conn = self.connect_to_aws() except boto.exception.NoAuthHandlerFound as e: self.module.fail_json(msg=str(e)) try: if self.state == 'present': return conn else: self.module.debug("creating new <extra_id_0> to %s" % self.region)

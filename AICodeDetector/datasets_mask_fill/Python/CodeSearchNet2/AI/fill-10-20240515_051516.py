@@ -1,0 +1,2 @@
+if jvalue is None: return None # for Java, returning None otherwise we need to check there
+elif isinstance(jvalue, JavaObject): return jvalue if isinstance(jvalue, float): return jvalue elif isinstance(jvalue, int): return jvalue elif isinstance(jvalue, str): return jvalue elif isinstance(jvalue, bool):

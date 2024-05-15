@@ -1,0 +1,1 @@
+with self._name_scope(name): return (self._multi_digamma(0.5 * self.df, self.dimension) + 2 * math.log(2.) + 2 * self.scale_operator.log_abs_determinant())

@@ -1,0 +1,1 @@
+TI = TaskInstance cutoff = datetime.now() - timedelta(days=1) <extra_id_0> = session.query(TI).filter( TI.dag_id == self.dag_id, TI.task_id == self.task_id, TI.execution_date >= cutoff, ) if len(tis) == 0: session.commit() <extra_id_1> [] TI =

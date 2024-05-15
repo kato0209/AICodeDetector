@@ -1,0 +1,1 @@
+<extra_id_0> = _read_data('imdb.data', 'imdb.target') data = data.map(lambda x: x.split(',')) data = data.map(lambda x: x.split(' ')) data = data.map(lambda x: x.split(' ')) data = data.map(lambda x: x.split(' ')) data = data.map(lambda x: x.split(' ')) data = data.map(lambda x: x.split(' ')) data = data.map(lambda x: x.split(' ')) <extra_id_1> data <extra_id_2>

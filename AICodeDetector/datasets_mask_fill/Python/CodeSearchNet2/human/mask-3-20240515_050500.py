@@ -1,0 +1,1 @@
+# Note that `all` <extra_id_0> to `True` if `arg_list` is empty. if all(a is None for a in arg_list): return None return dtype_util.common_dtype(arg_list, tf.float32)

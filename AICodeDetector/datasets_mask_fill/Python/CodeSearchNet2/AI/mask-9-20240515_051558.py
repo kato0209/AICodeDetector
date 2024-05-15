@@ -1,0 +1,1 @@
+<extra_id_0> = <extra_id_1> self.cashed_date = datetime.datetime.now() self.cashed_cash = True self.cashed_cash_date = datetime.datetime.now() self.cashed_cash_cash = True self.cashed_cash_cash_date = datetime.datetime.now() self.cashed_cash_cash_cash = True self.cashed_cash_cash_date = datetime.datetime.now() self.cashed_cash_cash_cash = True self.cashed_cash_cash

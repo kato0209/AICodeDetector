@@ -1,0 +1,1 @@
+TI = TaskInstance <extra_id_0> = 0 if hasattr(TI, 'task_id'): TI = ti.task_id try: task_id = TI.task_id except AttributeError: # in case TI is None or <extra_id_1> TI = None if TI is not None:

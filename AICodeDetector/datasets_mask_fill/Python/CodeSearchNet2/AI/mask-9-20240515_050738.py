@@ -1,0 +1,1 @@
+try: <extra_id_0> = self.session.http.get(url) data = <extra_id_1> data = data.replace('\n', '') data = data.replace('\r', '') data = data.replace('\t', '') data = data.replace('\n', '') data = data.replace('\r', '') data = data.replace('\t', '')

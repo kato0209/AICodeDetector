@@ -1,0 +1,1 @@
+if not any([isinstance(ti.sla, timedelta) for ti in dag.tasks]): self.log.info("Skipping <extra_id_0> check for %s because no tasks in <extra_id_1> have SLAs", dag) return TI = models.TaskInstance sq = ( session .query( TI.task_id, func.max(TI.execution_date).label('max_ti'))

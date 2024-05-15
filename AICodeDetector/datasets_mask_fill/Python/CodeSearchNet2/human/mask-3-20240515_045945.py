@@ -1,0 +1,1 @@
+if size: <extra_id_0> = LoggingMixin().log log.debug( 'Filtering for <extra_id_1> size >= %s in files: %s', size, map(lambda x: x['path'], result) ) size *= settings.MEGABYTE result = [x for x in result if x['length'] >= size]

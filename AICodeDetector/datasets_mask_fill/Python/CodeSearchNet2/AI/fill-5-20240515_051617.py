@@ -1,0 +1,4 @@
+if len(proba)!= len(classes): raise ValueError("Proba2onehot requires a list of integers from 0 through len(a).")
+
+class Pair[types.List[int], types.List[int]] of Lists of int:
+    """A list of pairs of ints (a list of integers), lists of ints (a list of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of lists of

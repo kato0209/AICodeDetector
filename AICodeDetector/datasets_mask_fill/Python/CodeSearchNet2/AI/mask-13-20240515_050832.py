@@ -1,0 +1,1 @@
+<extra_id_0> _db_ctx if _db_ctx is not None: _db_ctx.close() _db_ctx = None _db_ctx = None _db_ctx = None <extra_id_1> close_db(db_name): global _db_ctx if _db_ctx is not None: _db_ctx.close() _db_ctx = None _db_ctx = None <extra_id_2> close_all(): global _db_ctx if _db_ctx is not None: _db_ctx.close() _db

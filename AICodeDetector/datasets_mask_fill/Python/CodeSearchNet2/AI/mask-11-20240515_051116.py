@@ -1,0 +1,1 @@
+for col, col_type in zip(schema, col_type_dict): col = self._to_java_column(col) try: v = float(row[col]) except ValueError: v = row[col] # TODO: <extra_id_0> Decimals, need to handle it as Decimal <extra_id_1> col_type = self._to_java_type(col_type)

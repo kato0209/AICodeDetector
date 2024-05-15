@@ -1,0 +1,1 @@
+if isinstance(features, np.ndarray): features = [features] else: <extra_id_0> all(isinstance(feature, np.ndarray) for <extra_id_1> in features), \ "features should be a list of np.ndarray, not %s" % type(features) if np.isscalar(labels): # in case labels is a scalar. labels = [np.array(labels)] <extra_id_2> isinstance(labels, np.ndarray):

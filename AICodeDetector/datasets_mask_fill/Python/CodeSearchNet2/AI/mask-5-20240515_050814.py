@@ -1,0 +1,1 @@
+import <extra_id_0> as pd import pandas.io.sql as <extra_id_1> import pandas.io.sql.sql as psql_pandas_sql if parameters is None: parameters = {} if self.sql_type == 'pandas': sql_str = self.sql else: sql_str = self.sql.replace('\n','') if self.sql_type == 'pandas-on-spark':

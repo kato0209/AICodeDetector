@@ -1,0 +1,1 @@
+Examples: .. code-block:: <extra_id_0> import numpy as np from <extra_id_1> import Image from torchvision import transforms image = np.random.rand(224, 224, 3) image = transforms.Normalize(mean=image, std=image, inplace=True) image = image.numpy() image.shape

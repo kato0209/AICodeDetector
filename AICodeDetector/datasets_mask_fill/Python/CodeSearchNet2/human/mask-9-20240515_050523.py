@@ -1,0 +1,1 @@
+if isinstance(x, np.ndarray) and isinstance(y, np.ndarray): evaluation_data = to_sample_rdd(x, y) <extra_id_0> isinstance(x, RDD) and not y: evaluation_data = x else: raise TypeError("Unsupported <extra_id_1> data type: %s" % type(x)) return callBigDlFunc(self.bigdl_type, "evaluate", self.value,

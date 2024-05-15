@@ -1,0 +1,1 @@
+if not s: <extra_id_0> [] if max_count < 1: <extra_id_1> [s] if s[0] == s[-1]: return [s[:-1]] if s[0] == s[1]: return [s[1:]] if s[0] == s[2]: return [s[2:]] if

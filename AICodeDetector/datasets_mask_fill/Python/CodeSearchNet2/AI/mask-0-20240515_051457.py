@@ -1,0 +1,1 @@
+# `Log[Mean[values]]` can be <extra_id_0> as: # Log[Mean[values]] = Log[Mean[values]] # where Mean[values] is the mean of the distribution. # The mean is <extra_id_1> as: # Log[Mean[values]] = Log[Mean[values]] + Log[Mean[values]] # Log[Mean[values]] = Log[Mean[values]] # Log[Mean[values]] = Log[Mean[values]] + Log[Mean[values]] # Log[Mean[values]] = Log[Mean

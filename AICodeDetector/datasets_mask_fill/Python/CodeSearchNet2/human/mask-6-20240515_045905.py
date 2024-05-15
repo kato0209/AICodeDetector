@@ -1,0 +1,1 @@
+if string_field is None: <extra_id_0> None <extra_id_1> bq_type == 'INTEGER': return int(string_field) elif bq_type == 'FLOAT' or bq_type == 'TIMESTAMP': return float(string_field) elif bq_type == 'BOOLEAN': if string_field not in ['true', 'false']: <extra_id_2> ValueError("{} must have value 'true' or 'false'".format( string_field)) return string_field == 'true' else:

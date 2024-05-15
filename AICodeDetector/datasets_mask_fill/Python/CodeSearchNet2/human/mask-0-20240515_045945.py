@@ -1,0 +1,1 @@
+retry_after = int( rate_limit_exception.response.headers.get('Retry-After', 60)) self.log.info( "Hit Zendesk API rate limit. <extra_id_0> for %s seconds", retry_after ) time.sleep(retry_after)

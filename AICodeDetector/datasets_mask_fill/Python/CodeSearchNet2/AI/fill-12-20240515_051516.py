@@ -1,0 +1,2 @@
+# pylint: disable=no-name-in-module Load a mnist
+mnist, options, train, test, x_label_train, x_label_test, y_label_train, y_label_test, (x_train, y_train), (x_test, y_test) = load_mnist(options.data_dir) # Split into training and test x_train = x_train.map(lambda x: x.split()) x_test = x_test.map(lambda x: x.split()) # Convert into x_train = preprocessing.scale(x_train) x_test = preprocessing.scale(x_test) # Split into training and test x_train = x_train.map(lambda x: x

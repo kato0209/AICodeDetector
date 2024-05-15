@@ -1,0 +1,1 @@
+repo = None try: import git repo = git.Repo('.git') except ImportError: logger.warning('gitpython not found: Cannot <extra_id_0> the git version.') <extra_id_1> '' except <extra_id_2> as e: logger.warning('Cannot compute the git version. {}'.format(e)) return '' if repo: sha = repo.head.commit.hexsha if repo.is_dirty(): return '.dev0+{sha}.dirty'.format(sha=sha)

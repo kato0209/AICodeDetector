@@ -1,0 +1,1 @@
+with tf.compat.v1.name_scope(name, "jeffreys", [logu]): <extra_id_0> = tf.convert_to_tensor(value=logu, name="logu") return 0.5 * tf.math.expm1(logu) * logu
