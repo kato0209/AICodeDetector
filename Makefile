@@ -12,4 +12,4 @@ build-generator:
 	docker build -t detectgpt -f DetectCodeGPT/Dockerfile ./DetectCodeGPT
 
 run-generator:
-	docker run -it --gpus all -v /home/kato/AICodeDetector/DetectCodeGPT:/work detectgpt
+	docker run -it --gpus all -v /home/kato/AICodeDetectorWorkspace/DetectCodeGPT:/work detectgpt

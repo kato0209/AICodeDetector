@@ -129,7 +129,7 @@ args = parser.parse_args(input_args)
 
 
 cbm = CustomBertModel()
-model_path = 'saved_model/model_CodeSearchNet_20240510_154855.pth' 
+model_path = 'saved_model/model_parrot_yake_remake_20240515_075332.pth' 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 cbm.load_state_dict(torch.load(model_path, map_location=device))
 cbm.to(device)
@@ -139,7 +139,7 @@ model_config = load_mask_filling_model(args, args.mask_filling_model_name, model
 
 # define the dataset
 #DATASET_PATH = 'datasets/Python/temp_test'
-DATASET_PATH = 'datasets/Python/train'
+DATASET_PATH = 'datasets/Python/train_main'
 datasets = CodeDataset(DATASET_PATH, model_config, args)
 test_dataloader = DataLoader(datasets, batch_size=32, shuffle=False)
 

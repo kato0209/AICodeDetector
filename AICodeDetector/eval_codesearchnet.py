@@ -131,7 +131,7 @@ args = parser.parse_args(input_args)
 
 def generate_data(max_num=500, min_len=0, max_len=128, max_comment_num=10, max_def_num=5, cut_def=False, max_todo_num=3):
 
-    path = f'CodeSearchNetDatasets/outputs_codeparrot.txt'
+    path = f'CodeSearchNetDatasets/outputs_phi1.txt'
 
     logger.info(f'Loading data from {path}')
     import json
@@ -210,13 +210,14 @@ def generate_data(max_num=500, min_len=0, max_len=128, max_comment_num=10, max_d
         "original": all_originals[max_num:max_num*2],
         "sampled": all_samples[max_num:max_num*2]
     }
+    
 
     return data
 
 data = generate_data()
 
 cbm = CustomBertModel()
-model_path = 'saved_model/model_Python_yake_remake_20240515_075332.pth' 
+model_path = 'saved_model/model_GPT4o_20240515_133824.pth' 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 cbm.load_state_dict(torch.load(model_path, map_location=device))
 cbm.to(device)
