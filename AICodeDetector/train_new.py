@@ -136,7 +136,7 @@ model_config = load_mask_filling_model(args, args.mask_filling_model_name, model
 
 def generate_data(max_num=500, min_len=0, max_len=128, max_comment_num=10, max_def_num=5, cut_def=False, max_todo_num=3):
 
-    path = f'CodeSearchNetDatasets/outputs_codeparrot.txt'
+    path = f'CodeSearchNetDatasets/outputs_Llama.txt'
 
     logger.info(f'Loading data from {path}')
     import json
@@ -274,7 +274,7 @@ def pertubate_code(codes, model_config, args):
 
 data = generate_data()
 
-perturbation_type = 'space-line'
+perturbation_type = 'original'
 if perturbation_type == 'space-line':
     human_codes_perturbed = random_insert_newline_space(data["original"])
     AI_codes_perturbed = random_insert_newline_space(data["sampled"])
