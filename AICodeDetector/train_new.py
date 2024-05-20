@@ -72,6 +72,11 @@ parser.add_argument('--max_comment_num', type=int, default=10)
 parser.add_argument('--max_def_num', type=int, default=5)
 parser.add_argument('--cut_def', action='store_true')
 parser.add_argument('--max_todo_num', type=int, default=3)
+parser.add_argument("--learning_rate", default=1e-5, type=float)
+parser.add_argument("--adam_epsilon", default=1e-6, type=float)
+parser.add_argument("--num_train_epochs", default=12, type=float)
+parser.add_argument("--warmup_ratio", default=0.06, type=float)
+parser.add_argument("--weight_decay", default=0.01, type=float)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -274,7 +279,7 @@ def pertubate_code(codes, model_config, args):
 
 data = generate_data()
 
-perturbation_type = 'original'
+perturbation_type = 'space-line'
 if perturbation_type == 'space-line':
     human_codes_perturbed = random_insert_newline_space(data["original"])
     AI_codes_perturbed = random_insert_newline_space(data["sampled"])

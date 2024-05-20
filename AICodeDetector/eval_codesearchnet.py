@@ -205,7 +205,6 @@ def generate_data(max_num=500, min_len=0, max_len=128, max_comment_num=10, max_d
     # random.seed(42)
     # random.shuffle(all_originals)
     # random.shuffle(all_samples)
-
     data = {
         "original": all_originals[max_num:max_num*2],
         "sampled": all_samples[max_num:max_num*2]
@@ -215,9 +214,8 @@ def generate_data(max_num=500, min_len=0, max_len=128, max_comment_num=10, max_d
     return data
 
 data = generate_data()
-
 cbm = CustomBertModel()
-model_path = 'saved_model/model_GPT4o_20240515_133824.pth' 
+model_path = 'saved_model/model_Llama_260_space_line_20240520_054322.pth' 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 cbm.load_state_dict(torch.load(model_path, map_location=device))
 cbm.to(device)

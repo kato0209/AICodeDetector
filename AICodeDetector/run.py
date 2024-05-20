@@ -139,6 +139,88 @@ args = parser.parse_args(input_args)
 model_config = {}
 model_config = load_mask_filling_model(args, args.mask_filling_model_name, model_config)
 
+def generate_data(max_num=500, min_len=0, max_len=128, max_comment_num=10, max_def_num=5, cut_def=False, max_todo_num=3, path=None):
+
+    logger.info(f'Loading data from {path}')
+    import json
+    all_originals = []
+    all_samples = []  # machine generated
+
+    max_def_num_count = 0
+    min_len_count = 0
+    max_comment_num_count = 0
+    function_comment_num_count = 0
+    max_todo_num_count = 0
+
+    with open(path, 'r') as f:
+        for line in tqdm(f, ncols=70):
+            line = line.strip()
+            if line == '':
+                continue
+            line = json.loads(line)
+
+            # cut out the 'def' part after the first generation
+            if cut_def:
+                line['output'] = line['output'].split('def')[0]
+                line['solution'] = line['solution'].split('def')[0]
+
+            # I don't like there to have too many 'def' in the code
+            # ~100/100000 examples have more than 3 'def'
+            if line['solution'].count('def') > max_def_num or line['output'].count('def') > max_def_num:
+                max_def_num_count += 1
+                continue
+
+            # avoid examples that are too short (less than min_len words)
+            # around 2000/100000 examples have around 55 words
+            if len(line['solution'].split()) < min_len or len(line['output'].split()) < min_len:
+                min_len_count += 1
+                continue
+
+            # if the are too many comments, skip
+            def count_comment(text):
+                return text.count('#')
+
+            if count_comment(line['solution']) > max_comment_num or count_comment(line['output']) > max_comment_num:
+                max_comment_num_count += 1
+                continue
+
+            # if there are too many TODOs, skip
+            def count_todo_comment(text):
+                return text.count('# TODO') + text.count('# todo')
+
+            if count_todo_comment(line['solution']) > max_todo_num or count_todo_comment(line['output']) > max_todo_num:
+                max_todo_num_count += 1
+                continue
+
+            # the number of text.count("'''") and text.count('"""') should be <1
+            if line['solution'].count("'''") > 0 or line['solution'].count('"""') > 0 or line['output'].count("'''") > 0 or line['output'].count('"""') > 0:
+                function_comment_num_count += 1
+                continue
+
+            # cut to 128 tokens
+            all_originals.append(' '.join(line['solution'].split(' ')[:max_len]))
+            all_samples.append(' '.join(line['output'].split(' ')[:max_len]))
+
+    logger.info(f'{max_def_num_count} examples have more than {max_def_num} "def"')
+    logger.info(f'{min_len_count} examples have less than {min_len} words')
+    logger.info(f'{max_comment_num_count} examples have more than {max_comment_num} comments')
+    logger.info(f'{max_todo_num_count} examples have more than {max_todo_num} TODOs')
+    logger.info(f'{function_comment_num_count} examples have more than 1 function comment')
+    logger.info(f'Loaded {len(all_originals)} examples after filtering, and will return {min(max_num, len(all_originals))} examples')
+
+    # statistical analysis
+    # import random
+    # random.seed(42)
+    # random.shuffle(all_originals)
+    # random.shuffle(all_samples)
+
+    data = {
+        "original": all_originals[:max_num],
+        "sampled": all_samples[:max_num]
+    }
+
+    return data
+
 def random_insert_space(text, pct=0.3, mean=1):
     '''
     randomly insert a space for pct of the lines
@@ -193,27 +275,28 @@ def pertubate_code(codes, model_config, args):
 
     return masked_codes, perturbed_codes 
 
-data = {}
-data["original"] = [] 
-data["sampled"] = []
-directory_path = 'datasets/Python/train_main'
-# humanのコードを収集
-human_code_dir = os.path.join(directory_path, 'human')
-for filename in os.listdir(human_code_dir):
-    with open(os.path.join(human_code_dir, filename), 'r') as f:
-        code = f.read()
-        data['original'].append(code)
+datasets_paths = [
+    "CodeSearchNetDatasets/outputs_Llama.txt",
+    "CodeSearchNetDatasets/outputs_phi1.txt",
+    "CodeSearchNetDatasets/outputs_wizard.txt",
+    "CodeSearchNetDatasets/outputs_codeparrot.txt",
+    "CodeSearchNetDatasets/outputs_incoder.txt",
+]
 
-# chatGPTのコードを収集
-AI_code_dir = os.path.join(directory_path, 'AI')
-for filename in os.listdir(AI_code_dir):
-    with open(os.path.join(AI_code_dir, filename), 'r') as f:
-        code = f.read()
-        data['sampled'].append(code)
+data = {
+    "original": [],
+    "sampled": []
+}
+i = 0
+for path in datasets_paths:
+    sep_data = generate_data(path=path)
+    if i == 0:
+        data["original"] = data["original"] + sep_data["original"]
+    data["sampled"] = data["sampled"] + sep_data["sampled"]
+    i += 1
 
 
-perturbation_type = 'original'
-
+perturbation_type = 'space-line'
 if perturbation_type == 'space-line':
     human_codes_perturbed = random_insert_newline_space(data["original"])
     AI_codes_perturbed = random_insert_newline_space(data["sampled"])
@@ -246,6 +329,7 @@ else:
 
     data["original"] = all_human_codes + all_human_masked_codes + all_human_perturbed_codes
     data["sampled"] = all_AI_codes + all_AI_masked_codes + all_AI_perturbed_codes
+
 
 
 datasets = CodeDatasetFromCodeSearchNet(data, model_config, args)

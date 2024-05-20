@@ -12,7 +12,7 @@ from baselines.loss import get_ll, get_lls
 import random
 import re
 import numpy as np
-from identifier_tagging import get_identifier
+#from identifier_tagging import get_identifier
 import scipy.stats
 from tqdm import tqdm
 from loguru import logger
@@ -78,7 +78,7 @@ parser.add_argument('--max_todo_num', type=int, default=3)
 args_dict = {
     #'dataset': "train",
     'dataset': "CodeSearchNet",
-    'dataset_key': "codeparrot-100000-tp0.2",
+    'dataset_key': "phi-1-10000-tp0.2",
     # 'dataset_key': "CodeLlama-7b-hf-10000-tp1.0",
     'pct_words_masked': 0.5,
     'pct_identifiers_masked': 0.75,
@@ -147,7 +147,7 @@ model_config = load_mask_filling_model(args, mask_filling_model_name, model_conf
 
 logger.info(f'args: {args}')
 
-def generate_data(dataset, key, max_num=200, min_len=0, max_len=128, max_comment_num=10, max_def_num=5, cut_def=False, max_todo_num=3):
+def generate_data(dataset, key, max_num=500, min_len=0, max_len=128, max_comment_num=10, max_def_num=5, cut_def=False, max_todo_num=3):
 
     path = f'../output/{dataset}/{key}/outputs.txt'
 
@@ -252,7 +252,7 @@ def remove_mask_space(text):
 
 def tokenize_and_mask_identifiers(text, args, span_length, pct, ceil_pct=False, buffer_size=1):
 
-    varnames, pos = get_identifier(text, 'python')
+    #varnames, pos = get_identifier(text, 'python')
 
     mask_string = ' <<<mask>>> '
     sampled = random.sample(varnames, int(len(varnames)*1))

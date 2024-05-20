@@ -19,7 +19,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # device = torch.device('cpu')
 
 
-def load_data(path='data/CodeSearchNet', language='python', max_num=1000):
+def load_data(path='data/CodeSearchNet', language='python', max_num=10000):
 
     all_prompts = []
     all_solutions = []
@@ -284,10 +284,10 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--path', type=str, default="data/CodeSearchNet")
-    parser.add_argument('--max_num', type=int, default=1000)
+    parser.add_argument('--max_num', type=int, default=10000)
     parser.add_argument('--temperature', type=float, default=0.2)
     #parser.add_argument('--model_name', type=str, default='codellama/CodeLlama-7b-hf')
-    parser.add_argument('--model_name', type=str, default='codellama/CodeLlama-7b-hf')
+    parser.add_argument('--model_name', type=str, default='microsoft/phi-1')
     parser.add_argument('--batch_size', type=int, default=16)
     parser.add_argument('--max_length', type=int, default=128)
     args = parser.parse_args()
