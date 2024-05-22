@@ -140,3 +140,5 @@ tmp_results/
 *.pt
 *.png
 *.pdf
+
+data/Stack/
