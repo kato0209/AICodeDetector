@@ -131,7 +131,8 @@ args = parser.parse_args(input_args)
 
 def generate_data(max_num=500, min_len=0, max_len=128, max_comment_num=10, max_def_num=5, cut_def=False, max_todo_num=3):
 
-    path = f'CodeSearchNetDatasets/outputs_phi1.txt'
+    #path = f'CodeSearchNetDatasets/outputs_phi1.txt'
+    path = f'TheVaultDatasets/outputs_phi1_0.2.txt'
 
     logger.info(f'Loading data from {path}')
     import json

@@ -285,12 +285,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--path', type=str, default="data/CodeSearchNet")
     parser.add_argument('--max_num', type=int, default=10000)
-    parser.add_argument('--temperature', type=float, default=0.2)
+    parser.add_argument('--temperature', type=float, default=1.0)
     #parser.add_argument('--model_name', type=str, default='codellama/CodeLlama-7b-hf')
     #parser.add_argument('--model_name', type=str, default='facebook/incoder-1B')
     #parser.add_argument('--model_name', type=str, default='AlekseyKorshuk/WizardCoder-3B-V1.0-dpo-beta-0.01')
-    parser.add_argument('--model_name', type=str, default='Salesforce/codegen2-3_7B_P')
-    ##parser.add_argument('--model_name', type=str, default='bigcode/starcoderbase-3b')
+    #parser.add_argument('--model_name', type=str, default='Salesforce/codegen2-3_7B_P')
+    parser.add_argument('--model_name', type=str, default='bigcode/starcoderbase-3b')
     #parser.add_argument('--model_name', type=str, default='microsoft/phi-1')
     parser.add_argument('--batch_size', type=int, default=16)
     parser.add_argument('--max_length', type=int, default=128)
@@ -301,55 +301,65 @@ if __name__ == "__main__":
     path = args.path
     max_num = args.max_num
     temperature = args.temperature
-    model_name = args.model_name
+    #model_name = args.model_name
     batch_size = args.batch_size
 
-    # max_num = 100000
-    prompts, solutions = load_data(path=path, language='python', max_num=max_num)
+    model_names = [
+        #"facebook/incoder-1B",
+        #"microsoft/phi-1",
+        "AlekseyKorshuk/WizardCoder-3B-V1.0-dpo-beta-0.01",
+        "Salesforce/codegen2-3_7B_P",
+        "bigcode/starcoderbase-3b",
+    ]
+
+    for model_name in model_names:
+
+        # max_num = 100000
+        prompts, solutions = load_data(path=path, language='python', max_num=max_num)
 
 
-    prompts, outputs, solutions = generate_hf(model_name, prompts, solutions, max_length_sample=args.max_length,
-                                                max_length=128, do_sample=True, top_p=0.95, temperature=temperature, batch_size=batch_size)
+        prompts, outputs, solutions = generate_hf(model_name, prompts, solutions, max_length_sample=args.max_length,
+                                                    max_length=128, do_sample=True, top_p=0.95, temperature=temperature, batch_size=batch_size)
 
-    model_name = model_name.split('/')[-1]
+        model_name = model_name.split('/')[-1]
 
-    logger.info(f'Generated {len(outputs)} outputs')
+        logger.info(f'Generated {len(outputs)} outputs')
 
-    # write the outputs to a file and together with the prompts and solutions
+        # write the outputs to a file and together with the prompts and solutions
 
-    save_prefix = f'output/{path.split("/")[-1]}'
+        save_prefix = f'output/{path.split("/")[-1]}'
 
-    if args.max_length >= 256:
-        file_name = f'{save_prefix}/{model_name}-{max_num}-tp{temperature}-nostop/outputs.txt'
-        if not os.path.exists(f'{save_prefix}/{model_name}-{max_num}-tp{temperature}-nostop'):
-            os.makedirs(f'{save_prefix}/{model_name}-{max_num}-tp{temperature}-nostop')
-    else:
-        file_name = f'{save_prefix}/{model_name}-{max_num}-tp{temperature}/outputs.txt'
-        if not os.path.exists(f'{save_prefix}/{model_name}-{max_num}-tp{temperature}'):
-            os.makedirs(f'{save_prefix}/{model_name}-{max_num}-tp{temperature}')
-    if os.path.exists(file_name):
-        os.remove(file_name)
+        if args.max_length >= 256:
+            file_name = f'{save_prefix}/{model_name}-{max_num}-tp{temperature}-nostop/outputs.txt'
+            if not os.path.exists(f'{save_prefix}/{model_name}-{max_num}-tp{temperature}-nostop'):
+                os.makedirs(f'{save_prefix}/{model_name}-{max_num}-tp{temperature}-nostop')
+        else:
+            file_name = f'{save_prefix}/{model_name}-{max_num}-tp{temperature}/outputs.txt'
+            if not os.path.exists(f'{save_prefix}/{model_name}-{max_num}-tp{temperature}'):
+                os.makedirs(f'{save_prefix}/{model_name}-{max_num}-tp{temperature}')
+        if os.path.exists(file_name):
+            os.remove(file_name)
 
-    with open(file_name, 'w+') as f:
+        with open(file_name, 'w+') as f:
+            for i in range(len(outputs)):
+                results = {'prompt': prompts[i], 'output': outputs[i], 'solution': solutions[i]}
+                f.write(json.dumps(results))
+                f.write('\n')
+
+        # another version that is more clear with printing
+        file_name = f'{save_prefix}/{model_name}-{max_num}-tp{temperature}/outputs_v2.txt'
+
+        # delete the file if it exists
+        if os.path.exists(file_name):
+            os.remove(file_name)
+
         for i in range(len(outputs)):
-            results = {'prompt': prompts[i], 'output': outputs[i], 'solution': solutions[i]}
-            f.write(json.dumps(results))
-            f.write('\n')
+            # print the output directly
+            print("-"*20, file=open(file_name, 'a'))
+            print(f'Prompt: \n{prompts[i]}', file=open(file_name, 'a'))
+            print("-"*10, file=open(file_name, 'a'))
+            print(f'Output: \n{outputs[i]}', file=open(file_name, 'a'))
+            print("-"*10, file=open(file_name, 'a'))
+            print(f'Solution: \n{solutions[i]}', file=open(file_name, 'a'))
 
-    # another version that is more clear with printing
-    file_name = f'{save_prefix}/{model_name}-{max_num}-tp{temperature}/outputs_v2.txt'
-
-    # delete the file if it exists
-    if os.path.exists(file_name):
-        os.remove(file_name)
-
-    for i in range(len(outputs)):
-        # print the output directly
-        print("-"*20, file=open(file_name, 'a'))
-        print(f'Prompt: \n{prompts[i]}', file=open(file_name, 'a'))
-        print("-"*10, file=open(file_name, 'a'))
-        print(f'Output: \n{outputs[i]}', file=open(file_name, 'a'))
-        print("-"*10, file=open(file_name, 'a'))
-        print(f'Solution: \n{solutions[i]}', file=open(file_name, 'a'))
-
-    logger.info(f'Finished writing to {file_name}')
+        logger.info(f'Finished writing to {file_name}')
