@@ -276,11 +276,12 @@ def pertubate_code(codes, model_config, args):
     return masked_codes, perturbed_codes 
 
 datasets_paths = [
-    "CodeSearchNetDatasets/outputs_Llama.txt",
-    "CodeSearchNetDatasets/outputs_phi1.txt",
-    "CodeSearchNetDatasets/outputs_wizard.txt",
-    "CodeSearchNetDatasets/outputs_codeparrot.txt",
-    "CodeSearchNetDatasets/outputs_incoder.txt",
+    "CodeSearchNetDatasets/outputs_incoder_0.2.txt",
+    "CodeSearchNetDatasets/outputs_phi1_0.2.txt",
+    "CodeSearchNetDatasets/outputs_starcoder_0.2.txt",
+    "CodeSearchNetDatasets/outputs_wizardcoder_0.2.txt",
+    "CodeSearchNetDatasets/outputs_codegen2_0.2.txt",
+    "CodeSearchNetDatasets/outputs_Llama_0.2.txt",
 ]
 
 data = {
