@@ -131,7 +131,7 @@ args = parser.parse_args(input_args)
 
 def generate_data(max_num=500, min_len=0, max_len=128, max_comment_num=10, max_def_num=5, cut_def=False, max_todo_num=3):
 
-    #path = f'CodeSearchNetDatasets/outputs_incoder_1.0.txt'
+    #path = f'CodeSearchNetDatasets/outputs_incoder_0.2.txt'
     path = f'TheVaultDatasets/outputs_incoder_0.2.txt'
 
     logger.info(f'Loading data from {path}')
@@ -216,7 +216,7 @@ def generate_data(max_num=500, min_len=0, max_len=128, max_comment_num=10, max_d
 
 data = generate_data()
 cbm = CustomBertModel()
-model_path = 'saved_model/model_allmodel_space_line_0.2_humaP_20240526_033708.pth' 
+model_path = 'saved_model/model_allModel_space_line_0.2_1000_humanP_20240526_063612.pth' 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 cbm.load_state_dict(torch.load(model_path, map_location=device))
 cbm.to(device)
