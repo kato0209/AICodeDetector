@@ -142,3 +142,4 @@ tmp_results/
 *.pdf
 
 data/Stack/
+output/

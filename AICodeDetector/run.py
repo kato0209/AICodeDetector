@@ -139,7 +139,7 @@ args = parser.parse_args(input_args)
 model_config = {}
 model_config = load_mask_filling_model(args, args.mask_filling_model_name, model_config)
 
-def generate_data(max_num=500, min_len=0, max_len=128, max_comment_num=10, max_def_num=5, cut_def=False, max_todo_num=3, path=None):
+def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_def_num=5, cut_def=False, max_todo_num=3, path=None):
 
     logger.info(f'Loading data from {path}')
     import json
@@ -291,8 +291,9 @@ data = {
 i = 0
 for path in datasets_paths:
     sep_data = generate_data(path=path)
-    if i == 0:
-        data["original"] = data["original"] + sep_data["original"]
+    #if i == 0:
+    data["original"] = data["original"] + sep_data["original"]
+
     data["sampled"] = data["sampled"] + sep_data["sampled"]
     i += 1
 
