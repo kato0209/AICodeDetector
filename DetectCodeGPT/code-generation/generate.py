@@ -290,7 +290,7 @@ if __name__ == "__main__":
     #parser.add_argument('--model_name', type=str, default='facebook/incoder-1B')
     #parser.add_argument('--model_name', type=str, default='AlekseyKorshuk/WizardCoder-3B-V1.0-dpo-beta-0.01')
     #parser.add_argument('--model_name', type=str, default='Salesforce/codegen2-3_7B_P')
-    parser.add_argument('--model_name', type=str, default='bigcode/starcoderbase-3b')
+    #parser.add_argument('--model_name', type=str, default='bigcode/starcoderbase-3b')
     #parser.add_argument('--model_name', type=str, default='microsoft/phi-1')
     parser.add_argument('--batch_size', type=int, default=16)
     parser.add_argument('--max_length', type=int, default=128)
@@ -307,9 +307,10 @@ if __name__ == "__main__":
     model_names = [
         #"facebook/incoder-1B",
         #"microsoft/phi-1",
-        "AlekseyKorshuk/WizardCoder-3B-V1.0-dpo-beta-0.01",
-        "Salesforce/codegen2-3_7B_P",
-        "bigcode/starcoderbase-3b",
+        #"AlekseyKorshuk/WizardCoder-3B-V1.0-dpo-beta-0.01",
+        #"Salesforce/codegen2-3_7B_P",
+        #"bigcode/starcoderbase-3b",
+        "codellama/CodeLlama-7b-hf",
     ]
 
     for model_name in model_names:
