@@ -2,7 +2,7 @@ import os
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from torch.utils.data import DataLoader, Dataset
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, roc_auc_score
 import torch.nn as nn
 from datetime import datetime
 import logging
@@ -131,8 +131,8 @@ args = parser.parse_args(input_args)
 
 def generate_data(max_num=500, min_len=0, max_len=128, max_comment_num=10, max_def_num=5, cut_def=False, max_todo_num=3):
 
-    #path = f'CodeSearchNetDatasets/outputs_incoder_0.2.txt'
-    path = f'TheVaultDatasets/outputs_incoder_0.2.txt'
+    path = f'CodeSearchNetDatasets/outputs_incoder_0.2.txt'
+    #path = f'TheVaultDatasets/outputs_incoder_0.2.txt'
 
     logger.info(f'Loading data from {path}')
     import json
@@ -254,6 +254,9 @@ accuracy = accuracy_score(label_list, pred_list)
 print(label_list)
 print(pred_list)
 print(accuracy)
+
+auc = roc_auc_score(label_list, pred_list)
+print(f"ROC AUC : {auc}")
 
 
 target_names = ['ChatGPT','Human']

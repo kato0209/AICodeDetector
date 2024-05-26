@@ -18,7 +18,7 @@ from transformers.optimization import AdamW, get_linear_schedule_with_warmup
 from utils.model_save import model_save
 from utils.confusion_matrix import plot_confusion_matrix
 
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, roc_auc_score
 from datetime import datetime
 import logging
 from sklearn.metrics import classification_report, confusion_matrix
@@ -409,6 +409,9 @@ accuracy = accuracy_score(label_list, pred_list)
 print(label_list)
 print(pred_list)
 print(accuracy)
+
+auc = roc_auc_score(label_list, pred_list)
+print(f"ROC AUC : {auc}")
 
 
 target_names = ['ChatGPT','Human']

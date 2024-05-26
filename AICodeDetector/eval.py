@@ -2,7 +2,7 @@ import os
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from torch.utils.data import DataLoader, Dataset
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, roc_auc_score
 import torch.nn as nn
 from datetime import datetime
 import logging
@@ -129,7 +129,7 @@ args = parser.parse_args(input_args)
 
 
 cbm = CustomBertModel()
-model_path = 'saved_model/model_parrot_yake_remake_20240515_075332.pth' 
+model_path = 'saved_model/model_allModel_space_line_0.2_1000_humanP_20240526_063612.pth' 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 cbm.load_state_dict(torch.load(model_path, map_location=device))
 cbm.to(device)
@@ -170,6 +170,8 @@ print(label_list)
 print(pred_list)
 print(accuracy)
 
+auc = roc_auc_score(label_list, pred_list)
+print(f"ROC AUC : {auc}")
 
 target_names = ['ChatGPT','Human']
 logging.info('Confusion Matrix')
