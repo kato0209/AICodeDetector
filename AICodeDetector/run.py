@@ -282,6 +282,12 @@ datasets_paths = [
     "CodeSearchNetDatasets/outputs_wizardcoder_0.2.txt",
     "CodeSearchNetDatasets/outputs_codegen2_0.2.txt",
     "CodeSearchNetDatasets/outputs_Llama_0.2.txt",
+    "CodeSearchNetDatasets/outputs_incoder_1.0.txt",
+    "CodeSearchNetDatasets/outputs_phi1_1.0.txt",
+    "CodeSearchNetDatasets/outputs_starcoder_1.0.txt",
+    "CodeSearchNetDatasets/outputs_wizardcoder_1.0.txt",
+    "CodeSearchNetDatasets/outputs_codegen2_1.0.txt",
+    "CodeSearchNetDatasets/outputs_Llama_1.0.txt",
 ]
 
 data = {
@@ -291,8 +297,8 @@ data = {
 i = 0
 for path in datasets_paths:
     sep_data = generate_data(path=path)
-    #if i == 0:
-    data["original"] = data["original"] + sep_data["original"]
+    if i == 0:
+        data["original"] = data["original"] + sep_data["original"]
 
     data["sampled"] = data["sampled"] + sep_data["sampled"]
     i += 1
