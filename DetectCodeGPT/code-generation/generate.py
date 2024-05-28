@@ -39,7 +39,8 @@ def load_data(path='data/CodeSearchNet', language='python', max_num=10000):
 
     elif 'CodeSearchNet' in path:
 
-        path_to_data = f'{path}/{language}/final/jsonl/test/python_test_0.jsonl.gz'
+        #path_to_data = f'{path}/{language}/final/jsonl/test/python_test_0.jsonl.gz'
+        path_to_data = f'{path}/{language}/final/jsonl/test/python_test_0.jsonl'
 
         logger.info(f'Loading data from {path_to_data}')
 
@@ -52,7 +53,7 @@ def load_data(path='data/CodeSearchNet', language='python', max_num=10000):
         max_solution_len = 256
         min_solution_len = 5
 
-        with gzip.open(path_to_data, 'rb') as f:
+        with open(path_to_data, 'r') as f:
 
             count = 0
             for line in tqdm(f):
@@ -283,9 +284,9 @@ if __name__ == "__main__":
     # path = "data/TheVault"
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--path', type=str, default="data/TheVault")
+    parser.add_argument('--path', type=str, default="data/CodeSearchNet")
     parser.add_argument('--max_num', type=int, default=10000)
-    parser.add_argument('--temperature', type=float, default=1.0)
+    parser.add_argument('--temperature', type=float, default=0.2)
     #parser.add_argument('--model_name', type=str, default='codellama/CodeLlama-7b-hf')
     #parser.add_argument('--model_name', type=str, default='facebook/incoder-1B')
     #parser.add_argument('--model_name', type=str, default='AlekseyKorshuk/WizardCoder-3B-V1.0-dpo-beta-0.01')

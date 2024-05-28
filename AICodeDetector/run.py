@@ -307,7 +307,7 @@ for path in datasets_paths:
 data["original"] = list(set(data["original"]))
 data["sampled"] = list(set(data["sampled"]))
 
-perturbation_type = 'space-line'
+perturbation_type = 'x'
 if perturbation_type == 'space-line':
     human_codes_perturbed = random_insert_newline_space(data["original"])
     AI_codes_perturbed = random_insert_newline_space(data["sampled"])
