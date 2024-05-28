@@ -81,7 +81,7 @@ def load_data(path='data/CodeSearchNet', language='python', max_num=10000):
 
     elif "TheVault" in path:
 
-        path_to_data = f'{path}/{language}/small_train.jsonl'
+        path_to_data = f'{path}/small_train.jsonl'
 
         logger.info(f'Loading data from {path_to_data}')
 
@@ -283,7 +283,7 @@ if __name__ == "__main__":
     # path = "data/TheVault"
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--path', type=str, default="data/CodeSearchNet")
+    parser.add_argument('--path', type=str, default="data/TheVault")
     parser.add_argument('--max_num', type=int, default=10000)
     parser.add_argument('--temperature', type=float, default=1.0)
     #parser.add_argument('--model_name', type=str, default='codellama/CodeLlama-7b-hf')

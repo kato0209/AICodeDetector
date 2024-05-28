@@ -129,10 +129,10 @@ for key, value in args_dict.items():
 
 args = parser.parse_args(input_args)
 
-def generate_data(max_num=500, min_len=0, max_len=128, max_comment_num=10, max_def_num=5, cut_def=False, max_todo_num=3):
+def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_def_num=5, cut_def=False, max_todo_num=3):
 
-    #path = f'CodeSearchNetDatasets/outputs_incoder_1.0.txt'
-    path = f'TheVaultDatasets/outputs_incoder_0.2.txt'
+    path = f'CodeSearchNetDatasets/outputs_phi1_0.2.txt'
+    ##path = f'TheVaultDatasets/outputs_incoder_1.0.txt'
 
     logger.info(f'Loading data from {path}')
     import json
@@ -206,9 +206,10 @@ def generate_data(max_num=500, min_len=0, max_len=128, max_comment_num=10, max_d
     # random.seed(42)
     # random.shuffle(all_originals)
     # random.shuffle(all_samples)
+    print(len(all_originals))
     data = {
-        "original": all_originals[max_num:max_num*2],
-        "sampled": all_samples[max_num:max_num*2]
+        "original": all_originals[-1000:],
+        "sampled": all_samples[-1000:]
     }
     
 
@@ -216,7 +217,7 @@ def generate_data(max_num=500, min_len=0, max_len=128, max_comment_num=10, max_d
 
 data = generate_data()
 cbm = CustomBertModel()
-model_path = 'saved_model/all_model_space_line_0.2_1.0_20240527_071739.pth' 
+model_path = 'saved_model/allmodel_space_line_0.2_1.0_humanP_20240527_054951.pth' 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 cbm.load_state_dict(torch.load(model_path, map_location=device))
 cbm.to(device)

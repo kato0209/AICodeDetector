@@ -20,6 +20,7 @@ from utils.confusion_matrix import plot_confusion_matrix
 
 from sklearn.metrics import accuracy_score, roc_auc_score
 from datetime import datetime
+import random
 import logging
 from sklearn.metrics import classification_report, confusion_matrix
 
@@ -213,10 +214,11 @@ def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_
     # random.seed(42)
     # random.shuffle(all_originals)
     # random.shuffle(all_samples)
+    all_samples = random.sample(all_samples, 800)
 
     data = {
-        "original": all_originals[:max_num],
-        "sampled": all_samples[:max_num]
+        "original": all_originals,
+        "sampled": all_samples
     }
 
     return data
@@ -297,12 +299,13 @@ data = {
 i = 0
 for path in datasets_paths:
     sep_data = generate_data(path=path)
-    if i == 0:
-        data["original"] = data["original"] + sep_data["original"]
+    data["original"] = data["original"] + sep_data["original"]
 
     data["sampled"] = data["sampled"] + sep_data["sampled"]
     i += 1
 
+data["original"] = list(set(data["original"]))
+data["sampled"] = list(set(data["sampled"]))
 
 perturbation_type = 'space-line'
 if perturbation_type == 'space-line':

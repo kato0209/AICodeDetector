@@ -141,5 +141,5 @@ tmp_results/
 *.png
 *.pdf
 
-data/Stack/
+data/
 output/
