@@ -26,6 +26,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 
 import numpy as np
 import scipy.stats
+import matplotlib.pyplot as plt
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', type=str, default="writing")
@@ -38,7 +39,7 @@ parser.add_argument('--n_perturbation_rounds', type=int, default=1)
 parser.add_argument('--base_model_name', type=str, default="")
 parser.add_argument('--scoring_model_name', type=str, default="")
 parser.add_argument('--mask_filling_model_name', type=str, default="Salesforce/CodeT5-large")
-parser.add_argument('--batch_size', type=int, default=5)
+parser.add_argument('--batch_size', type=int, default=64)
 parser.add_argument('--chunk_size', type=int, default=20)
 parser.add_argument('--n_similarity_samples', type=int, default=20)
 parser.add_argument('--int8', action='store_true')
@@ -73,7 +74,7 @@ parser.add_argument('--max_comment_num', type=int, default=10)
 parser.add_argument('--max_def_num', type=int, default=5)
 parser.add_argument('--cut_def', action='store_true')
 parser.add_argument('--max_todo_num', type=int, default=3)
-parser.add_argument("--learning_rate", default=1e-5, type=float)
+parser.add_argument("--learning_rate", default=5e-5, type=float)
 parser.add_argument("--adam_epsilon", default=1e-6, type=float)
 parser.add_argument("--num_train_epochs", default=12, type=float)
 parser.add_argument("--warmup_ratio", default=0.06, type=float)
@@ -94,7 +95,7 @@ args_dict = {
     'n_perturbation_rounds': 1,
     'base_model_name': "codellama/CodeLlama-7b-hf",
     'mask_filling_model_name': "Salesforce/codet5p-770m",
-    'batch_size': 50,
+    'batch_size': 64,
     'chunk_size': 10,
     'n_similarity_samples': 20,
     'int8': False,
@@ -307,7 +308,7 @@ for path in datasets_paths:
 data["original"] = list(set(data["original"]))
 data["sampled"] = list(set(data["sampled"]))
 
-perturbation_type = 'x'
+perturbation_type = 'space-line'
 if perturbation_type == 'space-line':
     human_codes_perturbed = random_insert_newline_space(data["original"])
     AI_codes_perturbed = random_insert_newline_space(data["sampled"])
@@ -352,8 +353,8 @@ test_size = dataset_size - train_size
 # データセットをランダムに分割
 train_dataset, test_dataset = random_split(datasets, [train_size, test_size])
 
-train_dataloader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-test_dataloader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+train_dataloader = DataLoader(train_dataset, args.batch_size, shuffle=True)
+test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle=False)
 
 cbm = CustomBertModel()
 cbm.to(device)
@@ -371,6 +372,10 @@ optimizer_grouped_parameters = [
 optimizer = AdamW(optimizer_grouped_parameters, lr=args.learning_rate, eps=args.adam_epsilon)
 scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps, num_training_steps=total_steps)
 
+# Initialize lists to store loss values
+train_loss_values = []
+cosine_loss_values = []
+
 cbm.train()
 num_steps = 0
 for epoch in range(int(args.num_train_epochs)):
@@ -384,12 +389,27 @@ for epoch in range(int(args.num_train_epochs)):
         optimizer.step()
         scheduler.step()
         cbm.zero_grad()
+
+        # Store the loss values
+        train_loss_values.append(loss.item())
+        cosine_loss_values.append(cos_loss.item())
+
         num_steps += 1
         print(f"Epoch: {epoch}, Step: {num_steps}, Loss: {loss.item()}, Cosine Loss: {cos_loss.item()}")
 
 model_save(cbm)
 print("done training")
+# Plot the learning curve
+plt.figure(figsize=(12, 6))
 
+plt.plot(train_loss_values, label="Training Loss")
+plt.plot(cosine_loss_values, label="Cosine Loss")
+
+plt.xlabel("Training Steps")
+plt.ylabel("Loss")
+plt.title("Learning Curve")
+plt.legend()
+plt.savefig("./learning_result/learning_curve.png")
 
 # Test the model and print out the confusion matrix
 log_path = './logs'
@@ -423,7 +443,7 @@ auc = roc_auc_score(label_list, pred_list)
 print(f"ROC AUC : {auc}")
 
 
-target_names = ['ChatGPT','Human']
+target_names = ['Human','ChatGPT']
 logging.info('Confusion Matrix')
 cm = confusion_matrix(label_list, pred_list)
 plot_confusion_matrix(cm, target_names, title='Confusion Matrix')

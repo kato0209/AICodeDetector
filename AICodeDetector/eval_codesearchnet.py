@@ -132,8 +132,8 @@ args = parser.parse_args(input_args)
 def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_def_num=5, cut_def=False, max_todo_num=3):
 
     #path = f'CodeSearchNetDatasets/outputs_phi1_0.2.txt'
-    #path = f'test_CodeSearchNetDatasets/outputs_incoder_0.2.txt'
-    path = f'TheVaultDatasets/outputs_Llama_0.2.txt'
+    path = f'test_CodeSearchNetDatasets/outputs_incoder_0.2.txt'
+    #path = f'TheVaultDatasets/outputs_Llama_1.0.txt'
 
     logger.info(f'Loading data from {path}')
     import json
@@ -218,7 +218,7 @@ def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_
 
 data = generate_data()
 cbm = CustomBertModel()
-model_path = 'saved_model/x_allmodel_mask_0.2_1.0_20240528_132751.pth' 
+model_path = 'saved_model/xmodel_20240530_073530.pth' 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 cbm.load_state_dict(torch.load(model_path, map_location=device))
 cbm.to(device)
@@ -261,7 +261,7 @@ auc = roc_auc_score(label_list, pred_list)
 print(f"ROC AUC : {auc}")
 
 
-target_names = ['ChatGPT','Human']
+target_names = ['Human','ChatGPT']
 logging.info('Confusion Matrix')
 
 cm = confusion_matrix(label_list, pred_list)
