@@ -308,19 +308,34 @@ for path in datasets_paths:
 data["original"] = list(set(data["original"]))
 data["sampled"] = list(set(data["sampled"]))
 
-perturbation_type = 'space-line'
+train_data = {
+    "original": data["original"][:int(len(data["original"])*0.7)],
+    "sampled": data["sampled"][:int(len(data["sampled"])*0.7)]
+}
+
+val_data = {
+    "original": data["original"][int(len(data["original"])*0.7):int(len(data["original"])*0.8)],
+    "sampled": data["sampled"][int(len(data["sampled"])*0.7):int(len(data["sampled"])*0.8)]
+}
+
+test_data = {
+    "original": data["original"][int(len(data["original"])*0.8):],
+    "sampled": data["sampled"][int(len(data["sampled"])*0.8):]
+}
+
+perturbation_type = ''
 if perturbation_type == 'space-line':
-    human_codes_perturbed = random_insert_newline_space(data["original"])
-    AI_codes_perturbed = random_insert_newline_space(data["sampled"])
-    data["original"] = data["original"] + human_codes_perturbed
-    data["sampled"] = data["sampled"] + AI_codes_perturbed
-else:
+    human_codes_perturbed = random_insert_newline_space(train_data["original"])
+    AI_codes_perturbed = random_insert_newline_space(train_data["sampled"])
+    train_data["original"] = train_data["original"] + human_codes_perturbed
+    train_data["sampled"] = train_data["sampled"] + AI_codes_perturbed
+elif perturbation_type == 'mask':
     batch_size = 16
-    all_human_codes = data["original"]
+    all_human_codes = train_data["original"]
     all_human_masked_codes = []
     all_human_perturbed_codes = []
 
-    all_AI_codes = data["sampled"]
+    all_AI_codes = train_data["sampled"]
     all_AI_masked_codes = []
     all_AI_perturbed_codes = []
 
@@ -339,21 +354,15 @@ else:
         all_AI_masked_codes += AI_masked_codes
         all_AI_perturbed_codes += AI_perturbed_codes
 
-    data["original"] = all_human_codes + all_human_masked_codes + all_human_perturbed_codes
-    data["sampled"] = all_AI_codes + all_AI_masked_codes + all_AI_perturbed_codes
+    train_data["original"] = all_human_codes + all_human_masked_codes + all_human_perturbed_codes
+    train_data["sampled"] = all_AI_codes + all_AI_masked_codes + all_AI_perturbed_codes
 
-
-
-datasets = CodeDatasetFromCodeSearchNet(data, model_config, args)
-# データセットの全長を取得
-dataset_size = len(datasets)
-train_size = int(0.8 * dataset_size)
-test_size = dataset_size - train_size
-
-# データセットをランダムに分割
-train_dataset, test_dataset = random_split(datasets, [train_size, test_size])
+train_dataset = CodeDatasetFromCodeSearchNet(train_data, model_config, args)
+val_dataset = CodeDatasetFromCodeSearchNet(val_data, model_config, args)
+test_dataset = CodeDatasetFromCodeSearchNet(test_data, model_config, args)
 
 train_dataloader = DataLoader(train_dataset, args.batch_size, shuffle=True)
+validation_dataloader = DataLoader(val_dataset, args.batch_size, shuffle=False)
 test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle=False)
 
 cbm = CustomBertModel()
@@ -375,10 +384,13 @@ scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=warmup_s
 # Initialize lists to store loss values
 train_loss_values = []
 cosine_loss_values = []
+validation_loss_values = []
 
 cbm.train()
 num_steps = 0
 for epoch in range(int(args.num_train_epochs)):
+    train_loss = 0.0
+    cosine_loss = 0.0
     for batch in train_dataloader:
         input_ids = batch['input_ids'].to(device)
         attention_mask = batch['attention_mask'].to(device)
@@ -390,12 +402,31 @@ for epoch in range(int(args.num_train_epochs)):
         scheduler.step()
         cbm.zero_grad()
 
-        # Store the loss values
-        train_loss_values.append(loss.item())
-        cosine_loss_values.append(cos_loss.item())
-
+        train_loss += loss.item()
+        cosine_loss += cos_loss.item()
         num_steps += 1
-        print(f"Epoch: {epoch}, Step: {num_steps}, Loss: {loss.item()}, Cosine Loss: {cos_loss.item()}")
+
+    train_loss /= len(train_dataloader)
+    cosine_loss /= len(train_dataloader)
+    train_loss_values.append(train_loss)
+    cosine_loss_values.append(cosine_loss)
+    print(f"Epoch: {epoch}, Training Loss: {train_loss}, Cosine Loss: {cosine_loss}")
+
+    cbm.eval()
+    validation_loss = 0.0
+    with torch.no_grad():
+        for batch in validation_dataloader:
+            input_ids = batch['input_ids'].to(device)
+            attention_mask = batch['attention_mask'].to(device)
+            labels = batch['labels'].to(device)
+            outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels)
+            loss = outputs[0]
+            validation_loss += loss.item()
+
+    validation_loss /= len(validation_dataloader)
+    validation_loss_values.append(validation_loss)
+    print(f"Validation Loss after epoch {epoch}: {validation_loss}")
+    cbm.train()
 
 model_save(cbm)
 print("done training")
@@ -404,12 +435,14 @@ plt.figure(figsize=(12, 6))
 
 plt.plot(train_loss_values, label="Training Loss")
 plt.plot(cosine_loss_values, label="Cosine Loss")
+plt.plot(validation_loss_values, label="Validation Loss")
 
 plt.xlabel("Training Steps")
 plt.ylabel("Loss")
 plt.title("Learning Curve")
 plt.legend()
-plt.savefig("./learning_result/learning_curve.png")
+timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+plt.savefig(f"./learning_result/learning_curve_{timestamp}.png")
 
 # Test the model and print out the confusion matrix
 log_path = './logs'

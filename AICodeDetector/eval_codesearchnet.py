@@ -218,7 +218,7 @@ def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_
 
 data = generate_data()
 cbm = CustomBertModel()
-model_path = 'saved_model/xmodel_20240530_073530.pth' 
+model_path = 'saved_model/model_20240530_152233.pth' 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 cbm.load_state_dict(torch.load(model_path, map_location=device))
 cbm.to(device)
