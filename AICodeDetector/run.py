@@ -74,7 +74,7 @@ parser.add_argument('--max_comment_num', type=int, default=10)
 parser.add_argument('--max_def_num', type=int, default=5)
 parser.add_argument('--cut_def', action='store_true')
 parser.add_argument('--max_todo_num', type=int, default=3)
-parser.add_argument("--learning_rate", default=5e-5, type=float)
+parser.add_argument("--learning_rate", default=1e-5, type=float)
 parser.add_argument("--adam_epsilon", default=1e-6, type=float)
 parser.add_argument("--num_train_epochs", default=12, type=float)
 parser.add_argument("--warmup_ratio", default=0.06, type=float)
@@ -215,7 +215,9 @@ def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_
     # random.seed(42)
     # random.shuffle(all_originals)
     # random.shuffle(all_samples)
-    all_samples = random.sample(all_samples, 800)
+    
+    #all_samples = random.sample(all_samples, 800)
+    all_samples = random.sample(all_samples, 700)
 
     data = {
         "original": all_originals,
@@ -370,15 +372,74 @@ cbm.to(device)
 
 total_steps = int(len(train_dataloader) * args.num_train_epochs)
 warmup_steps = int(total_steps * args.warmup_ratio)
+
+base_lr = args.learning_rate
+
+group1 = ['encoder.layer.0.', 'encoder.layer.1.', 'encoder.layer.2.', 'encoder.layer.3.']
+group2 = ['encoder.layer.4.', 'encoder.layer.5.', 'encoder.layer.6.', 'encoder.layer.7.']
+group3 = ['encoder.layer.8.', 'encoder.layer.9.', 'encoder.layer.10.', 'encoder.layer.11.']
+group_all = group1 + group2 + group3
+
+optimizer_parameters = []
 no_decay = ["LayerNorm.weight", "bias"]
-optimizer_grouped_parameters = [
-    {
-        "params": [p for n, p in cbm.named_parameters() if not any(nd in n for nd in no_decay)],
-        "weight_decay": args.weight_decay,
-    },
-    {"params": [p for n, p in cbm.named_parameters() if any(nd in n for nd in no_decay)], "weight_decay": 0.0},
-]
-optimizer = AdamW(optimizer_grouped_parameters, lr=args.learning_rate, eps=args.adam_epsilon)
+
+# 全レイヤーに含まれないパラメータ（例えば、分類ヘッド）
+optimizer_parameters.append({
+    'params': [
+        p for n, p in cbm.named_parameters()
+        if not any(nd in n for nd in group_all) and 'classifier' not in n and not any(nd in n for nd in no_decay)
+    ],
+    'weight_decay': args.weight_decay,
+    'lr': base_lr
+})
+
+# 正則化を適用しないパラメータ
+optimizer_parameters.append({
+    'params': [
+        p for n, p in cbm.named_parameters()
+        if any(nd in n for nd in no_decay)
+    ],
+    'weight_decay': 0.0,
+    'lr': base_lr
+})
+
+# グループごとのパラメータと学習率
+optimizer_parameters.append({
+    'params': [
+        p for n, p in cbm.named_parameters()
+        if any(nd in n for nd in group1) and not any(nd in n for nd in no_decay)
+    ],
+    'weight_decay': args.weight_decay,
+    'lr': base_lr
+})
+optimizer_parameters.append({
+    'params': [
+        p for n, p in cbm.named_parameters()
+        if any(nd in n for nd in group2) and not any(nd in n for nd in no_decay)
+    ],
+    'weight_decay': args.weight_decay,
+    'lr': base_lr * 2.5
+})
+optimizer_parameters.append({
+    'params': [
+        p for n, p in cbm.named_parameters()
+        if any(nd in n for nd in group3) and not any(nd in n for nd in no_decay)
+    ],
+    'weight_decay': args.weight_decay,
+    'lr': base_lr * 5.0
+})
+
+# 分類ヘッドのパラメータ
+optimizer_parameters.append({
+    'params': [
+        p for n, p in cbm.named_parameters()
+        if 'classifier' in n and not any(nd in n for nd in no_decay)
+    ],
+    'weight_decay': args.weight_decay,
+    'lr': base_lr * 5.0  # 分類ヘッドの学習率を指定
+})
+
+optimizer = AdamW(optimizer_parameters, lr=args.learning_rate, eps=args.adam_epsilon)
 scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps, num_training_steps=total_steps)
 
 # Initialize lists to store loss values

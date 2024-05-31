@@ -31,7 +31,8 @@ class CustomBertModel(nn.Module):
         self.dropout = nn.Dropout(self.model.config.hidden_dropout_prob)
         self.classifier = CustomClassificationHead(self.model.config)
         self.num_labels = 2
-        self.alpha = 0.1
+        #self.alpha = 0.1
+        self.alpha = 0.5
         
     
     def return_model(self):
