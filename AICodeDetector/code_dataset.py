@@ -63,24 +63,50 @@ class CodeDataset(Dataset):
     """
 
 class CodeDatasetFromCodeSearchNet(Dataset):
-    def __init__(self, data, model_config, args):
+    def __init__(self, data, model_config, args, perturb=False):
         self.samples = []
         self.model_config = model_config
         self.args = args
+        self.perturb = perturb
 
-        for code in data["original"]:
-            self.samples.append((code, 0))
+        if perturb: 
+            for code, perturb_code in data["original"]:
+                self.samples.append((code, perturb_code, 0))
     
-        for code in data["sampled"]:
-            self.samples.append((code, 1))
+            for code, perturb_code in data["sampled"]:
+                self.samples.append((code, perturb_code, 1))
+        else:
+            for code in data["original"]:
+                self.samples.append((code, 0))
+        
+            for code in data["sampled"]:
+                self.samples.append((code, 1))
     
     def __len__(self):
         return len(self.samples)
 
     def __getitem__(self, index):
-        code, label = self.samples[index]
-        inputs = self.model_config["mask_tokenizer"].encode_plus(code, padding='max_length', max_length=128, truncation=True)
-        input_ids = inputs['input_ids']
-        attention_mask = inputs['attention_mask']
-        #return {'input_ids': torch.tensor(input_ids, dtype=torch.long), 'attention_mask': torch.tensor(attention_mask, dtype=torch.float), 'labels': torch.tensor(label, dtype=torch.float)}
-        return {'input_ids': torch.tensor(input_ids, dtype=torch.long), 'attention_mask': torch.tensor(attention_mask, dtype=torch.long), 'labels': torch.tensor(label, dtype=torch.long)}
+
+        if not self.perturb:
+            code, label = self.samples[index]
+            inputs = self.model_config["mask_tokenizer"].encode_plus(code, padding='max_length', max_length=128, truncation=True)
+            input_ids = inputs['input_ids']
+            attention_mask = inputs['attention_mask']
+            return {'input_ids': torch.tensor(input_ids, dtype=torch.long), 'attention_mask': torch.tensor(attention_mask, dtype=torch.long), 'labels': torch.tensor(label, dtype=torch.long)}
+        else:
+            code, perturb_code, label = self.samples[index]
+            inputs = self.model_config["mask_tokenizer"].encode_plus(code, padding='max_length', max_length=128, truncation=True)
+            input_ids = inputs['input_ids']
+            attention_mask = inputs['attention_mask']
+            
+            perturb_inputs = self.model_config["mask_tokenizer"].encode_plus(perturb_code, padding='max_length', max_length=128, truncation=True)
+            perturb_input_ids = perturb_inputs['input_ids']
+            perturb_attention_mask = perturb_inputs['attention_mask']
+            #return {'input_ids': torch.tensor(input_ids, dtype=torch.long), 'attention_mask': torch.tensor(attention_mask, dtype=torch.float), 'labels': torch.tensor(label, dtype=torch.float)}
+            return {
+                'input_ids': torch.tensor(input_ids, dtype=torch.long), 
+                'attention_mask': torch.tensor(attention_mask, dtype=torch.long), 
+                'labels': torch.tensor(label, dtype=torch.long),
+                'perturb_input_ids': torch.tensor(perturb_input_ids, dtype=torch.long),
+                'perturb_attention_mask': torch.tensor(perturb_attention_mask, dtype=torch.long)
+            }
