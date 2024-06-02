@@ -325,13 +325,26 @@ test_data = {
     "sampled": data["sampled"][int(len(data["sampled"])*0.8):]
 }
 
-perturbation_type = ''
+new_train_data = {
+    "original": [],
+    "sampled": []
+}
+
+perturbation_type = 'space-line'
+pertube = False
 if perturbation_type == 'space-line':
+    pertube = True
     human_codes_perturbed = random_insert_newline_space(train_data["original"])
     AI_codes_perturbed = random_insert_newline_space(train_data["sampled"])
-    train_data["original"] = train_data["original"] + human_codes_perturbed
-    train_data["sampled"] = train_data["sampled"] + AI_codes_perturbed
+    for i in range(len(train_data["original"])):
+        new_train_data["original"].append((train_data["original"][i], human_codes_perturbed[i]))
+    
+    for i in range(len(train_data["sampled"])):
+        new_train_data["sampled"].append((train_data["sampled"][i], AI_codes_perturbed[i]))
+
+    train_data = new_train_data
 elif perturbation_type == 'mask':
+    pertube = True
     batch_size = 16
     all_human_codes = train_data["original"]
     all_human_masked_codes = []
@@ -359,7 +372,7 @@ elif perturbation_type == 'mask':
     train_data["original"] = all_human_codes + all_human_masked_codes + all_human_perturbed_codes
     train_data["sampled"] = all_AI_codes + all_AI_masked_codes + all_AI_perturbed_codes
 
-train_dataset = CodeDatasetFromCodeSearchNet(train_data, model_config, args)
+train_dataset = CodeDatasetFromCodeSearchNet(train_data, model_config, args, perturb=pertube)
 val_dataset = CodeDatasetFromCodeSearchNet(val_data, model_config, args)
 test_dataset = CodeDatasetFromCodeSearchNet(test_data, model_config, args)
 
@@ -456,7 +469,10 @@ for epoch in range(int(args.num_train_epochs)):
         input_ids = batch['input_ids'].to(device)
         attention_mask = batch['attention_mask'].to(device)
         labels = batch['labels'].to(device)
-        outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels)
+        perturbed_input_ids = batch['perturb_input_ids'].to(device)
+        perturbed_attention_mask = batch['perturb_attention_mask'].to(device)
+
+        outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels, perturbed_input_ids=perturbed_input_ids, perturbed_attention_mask=perturbed_attention_mask)
         loss, cos_loss = outputs[0], outputs[1]
         loss.backward()
         optimizer.step()

@@ -9,7 +9,9 @@ class CustomClassificationHead(nn.Module):
         super(CustomClassificationHead, self).__init__()
         self.N_MSD = 5
         self.dense = nn.Linear(config.hidden_size, config.hidden_size)
-        self.dropouts = nn.ModuleList([nn.Dropout(0.2) for _ in range(self.N_MSD)])
+        self.batch_norm = nn.BatchNorm1d(config.hidden_size)
+        self.activation = nn.ReLU()
+        self.dropouts = nn.ModuleList([nn.Dropout(0.4) for _ in range(self.N_MSD)])
         self.regressor = nn.Linear(config.hidden_size, 2)
     
     def forward(self, features, **kwargs):
@@ -21,20 +23,22 @@ class CustomClassificationHead(nn.Module):
 
         # 線形変換とドロップアウトを適用
         features = self.dense(features)
+        features = self.batch_norm(features)
+        features = self.activation(features)
         logits = sum([self.regressor(dropout(features)) for dropout in self.dropouts]) / self.N_MSD
         return logits
 
 class CustomBertModel(nn.Module):
-    def __init__(self):
+    def __init__(self, loss_ratio=0.5, alpha=0.5, beta=0.8):
         super(CustomBertModel, self).__init__()
         self.model = AutoModel.from_pretrained("microsoft/codebert-base")
         self.dropout = nn.Dropout(self.model.config.hidden_dropout_prob)
         self.classifier = CustomClassificationHead(self.model.config)
         self.num_labels = 2
         #self.alpha = 0.1
-        self.loss_ratio = 0.2
-        self.alpha = 0.5
-        self.beta = 1.0
+        self.loss_ratio = loss_ratio
+        self.alpha = alpha
+        self.beta = beta
         
     
     def return_model(self):

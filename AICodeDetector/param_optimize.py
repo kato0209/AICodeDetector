@@ -1,6 +1,6 @@
-from sklearn.model_selection import ParameterSampler
 from loguru import logger
 from tqdm import tqdm
+import itertools
 
 from masking import tokenize_and_mask
 from preprocessing import preprocess_and_save
@@ -40,7 +40,7 @@ parser.add_argument('--n_perturbation_rounds', type=int, default=1)
 parser.add_argument('--base_model_name', type=str, default="")
 parser.add_argument('--scoring_model_name', type=str, default="")
 parser.add_argument('--mask_filling_model_name', type=str, default="Salesforce/CodeT5-large")
-parser.add_argument('--batch_size', type=int, default=32)
+parser.add_argument('--batch_size', type=int, default=64)
 parser.add_argument('--chunk_size', type=int, default=20)
 parser.add_argument('--n_similarity_samples', type=int, default=20)
 parser.add_argument('--int8', action='store_true')
@@ -216,7 +216,9 @@ def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_
     # random.seed(42)
     # random.shuffle(all_originals)
     # random.shuffle(all_samples)
-    all_samples = random.sample(all_samples, 800)
+    
+    #all_samples = random.sample(all_samples, 800)
+    all_samples = random.sample(all_samples, 700)
 
     data = {
         "original": all_originals,
@@ -309,19 +311,47 @@ for path in datasets_paths:
 data["original"] = list(set(data["original"]))
 data["sampled"] = list(set(data["sampled"]))
 
+train_data = {
+    "original": data["original"][:int(len(data["original"])*0.7)],
+    "sampled": data["sampled"][:int(len(data["sampled"])*0.7)]
+}
+
+val_data = {
+    "original": data["original"][int(len(data["original"])*0.7):int(len(data["original"])*0.8)],
+    "sampled": data["sampled"][int(len(data["sampled"])*0.7):int(len(data["sampled"])*0.8)]
+}
+
+test_data = {
+    "original": data["original"][int(len(data["original"])*0.8):],
+    "sampled": data["sampled"][int(len(data["sampled"])*0.8):]
+}
+
+new_train_data = {
+    "original": [],
+    "sampled": []
+}
+
 perturbation_type = 'space-line'
+pertube = False
 if perturbation_type == 'space-line':
-    human_codes_perturbed = random_insert_newline_space(data["original"])
-    AI_codes_perturbed = random_insert_newline_space(data["sampled"])
-    data["original"] = data["original"] + human_codes_perturbed
-    data["sampled"] = data["sampled"] + AI_codes_perturbed
-else:
+    pertube = True
+    human_codes_perturbed = random_insert_newline_space(train_data["original"])
+    AI_codes_perturbed = random_insert_newline_space(train_data["sampled"])
+    for i in range(len(train_data["original"])):
+        new_train_data["original"].append((train_data["original"][i], human_codes_perturbed[i]))
+    
+    for i in range(len(train_data["sampled"])):
+        new_train_data["sampled"].append((train_data["sampled"][i], AI_codes_perturbed[i]))
+
+    train_data = new_train_data
+elif perturbation_type == 'mask':
+    pertube = True
     batch_size = 16
-    all_human_codes = data["original"]
+    all_human_codes = train_data["original"]
     all_human_masked_codes = []
     all_human_perturbed_codes = []
 
-    all_AI_codes = data["sampled"]
+    all_AI_codes = train_data["sampled"]
     all_AI_masked_codes = []
     all_AI_perturbed_codes = []
 
@@ -340,108 +370,183 @@ else:
         all_AI_masked_codes += AI_masked_codes
         all_AI_perturbed_codes += AI_perturbed_codes
 
-    data["original"] = all_human_codes + all_human_masked_codes + all_human_perturbed_codes
-    data["sampled"] = all_AI_codes + all_AI_masked_codes + all_AI_perturbed_codes
+    train_data["original"] = all_human_codes + all_human_masked_codes + all_human_perturbed_codes
+    train_data["sampled"] = all_AI_codes + all_AI_masked_codes + all_AI_perturbed_codes
 
-
-
-datasets = CodeDatasetFromCodeSearchNet(data, model_config, args)
-# データセットの全長を取得
-dataset_size = len(datasets)
-train_size = int(0.8 * dataset_size)
-test_size = dataset_size - train_size
-
-# データセットをランダムに分割
-train_dataset, test_dataset = random_split(datasets, [train_size, test_size])
+train_dataset = CodeDatasetFromCodeSearchNet(train_data, model_config, args, perturb=pertube)
+val_dataset = CodeDatasetFromCodeSearchNet(val_data, model_config, args)
+test_dataset = CodeDatasetFromCodeSearchNet(test_data, model_config, args)
 
 train_dataloader = DataLoader(train_dataset, args.batch_size, shuffle=True)
+validation_dataloader = DataLoader(val_dataset, args.batch_size, shuffle=False)
 test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle=False)
 
+loss_ratio_range = [0.2, 0.4, 0.6, 0.8, 1.0]
+alpha_range = [0.2, 0.4, 0.6, 0.8, 1.0]
+beta_range = [0.2, 0.4, 0.6, 0.8, 1.0]
 
-# Define the parameter grid
-param_grid = {
-    "learning_rate": [1e-5, 5e-5, 1e-4],
-    "batch_size": [16, 32, 64],
-    "num_train_epochs": [3, 6, 12],
-    "warmup_ratio": [0.06, 0.1, 0.2]
-}
+best_params = None
+best_validation_loss = float('inf')
 
-# Create a list of parameter combinations
-param_list = list(ParameterSampler(param_grid, n_iter=10, random_state=42))
+def train_and_evaluate_model(loss_ratio, alpha, beta):
+    # Initialize lists to store loss values
+    train_loss_values = []
+    cosine_loss_values = []
+    validation_loss_values = []
 
-best_model = None
-best_score = 0
-results = []
-
-# Perform random search
-for params in param_list:
-    args.learning_rate = params["learning_rate"]
-    args.batch_size = params["batch_size"]
-    args.num_train_epochs = params["num_train_epochs"]
-    args.warmup_ratio = params["warmup_ratio"]
-
-    no_decay = ["LayerNorm.weight", "bias"]
-    # Re-initialize model and other components
     cbm = CustomBertModel()
     cbm.to(device)
-    optimizer_grouped_parameters = [
-        {
-            "params": [p for n, p in cbm.named_parameters() if not any(nd in n for nd in no_decay)],
-            "weight_decay": args.weight_decay,
-        },
-        {"params": [p for n, p in cbm.named_parameters() if any(nd in n for nd in no_decay)], "weight_decay": 0.0},
-    ]
-    optimizer = AdamW(optimizer_grouped_parameters, lr=args.learning_rate, eps=args.adam_epsilon)
+
     total_steps = int(len(train_dataloader) * args.num_train_epochs)
     warmup_steps = int(total_steps * args.warmup_ratio)
+
+    base_lr = args.learning_rate
+
+    group1 = ['encoder.layer.0.', 'encoder.layer.1.', 'encoder.layer.2.', 'encoder.layer.3.']
+    group2 = ['encoder.layer.4.', 'encoder.layer.5.', 'encoder.layer.6.', 'encoder.layer.7.']
+    group3 = ['encoder.layer.8.', 'encoder.layer.9.', 'encoder.layer.10.', 'encoder.layer.11.']
+    group_all = group1 + group2 + group3
+
+    optimizer_parameters = []
+    no_decay = ["LayerNorm.weight", "bias"]
+
+    # 全レイヤーに含まれないパラメータ（例えば、分類ヘッド）
+    optimizer_parameters.append({
+        'params': [
+            p for n, p in cbm.named_parameters()
+            if not any(nd in n for nd in group_all) and 'classifier' not in n and not any(nd in n for nd in no_decay)
+        ],
+        'weight_decay': args.weight_decay,
+        'lr': base_lr
+    })
+
+    # 正則化を適用しないパラメータ
+    optimizer_parameters.append({
+        'params': [
+            p for n, p in cbm.named_parameters()
+            if any(nd in n for nd in no_decay)
+        ],
+        'weight_decay': 0.0,
+        'lr': base_lr
+    })
+
+    # グループごとのパラメータと学習率
+    optimizer_parameters.append({
+        'params': [
+            p for n, p in cbm.named_parameters()
+            if any(nd in n for nd in group1) and not any(nd in n for nd in no_decay)
+        ],
+        'weight_decay': args.weight_decay,
+        'lr': base_lr
+    })
+    optimizer_parameters.append({
+        'params': [
+            p for n, p in cbm.named_parameters()
+            if any(nd in n for nd in group2) and not any(nd in n for nd in no_decay)
+        ],
+        'weight_decay': args.weight_decay,
+        'lr': base_lr * 2.5
+    })
+    optimizer_parameters.append({
+        'params': [
+            p for n, p in cbm.named_parameters()
+            if any(nd in n for nd in group3) and not any(nd in n for nd in no_decay)
+        ],
+        'weight_decay': args.weight_decay,
+        'lr': base_lr * 5.0
+    })
+
+    # 分類ヘッドのパラメータ
+    optimizer_parameters.append({
+        'params': [
+            p for n, p in cbm.named_parameters()
+            if 'classifier' in n and not any(nd in n for nd in no_decay)
+        ],
+        'weight_decay': args.weight_decay,
+        'lr': base_lr * 5.0  # 分類ヘッドの学習率を指定
+    })
+
+    optimizer = AdamW(optimizer_parameters, lr=args.learning_rate, eps=args.adam_epsilon)
     scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps, num_training_steps=total_steps)
 
-    # Training loop
     cbm.train()
+    num_steps = 0
     for epoch in range(int(args.num_train_epochs)):
+        train_loss = 0.0
+        cosine_loss = 0.0
         for batch in train_dataloader:
             input_ids = batch['input_ids'].to(device)
             attention_mask = batch['attention_mask'].to(device)
             labels = batch['labels'].to(device)
-            outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels)
+            perturbed_input_ids = batch['perturb_input_ids'].to(device)
+            perturbed_attention_mask = batch['perturb_attention_mask'].to(device)
+
+            outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels, perturbed_input_ids=perturbed_input_ids, perturbed_attention_mask=perturbed_attention_mask)
             loss, cos_loss = outputs[0], outputs[1]
             loss.backward()
             optimizer.step()
             scheduler.step()
             cbm.zero_grad()
 
-    # Evaluation
-    cbm.eval()
-    label_list, pred_list = [], []
-    with torch.no_grad():
-        for batch in test_dataloader:
-            input_ids = batch['input_ids'].to(device)
-            attention_mask = batch['attention_mask'].to(device)
-            outputs = cbm(input_ids, attention_mask=attention_mask)
-            labels = batch["labels"]
-            logits = outputs[0]
-            predictions = torch.argmax(logits, dim=1)
-            label_list += labels.tolist()
-            pred_list += predictions.tolist()
+            train_loss += loss.item()
+            cosine_loss += cos_loss.item()
+            num_steps += 1
 
-    accuracy = accuracy_score(label_list, pred_list)
-    auc = roc_auc_score(label_list, pred_list)
+        train_loss /= len(train_dataloader)
+        cosine_loss /= len(train_dataloader)
+        train_loss_values.append(train_loss)
+        cosine_loss_values.append(cosine_loss)
+        print(f"Epoch: {epoch}, Training Loss: {train_loss}, Cosine Loss: {cosine_loss}")
+
+        cbm.eval()
+        validation_loss = 0.0
+        with torch.no_grad():
+            for batch in validation_dataloader:
+                input_ids = batch['input_ids'].to(device)
+                attention_mask = batch['attention_mask'].to(device)
+                labels = batch['labels'].to(device)
+                outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels)
+                loss = outputs[0]
+                validation_loss += loss.item()
+
+        validation_loss /= len(validation_dataloader)
+        validation_loss_values.append(validation_loss)
+        print(f"Validation Loss after epoch {epoch}: {validation_loss}")
+        cbm.train()
+        
+    print("done training")
+    # Plot the learning curve
+    plt.figure(figsize=(12, 6))
+
+    plt.plot(train_loss_values, label="Training Loss")
+    plt.plot(cosine_loss_values, label="Cosine Loss")
+    plt.plot(validation_loss_values, label="Validation Loss")
+
+    plt.xlabel("Training Steps")
+    plt.ylabel("Loss")
+    plt.title("Learning Curve")
+    plt.legend()
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    plt.savefig(f"./learning_result/learning_curve_{timestamp}.png")
+
+    # Test the model and print out the confusion matrix
+    log_path = './logs'
+    os.makedirs(log_path, exist_ok=True)
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    logging.basicConfig(filename=os.path.join(log_path, f'test_{timestamp}.log'),
+                        force=True,
+                        format='%(asctime)s - %(levelname)s - %(message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S',
+                        level=logging.INFO)
     
-    if accuracy > best_score:
-        best_score = accuracy
-        best_model = cbm
+    return validation_loss
 
-    results.append({
-        "params": params,
-        "accuracy": accuracy,
-        "auc": auc
-    })
+for loss_ratio, alpha, beta in itertools.product(loss_ratio_range, alpha_range, beta_range):
+    validation_loss = train_and_evaluate_model(loss_ratio, alpha, beta)
+    print(f"(loss_ratio: {loss_ratio}, alpha: {alpha}, beta: {beta}) -> Accuracy: {validation_loss}")
+    if validation_loss < best_validation_loss:
+        best_validation_loss = validation_loss
+        best_params = (loss_ratio, alpha, beta)
+    print(f"Last (loss_ratio: {loss_ratio}, alpha: {alpha}, beta: {beta}) -> Accuracy: {validation_loss}")
 
-# Save the best model
-model_save(best_model)
 
-# Output the results
-for result in results:
-    print(f"Params: {result['params']}, Accuracy: {result['accuracy']}, AUC: {result['auc']}")
-
-print("Best Model Accuracy:", best_score)
