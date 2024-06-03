@@ -5,14 +5,15 @@ from torch.nn import CrossEntropyLoss
 import torch.nn.functional as F
 
 class CustomClassificationHead(nn.Module):
-    def __init__(self,config):
+    def __init__(self,config, num_labels):
         super(CustomClassificationHead, self).__init__()
         self.N_MSD = 5
+        self.num_labels = num_labels
         self.dense = nn.Linear(config.hidden_size, config.hidden_size)
         self.batch_norm = nn.BatchNorm1d(config.hidden_size)
         self.activation = nn.ReLU()
         self.dropouts = nn.ModuleList([nn.Dropout(0.4) for _ in range(self.N_MSD)])
-        self.regressor = nn.Linear(config.hidden_size, 2)
+        self.regressor = nn.Linear(config.hidden_size, self.num_labels)
     
     def forward(self, features, **kwargs):
         # featuresの形状は [batch_size, sequence_length, hidden_size] を想定
@@ -29,27 +30,31 @@ class CustomClassificationHead(nn.Module):
         return logits
 
 class CustomBertModel(nn.Module):
-    def __init__(self, loss_ratio=0.5, alpha=0.5, beta=0.8):
+    def __init__(self, loss_ratio=0.5, sub_loss_ratio=0.5, alpha=0.5, beta=0.8):
         super(CustomBertModel, self).__init__()
         self.model = AutoModel.from_pretrained("microsoft/codebert-base")
         self.dropout = nn.Dropout(self.model.config.hidden_dropout_prob)
-        self.classifier = CustomClassificationHead(self.model.config)
+        self.classifier = CustomClassificationHead(self.model.config, num_labels=2)
+        self.id_classifier = CustomClassificationHead(self.model.config, num_labels=7)
         self.num_labels = 2
+        self.num_id_labels = 7
         #self.alpha = 0.1
         self.loss_ratio = loss_ratio
         self.alpha = alpha
         self.beta = beta
+        self.sub_loss_ratio = sub_loss_ratio
         
     
     def return_model(self):
         return self.model
     
-    def forward(self, input_ids=None, attention_mask=None, labels=None, perturbed_input_ids=None, perturbed_attention_mask=None):
+    def forward(self, input_ids=None, attention_mask=None, labels=None, sub_labels=None, perturbed_input_ids=None, perturbed_attention_mask=None):
         outputs = self.model(input_ids, attention_mask=attention_mask)
         pooled_output = pooled = outputs[1]
         pooled_output = self.dropout(pooled_output)
 
         logits = self.classifier(pooled_output)
+        sub_logits = self.id_classifier(pooled_output)
 
         loss = None
         cos_loss = None
@@ -71,6 +76,12 @@ class CustomBertModel(nn.Module):
             loss_fct = CrossEntropyLoss()
             loss = loss_fct(logits.view(-1, self.num_labels), labels.view(-1))
             loss = self.loss_ratio * loss + self.alpha * cos_loss
+
+            if sub_labels is not None:
+                sub_loss_fct = CrossEntropyLoss()
+                sub_loss = sub_loss_fct(sub_logits.view(-1, self.num_id_labels), sub_labels.view(-1))
+                loss += sub_loss * self.sub_loss_ratio
+
             if pert_loss is not None:
                 loss = loss + self.beta * pert_loss
 

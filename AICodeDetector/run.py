@@ -219,9 +219,23 @@ def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_
     #all_samples = random.sample(all_samples, 800)
     all_samples = random.sample(all_samples, 700)
 
+    label = None
+    if 'incoder' in path:
+        label = 1
+    elif 'phi1' in path:
+        label = 2
+    elif 'starcoder' in path:
+        label = 3
+    elif 'wizardcoder' in path:
+        label = 4
+    elif 'codegen2' in path:
+        label = 5
+    elif 'Llama' in path:
+        label = 6
+
     data = {
         "original": all_originals,
-        "sampled": all_samples
+        "sampled": [(x, label) for x in all_samples]
     }
 
     return data
@@ -254,7 +268,8 @@ def random_insert_newline(text, pct=0.3, mean=1):
         lines[idx] = lines[idx] + '\n'*n_newlines
     return '\n'.join(lines)
 
-def random_insert_newline_space(texts, pct=0.5, lambda_poisson=2):
+def random_insert_newline_space(text_label_pairs, pct=0.5, lambda_poisson=2):
+    texts = [x[0] for x in text_label_pairs]
     perturbed_texts_part1 = [random_insert_space(x, pct, lambda_poisson) for x in texts]
     perturbed_texts_part2 = [random_insert_newline(x, pct, lambda_poisson) for x in texts]
     total_num = len(perturbed_texts_part1)
@@ -340,7 +355,7 @@ if perturbation_type == 'space-line':
         new_train_data["original"].append((train_data["original"][i], human_codes_perturbed[i]))
     
     for i in range(len(train_data["sampled"])):
-        new_train_data["sampled"].append((train_data["sampled"][i], AI_codes_perturbed[i]))
+        new_train_data["sampled"].append((train_data["sampled"][i][0], AI_codes_perturbed[i], train_data["sampled"][i][1]))
 
     train_data = new_train_data
 elif perturbation_type == 'mask':
@@ -469,10 +484,11 @@ for epoch in range(int(args.num_train_epochs)):
         input_ids = batch['input_ids'].to(device)
         attention_mask = batch['attention_mask'].to(device)
         labels = batch['labels'].to(device)
+        sub_labels = batch['sub_label'].to(device)
         perturbed_input_ids = batch['perturb_input_ids'].to(device)
         perturbed_attention_mask = batch['perturb_attention_mask'].to(device)
 
-        outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels, perturbed_input_ids=perturbed_input_ids, perturbed_attention_mask=perturbed_attention_mask)
+        outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels, sub_labels=sub_labels, perturbed_input_ids=perturbed_input_ids, perturbed_attention_mask=perturbed_attention_mask)
         loss, cos_loss = outputs[0], outputs[1]
         loss.backward()
         optimizer.step()
