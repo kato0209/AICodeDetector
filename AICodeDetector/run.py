@@ -395,7 +395,12 @@ train_dataloader = DataLoader(train_dataset, args.batch_size, shuffle=True)
 validation_dataloader = DataLoader(val_dataset, args.batch_size, shuffle=False)
 test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle=False)
 
-cbm = CustomBertModel()
+loss_ration = 1.0
+sub_loss_ratio = 1.0
+alpha = 1.0
+beta = 1.0
+
+cbm = CustomBertModel(loss_ratio=loss_ration, sub_loss_ratio=sub_loss_ratio, alpha=alpha, beta=beta)
 cbm.to(device)
 
 total_steps = int(len(train_dataloader) * args.num_train_epochs)

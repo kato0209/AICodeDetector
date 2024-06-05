@@ -14,6 +14,7 @@ from tqdm import tqdm
 from model import CustomBertModel
 from code_dataset import CodeDataset, CodeDatasetFromCodeSearchNet
 from load_model import load_mask_filling_model
+import random
 
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -132,8 +133,8 @@ args = parser.parse_args(input_args)
 def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_def_num=5, cut_def=False, max_todo_num=3):
 
     #path = f'CodeSearchNetDatasets/outputs_phi1_0.2.txt'
-    path = f'test_CodeSearchNetDatasets/outputs_incoder_0.2.txt'
-    #path = f'TheVaultDatasets/outputs_phi1_1.0.txt'
+    #path = f'test_CodeSearchNetDatasets/outputs_incoder_1.0.txt'
+    path = f'TheVaultDatasets/outputs_phi1_0.2.txt'
 
     logger.info(f'Loading data from {path}')
     import json
@@ -207,18 +208,31 @@ def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_
     # random.seed(42)
     # random.shuffle(all_originals)
     # random.shuffle(all_samples)
-    print(len(all_originals))
+
+    label = None
+    if 'incoder' in path:
+        label = 1
+    elif 'phi1' in path:
+        label = 2
+    elif 'starcoder' in path:
+        label = 3
+    elif 'wizardcoder' in path:
+        label = 4
+    elif 'codegen2' in path:
+        label = 5
+    elif 'Llama' in path:
+        label = 6
+
     data = {
-        "original": all_originals[-1000:],
-        "sampled": all_samples[-1000:]
+        "original": all_originals,
+        "sampled": [(x, label) for x in all_samples]
     }
-    
 
     return data
 
 data = generate_data()
 cbm = CustomBertModel()
-model_path = 'saved_model/model_20240601_134003.pth' 
+model_path = 'saved_model/model_20240604_045240.pth' 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 cbm.load_state_dict(torch.load(model_path, map_location=device))
 cbm.to(device)
