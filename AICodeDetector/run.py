@@ -3,7 +3,7 @@ from tqdm import tqdm
 
 from masking import tokenize_and_mask
 from preprocessing import preprocess_and_save
-from load_model import load_mask_filling_model
+from load_model import load_mask_filling_model, load_model
 from filling_mask import replace_masks
 from extract_fill import extract_fills, apply_extracted_fills
 from code_dataset import CodeDataset, CodeDatasetFromCodeSearchNet
@@ -14,6 +14,7 @@ import datetime
 from torch.utils.data import DataLoader, random_split
 
 from model import CustomBertModel
+from pertubate import rewrite_code
 from transformers.optimization import AdamW, get_linear_schedule_with_warmup
 from utils.model_save import model_save
 from utils.confusion_matrix import plot_confusion_matrix
@@ -139,7 +140,8 @@ for key, value in args_dict.items():
 args = parser.parse_args(input_args)
 
 model_config = {}
-model_config = load_mask_filling_model(args, args.mask_filling_model_name, model_config)
+#model_config = load_mask_filling_model(args, args.mask_filling_model_name, model_config)
+model_config = load_model(args, args.base_model_name, model_config)
 
 def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_def_num=5, cut_def=False, max_todo_num=3, path=None):
 
@@ -345,7 +347,11 @@ new_train_data = {
     "sampled": []
 }
 
-perturbation_type = 'space-line'
+# train_dataを最初のひとつだけにする
+train_data["original"] = [train_data["original"][0]]
+train_data["sampled"] = [train_data["sampled"][0]]
+
+perturbation_type = 'rewrite'
 pertube = False
 if perturbation_type == 'space-line':
     pertube = True
@@ -356,6 +362,32 @@ if perturbation_type == 'space-line':
     
     for i in range(len(train_data["sampled"])):
         new_train_data["sampled"].append((train_data["sampled"][i][0], AI_codes_perturbed[i], train_data["sampled"][i][1]))
+
+    train_data = new_train_data
+elif perturbation_type == 'rewrite':
+    pertube = True
+    batch_size = 1
+    all_human_codes = train_data["original"]
+    all_human_rewritten_codes = []
+    all_AI_codes = train_data["sampled"]
+    all_AI_rewritten_codes = []
+
+    for i in range(0, len(all_human_codes), batch_size):
+        batch_codes = all_human_codes[i:i + batch_size]
+        human_rewritten_codes = rewrite_code(batch_codes, model_config, args)
+        all_human_rewritten_codes += human_rewritten_codes
+    
+    for i in range(0, len(all_AI_codes), batch_size):
+        batch_codes_pair = all_AI_codes[i:i + batch_size]
+        batch_codes = [x[0] for x in batch_codes_pair]
+        AI_rewritten_codes = rewrite_code(batch_codes, model_config, args)
+        all_AI_rewritten_codes += AI_rewritten_codes
+    
+    for i in range(len(all_human_codes)):
+        new_train_data["original"].append((all_human_codes[i], all_human_rewritten_codes[i]))
+    
+    for i in range(len(all_AI_codes)):
+        new_train_data["sampled"].append((all_AI_codes[i][0], all_AI_rewritten_codes[i], all_AI_codes[i][1]))
 
     train_data = new_train_data
 elif perturbation_type == 'mask':
@@ -386,6 +418,16 @@ elif perturbation_type == 'mask':
 
     train_data["original"] = all_human_codes + all_human_masked_codes + all_human_perturbed_codes
     train_data["sampled"] = all_AI_codes + all_AI_masked_codes + all_AI_perturbed_codes
+
+"""
+print(train_data["original"][0][0])
+print(train_data["original"][0][1])
+
+print(888888888888888)
+print(train_data["sampled"][0][0])
+print(train_data["sampled"][0][1])
+"""
+exit()
 
 train_dataset = CodeDatasetFromCodeSearchNet(train_data, model_config, args, perturb=pertube)
 val_dataset = CodeDatasetFromCodeSearchNet(val_data, model_config, args)
