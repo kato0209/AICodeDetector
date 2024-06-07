@@ -9,6 +9,10 @@ class CustomClassificationHead(nn.Module):
         super(CustomClassificationHead, self).__init__()
         self.N_MSD = 5
         self.num_labels = num_labels
+
+        # similarity feature
+        config.hidden_size = 769
+
         self.dense = nn.Linear(config.hidden_size, config.hidden_size)
         self.batch_norm = nn.BatchNorm1d(config.hidden_size)
         self.activation = nn.ReLU()
@@ -35,7 +39,7 @@ class CustomBertModel(nn.Module):
         self.model = AutoModel.from_pretrained("microsoft/codebert-base")
         self.dropout = nn.Dropout(self.model.config.hidden_dropout_prob)
         self.classifier = CustomClassificationHead(self.model.config, num_labels=2)
-        self.id_classifier = CustomClassificationHead(self.model.config, num_labels=7)
+        #self.id_classifier = CustomClassificationHead(self.model.config, num_labels=7)
         self.num_labels = 2
         self.num_id_labels = 7
         #self.alpha = 0.1
@@ -53,12 +57,12 @@ class CustomBertModel(nn.Module):
         pooled_output = pooled = outputs[1]
         pooled_output = self.dropout(pooled_output)
 
-        logits = self.classifier(pooled_output)
-        sub_logits = self.id_classifier(pooled_output)
+        #sub_logits = self.id_classifier(pooled_output)
 
         loss = None
         cos_loss = None
-        pert_loss = None
+        similarity_feature = None
+        similarity_loss = None
         if labels is not None:
             dist = ((pooled.unsqueeze(1) - pooled.unsqueeze(0)) ** 2).mean(-1)
             mask = (labels.unsqueeze(1) == labels.unsqueeze(0)).float()
@@ -68,25 +72,35 @@ class CustomBertModel(nn.Module):
             cos_loss = (dist * mask).sum(-1) / (mask.sum(-1) + 1e-3) + (F.relu(max_dist - dist) * neg_mask).sum(-1) / (neg_mask.sum(-1) + 1e-3)
             cos_loss = cos_loss.mean()
 
-            if perturbed_input_ids is not None:
-                pert_outputs = self.model(perturbed_input_ids, attention_mask=perturbed_attention_mask)
-                pert_pooled_output = pert_outputs[1]
-                pert_loss = F.mse_loss(pooled, pert_pooled_output)
+            pert_outputs = self.model(perturbed_input_ids, attention_mask=perturbed_attention_mask)
+            pert_pooled_output = pert_outputs[1]
+            cosine_sim = F.cosine_similarity(pooled, pert_pooled_output, dim=-1)
+            similarity_loss = 1 - cosine_sim.mean()
+            similarity_feature = cosine_sim.unsqueeze(-1)
 
             loss_fct = CrossEntropyLoss()
-            loss = loss_fct(logits.view(-1, self.num_labels), labels.view(-1))
-            loss = self.loss_ratio * loss + self.alpha * cos_loss
+            new_pooled_output = torch.cat((pooled_output, similarity_feature), dim=-1)
 
+            logits = self.classifier(new_pooled_output)
+            loss = loss_fct(logits.view(-1, self.num_labels), labels.view(-1))
+            loss = self.loss_ratio * loss + self.alpha * cos_loss + self.beta * similarity_loss
+
+            """
             if sub_labels is not None:
                 sub_loss_fct = CrossEntropyLoss()
                 sub_loss = sub_loss_fct(sub_logits.view(-1, self.num_id_labels), sub_labels.view(-1))
                 loss += sub_loss * self.sub_loss_ratio
-
-            if pert_loss is not None:
-                loss = loss + self.beta * pert_loss
+            """
+        else:
+            pert_outputs = self.model(perturbed_input_ids, attention_mask=perturbed_attention_mask)
+            pert_pooled_output = pert_outputs[1]
+            cosine_sim = F.cosine_similarity(pooled, pert_pooled_output, dim=-1)
+            similarity_feature = cosine_sim.unsqueeze(-1)
+            new_pooled_output = torch.cat((pooled_output, similarity_feature), dim=-1)
+            logits = self.classifier(new_pooled_output)
 
         output = (logits,) + outputs[2:]
         output = output + (pooled,)
-        return ((loss, cos_loss) + output) if loss is not None else output
+        return ((loss, cos_loss, similarity_loss) + output) if loss is not None else output
 
 

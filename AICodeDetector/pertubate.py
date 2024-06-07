@@ -1,48 +1,30 @@
 import re
 import transformers
+import torch
 
 def rewrite_code(codes, model_config, args):
     prompt = """
-    Please first explain the functionality of the python code above. 
-    Then generate a possible rewrite for this python code according to your explanation.
-    Please organize all the code in a single markdown code block.
-    Implemented in golang.
+    Please first explain the functionality of the python code above. Then generate a possible rewrite for this python code according to your explanation. Please organize all the code in a single markdown code block. Please do not add any clarifications after the rewritten code.
     ```
     {code}
     ```
     """
 
-    if model_config['tokenizer'].pad_token is None:
-        model_config['tokenizer'].pad_token = model_config['tokenizer'].eos_token
-
-    pipeline = transformers.pipeline(
-        task="text-generation",
-        model=model_config['model'],
-        tokenizer=model_config['tokenizer']
-    )
+    tokenizer = model_config['tokenizer']
+    model = model_config['model']
 
     rewrite_codes = []
     for code in codes:
         input_prompt = prompt.format(code=code)
-        print(code)
-        rewritten_code = pipeline(
-            input_prompt,
-            do_sample=True,
-            temperature=0.5,
-            top_p=0.95,
-            num_return_sequences=1,
-            eos_token_id=model_config['tokenizer'].eos_token_id,
-            max_length=256,
-            truncation=True
-        )
-        print(878787)
+        input_ids = tokenizer(input_prompt, return_tensors="pt", truncation=True, max_length=128).input_ids
+        input_ids = input_ids.to(args.DEVICE)
+        input_ids_len = len(input_ids[0])
+        outputs = model.generate(input_ids, do_sample=True, max_length=128+input_ids_len, top_p=0.95, temperature=0.2, pad_token_id=tokenizer.pad_token_id, use_cache=True)
+        decoded_output = tokenizer.decode(outputs[0])
         pattern = r"```(.*?)```"
-        rewritten_code = re.findall(pattern, rewritten_code[0], re.DOTALL)
+        rewritten_code = re.findall(pattern, decoded_output, re.DOTALL)
         if rewritten_code:
             rewrite_codes.append(rewritten_code[0].strip())
         else:
             rewrite_codes.append("")
-        rewrite_codes.append(rewritten_code[0])
-        print(rewritten_code)
-        exit()
     return rewrite_codes

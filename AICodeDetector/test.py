@@ -1,16 +1,26 @@
+from transformers import AutoTokenizer
+import transformers
 import torch
 
-# GPUが利用可能かどうかを確認
-if torch.cuda.is_available():
-    # CUDAデバイスの初期化
-    torch.cuda.init()
-    print("CUDA is available and initialized.")
-    # 利用可能なCUDAデバイスの数と、デフォルトデバイスを表示
-    print(f"Number of CUDA devices: {torch.cuda.device_count()}")
-    print(f"Current CUDA device: {torch.cuda.current_device()}")
+model = "codellama/CodeLlama-7b-hf"
 
-    # CUDAデバイス情報の取得
-    device = torch.device('cuda')
-    print(torch.cuda.get_device_properties(device))
-else:
-    print("CUDA is not available.")
+tokenizer = AutoTokenizer.from_pretrained(model)
+pipeline = transformers.pipeline(
+    "text-generation",
+    model=model,
+    torch_dtype=torch.float16,
+    device_map="auto",
+)
+
+sequences = pipeline(
+    'import socket\n\ndef ping_exponential_backoff(host: str):',
+    do_sample=True,
+    top_k=10,
+    temperature=0.1,
+    top_p=0.95,
+    num_return_sequences=1,
+    eos_token_id=tokenizer.eos_token_id,
+    max_length=200,
+)
+for seq in sequences:
+    print(f"Result: {seq['generated_text']}")

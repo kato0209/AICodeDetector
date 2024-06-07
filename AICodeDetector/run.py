@@ -81,8 +81,6 @@ parser.add_argument("--num_train_epochs", default=12, type=float)
 parser.add_argument("--warmup_ratio", default=0.06, type=float)
 parser.add_argument("--weight_decay", default=0.01, type=float)
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
 args_dict = {
     'dataset': "TheVault",
     # 'dataset': "CodeSearchNet",
@@ -109,7 +107,6 @@ args_dict = {
     'output_name': "test_ipynb",
     'openai_model': None,
     'openai_key': None,
-    'DEVICE': device,
     'buffer_size': 1,
     'mask_top_p': 1.0,
     'mask_temperature': 1,
@@ -139,6 +136,7 @@ for key, value in args_dict.items():
 
 args = parser.parse_args(input_args)
 
+device = args.DEVICE
 model_config = {}
 #model_config = load_mask_filling_model(args, args.mask_filling_model_name, model_config)
 model_config = load_model(args, args.base_model_name, model_config)
@@ -342,96 +340,84 @@ test_data = {
     "sampled": data["sampled"][int(len(data["sampled"])*0.8):]
 }
 
-new_train_data = {
-    "original": [],
-    "sampled": []
-}
 
-# train_dataを最初のひとつだけにする
-train_data["original"] = [train_data["original"][0]]
-train_data["sampled"] = [train_data["sampled"][0]]
-
-perturbation_type = 'rewrite'
-pertube = False
-if perturbation_type == 'space-line':
-    pertube = True
-    human_codes_perturbed = random_insert_newline_space(train_data["original"])
-    AI_codes_perturbed = random_insert_newline_space(train_data["sampled"])
-    for i in range(len(train_data["original"])):
-        new_train_data["original"].append((train_data["original"][i], human_codes_perturbed[i]))
-    
-    for i in range(len(train_data["sampled"])):
-        new_train_data["sampled"].append((train_data["sampled"][i][0], AI_codes_perturbed[i], train_data["sampled"][i][1]))
-
-    train_data = new_train_data
-elif perturbation_type == 'rewrite':
-    pertube = True
-    batch_size = 1
-    all_human_codes = train_data["original"]
-    all_human_rewritten_codes = []
-    all_AI_codes = train_data["sampled"]
-    all_AI_rewritten_codes = []
-
-    for i in range(0, len(all_human_codes), batch_size):
-        batch_codes = all_human_codes[i:i + batch_size]
-        human_rewritten_codes = rewrite_code(batch_codes, model_config, args)
-        all_human_rewritten_codes += human_rewritten_codes
-    
-    for i in range(0, len(all_AI_codes), batch_size):
-        batch_codes_pair = all_AI_codes[i:i + batch_size]
-        batch_codes = [x[0] for x in batch_codes_pair]
-        AI_rewritten_codes = rewrite_code(batch_codes, model_config, args)
-        all_AI_rewritten_codes += AI_rewritten_codes
-    
-    for i in range(len(all_human_codes)):
-        new_train_data["original"].append((all_human_codes[i], all_human_rewritten_codes[i]))
-    
-    for i in range(len(all_AI_codes)):
-        new_train_data["sampled"].append((all_AI_codes[i][0], all_AI_rewritten_codes[i], all_AI_codes[i][1]))
-
-    train_data = new_train_data
-elif perturbation_type == 'mask':
-    pertube = True
-    batch_size = 16
-    all_human_codes = train_data["original"]
-    all_human_masked_codes = []
-    all_human_perturbed_codes = []
-
-    all_AI_codes = train_data["sampled"]
-    all_AI_masked_codes = []
-    all_AI_perturbed_codes = []
-
-    # 各バッチでの処理、拡張子も動的に適用
-    for i in range(0, len(all_human_codes), batch_size):
-        batch_codes = all_human_codes[i:i + batch_size]
-        human_masked_codes, human_perturbed_codes = pertubate_code(batch_codes, model_config, args)
-        all_human_masked_codes += human_masked_codes
-        all_human_perturbed_codes += human_perturbed_codes
+def pertube_data(data):
+    perturbation_type = 'rewrite'
+    new_data = {
+        "original": [],
+        "sampled": []
+    }
+    if perturbation_type == 'space-line':
+        human_codes_perturbed = random_insert_newline_space(data["original"])
+        AI_codes_perturbed = random_insert_newline_space(data["sampled"])
+        for i in range(len(data["original"])):
+            new_data["original"].append((data["original"][i], human_codes_perturbed[i]))
         
+        for i in range(len(data["sampled"])):
+            new_data["sampled"].append((data["sampled"][i][0], AI_codes_perturbed[i], data["sampled"][i][1]))
 
-    # AIコードの処理も同様に行う
-    for i in range(0, len(all_AI_codes), batch_size):
-        batch_codes = all_AI_codes[i:i + batch_size]
-        AI_masked_codes, AI_perturbed_codes = pertubate_code(batch_codes, model_config, args)
-        all_AI_masked_codes += AI_masked_codes
-        all_AI_perturbed_codes += AI_perturbed_codes
+        data = new_data
+    elif perturbation_type == 'rewrite':
+        batch_size = 16
+        all_human_codes = data["original"]
+        all_human_rewritten_codes = []
+        all_AI_codes = data["sampled"]
+        all_AI_rewritten_codes = []
 
-    train_data["original"] = all_human_codes + all_human_masked_codes + all_human_perturbed_codes
-    train_data["sampled"] = all_AI_codes + all_AI_masked_codes + all_AI_perturbed_codes
+        for i in range(0, len(all_human_codes), batch_size):
+            batch_codes = all_human_codes[i:i + batch_size]
+            human_rewritten_codes = rewrite_code(batch_codes, model_config, args)
+            all_human_rewritten_codes += human_rewritten_codes
+        
+        for i in range(0, len(all_AI_codes), batch_size):
+            batch_codes_pair = all_AI_codes[i:i + batch_size]
+            batch_codes = [x[0] for x in batch_codes_pair]
+            AI_rewritten_codes = rewrite_code(batch_codes, model_config, args)
+            all_AI_rewritten_codes += AI_rewritten_codes
+        
+        for i in range(len(all_human_codes)):
+            new_data["original"].append((all_human_codes[i], all_human_rewritten_codes[i]))
+        
+        for i in range(len(all_AI_codes)):
+            new_data["sampled"].append((all_AI_codes[i][0], all_AI_rewritten_codes[i], all_AI_codes[i][1]))
 
-"""
-print(train_data["original"][0][0])
-print(train_data["original"][0][1])
+        data = new_data
+    elif perturbation_type == 'mask':
+        batch_size = 16
+        all_human_codes = data["original"]
+        all_human_masked_codes = []
+        all_human_perturbed_codes = []
 
-print(888888888888888)
-print(train_data["sampled"][0][0])
-print(train_data["sampled"][0][1])
-"""
-exit()
+        all_AI_codes = data["sampled"]
+        all_AI_masked_codes = []
+        all_AI_perturbed_codes = []
 
+        # 各バッチでの処理、拡張子も動的に適用
+        for i in range(0, len(all_human_codes), batch_size):
+            batch_codes = all_human_codes[i:i + batch_size]
+            human_masked_codes, human_perturbed_codes = pertubate_code(batch_codes, model_config, args)
+            all_human_masked_codes += human_masked_codes
+            all_human_perturbed_codes += human_perturbed_codes
+            
+
+        # AIコードの処理も同様に行う
+        for i in range(0, len(all_AI_codes), batch_size):
+            batch_codes = all_AI_codes[i:i + batch_size]
+            AI_masked_codes, AI_perturbed_codes = pertubate_code(batch_codes, model_config, args)
+            all_AI_masked_codes += AI_masked_codes
+            all_AI_perturbed_codes += AI_perturbed_codes
+
+        data["original"] = all_human_codes + all_human_masked_codes + all_human_perturbed_codes
+        data["sampled"] = all_AI_codes + all_AI_masked_codes + all_AI_perturbed_codes
+    return data
+
+pertube = True
+train_data = pertube_data(train_data)
+val_data = pertube_data(val_data)
+test_data = pertube_data(test_data)
 train_dataset = CodeDatasetFromCodeSearchNet(train_data, model_config, args, perturb=pertube)
-val_dataset = CodeDatasetFromCodeSearchNet(val_data, model_config, args)
-test_dataset = CodeDatasetFromCodeSearchNet(test_data, model_config, args)
+val_dataset = CodeDatasetFromCodeSearchNet(val_data, model_config, args, perturb=pertube)
+test_dataset = CodeDatasetFromCodeSearchNet(test_data, model_config, args, perturb=pertube)
 
 train_dataloader = DataLoader(train_dataset, args.batch_size, shuffle=True)
 validation_dataloader = DataLoader(val_dataset, args.batch_size, shuffle=False)
@@ -559,7 +545,9 @@ for epoch in range(int(args.num_train_epochs)):
             input_ids = batch['input_ids'].to(device)
             attention_mask = batch['attention_mask'].to(device)
             labels = batch['labels'].to(device)
-            outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels)
+            perturbed_input_ids = batch['perturb_input_ids'].to(device)
+            perturbed_attention_mask = batch['perturb_attention_mask'].to(device)
+            outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels, perturbed_input_ids=perturbed_input_ids, perturbed_attention_mask=perturbed_attention_mask)
             loss = outputs[0]
             validation_loss += loss.item()
 
@@ -600,7 +588,9 @@ with torch.no_grad():
     for batch in test_dataloader:
         input_ids = batch['input_ids'].to(device)
         attention_mask = batch['attention_mask'].to(device)
-        outputs = cbm(input_ids, attention_mask=attention_mask)
+        perturbed_input_ids = batch['perturb_input_ids'].to(device)
+        perturbed_attention_mask = batch['perturb_attention_mask'].to(device)
+        outputs = cbm(input_ids, attention_mask=attention_mask, perturbed_input_ids=perturbed_input_ids, perturbed_attention_mask=perturbed_attention_mask)
         labels = batch["labels"]
         logits = outputs[0]
         predictions = torch.argmax(logits, dim=1)

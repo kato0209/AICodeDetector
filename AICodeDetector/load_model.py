@@ -33,6 +33,7 @@ def load_mask_filling_model(args, mask_filling_model_name, model_config):
 
 def load_model(args, model_name, model_config):
     tokenizer = transformers.AutoTokenizer.from_pretrained(model_name)
+    tokenizer.pad_token = tokenizer.eos_token
     model = transformers.AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True, torch_dtype=torch.float16)
     model.to(args.DEVICE)
 
