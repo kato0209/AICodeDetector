@@ -94,7 +94,7 @@ args_dict = {
     'n_perturbation_rounds': 1,
     'base_model_name': "codellama/CodeLlama-7b-hf",
     'mask_filling_model_name': "Salesforce/codet5p-770m",
-    'batch_size': 64,
+    'batch_size': 32,
     'chunk_size': 10,
     'n_similarity_samples': 20,
     'int8': False,
@@ -422,11 +422,6 @@ test_dataset = CodeDatasetFromCodeSearchNet(test_data, model_config, args, pertu
 train_dataloader = DataLoader(train_dataset, args.batch_size, shuffle=True)
 validation_dataloader = DataLoader(val_dataset, args.batch_size, shuffle=False)
 test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle=False)
-
-loss_ration = 1.0
-sub_loss_ratio = 1.0
-alpha = 1.0
-beta = 1.0
 
 cbm = CustomBertModel(loss_ratio=loss_ration, sub_loss_ratio=sub_loss_ratio, alpha=alpha, beta=beta)
 cbm.to(device)

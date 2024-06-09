@@ -12,8 +12,9 @@ from loguru import logger
 from tqdm import tqdm
 
 from model import CustomBertModel
+from pertube_data import pertube_data
 from code_dataset import CodeDataset, CodeDatasetFromCodeSearchNet
-from load_model import load_mask_filling_model
+from load_model import load_mask_filling_model, load_model
 import random
 
 import sys
@@ -129,7 +130,6 @@ for key, value in args_dict.items():
         input_args.append(f"--{key}={value}")
 
 args = parser.parse_args(input_args)
-
 def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_def_num=5, cut_def=False, max_todo_num=3):
 
     #path = f'CodeSearchNetDatasets/outputs_phi1_0.2.txt'
@@ -231,17 +231,23 @@ def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_
     return data
 
 data = generate_data()
+test_data = {
+    "original": data["original"][:1],
+    "sampled": data["sampled"][:1]
+}
+
 cbm = CustomBertModel()
-model_path = 'saved_model/model_20240604_045240.pth' 
+model_path = 'saved_model/rename_model_20240608_161210.pth' 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 cbm.load_state_dict(torch.load(model_path, map_location=device))
 cbm.to(device)
 
 model_config = {}
-model_config = load_mask_filling_model(args, args.mask_filling_model_name, model_config)
+#model_config = load_mask_filling_model(args, args.mask_filling_model_name, model_config)
+model_config = load_model(args, args.base_model_name, model_config)
 
-
-datasets = CodeDatasetFromCodeSearchNet(data, model_config, args)
+test_data = pertube_data(test_data, model_config, args)
+datasets = CodeDatasetFromCodeSearchNet(test_data, model_config, args, perturb=True)
 test_dataloader = DataLoader(datasets, batch_size=32, shuffle=False)
 
 # Test the model and print out the confusion matrix
@@ -259,7 +265,9 @@ with torch.no_grad():
     for batch in test_dataloader:
         input_ids = batch['input_ids'].to(device)
         attention_mask = batch['attention_mask'].to(device)
-        outputs = cbm(input_ids, attention_mask=attention_mask)
+        perturbed_input_ids = batch['perturb_input_ids'].to(device)
+        perturbed_attention_mask = batch['perturb_attention_mask'].to(device)
+        outputs = cbm(input_ids, attention_mask=attention_mask, perturbed_input_ids=perturbed_input_ids, perturbed_attention_mask=perturbed_attention_mask)
         labels = batch["labels"]
         logits = outputs[0]
         predictions = torch.argmax(logits, dim=1)
