@@ -423,6 +423,10 @@ train_dataloader = DataLoader(train_dataset, args.batch_size, shuffle=True)
 validation_dataloader = DataLoader(val_dataset, args.batch_size, shuffle=False)
 test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle=False)
 
+loss_ration = 1.0
+sub_loss_ratio = 0.5
+alpha = 0.5
+beta = 0.0
 cbm = CustomBertModel(loss_ratio=loss_ration, sub_loss_ratio=sub_loss_ratio, alpha=alpha, beta=beta)
 cbm.to(device)
 
