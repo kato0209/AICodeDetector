@@ -53,16 +53,23 @@ class CustomBertModel(nn.Module):
         return self.model
     
     def forward(self, input_ids=None, attention_mask=None, labels=None, sub_labels=None, perturbed_input_ids=None, perturbed_attention_mask=None):
+        
+        f_input_ids = input_ids.float()
+        f_perturbed_input_ids = perturbed_input_ids.float()
+        cosine_sim = F.cosine_similarity(f_input_ids, f_perturbed_input_ids, dim=-1)
+        similarity_feature = cosine_sim.unsqueeze(-1)
+
         outputs = self.model(input_ids, attention_mask=attention_mask)
         pooled_output = pooled = outputs[1]
         pooled_output = self.dropout(pooled_output)
-
+        similarity_feature = similarity_feature * 1.0
+        new_pooled_output = torch.cat([pooled_output, similarity_feature], dim=-1)
         #sub_logits = self.id_classifier(pooled_output)
 
         loss = None
         cos_loss = None
         similarity_feature = None
-        similarity_loss = None
+        #similarity_loss = None
         if labels is not None:
             dist = ((pooled.unsqueeze(1) - pooled.unsqueeze(0)) ** 2).mean(-1)
             mask = (labels.unsqueeze(1) == labels.unsqueeze(0)).float()
@@ -72,18 +79,11 @@ class CustomBertModel(nn.Module):
             cos_loss = (dist * mask).sum(-1) / (mask.sum(-1) + 1e-3) + (F.relu(max_dist - dist) * neg_mask).sum(-1) / (neg_mask.sum(-1) + 1e-3)
             cos_loss = cos_loss.mean()
 
-            pert_outputs = self.model(perturbed_input_ids, attention_mask=perturbed_attention_mask)
-            pert_pooled_output = pert_outputs[1]
-            cosine_sim = F.cosine_similarity(pooled, pert_pooled_output, dim=-1)
-            similarity_loss = 1 - cosine_sim.mean()
-            similarity_feature = cosine_sim.unsqueeze(-1)
-
             loss_fct = CrossEntropyLoss()
-            new_pooled_output = torch.cat((pooled_output, similarity_feature), dim=-1)
 
             logits = self.classifier(new_pooled_output)
             loss = loss_fct(logits.view(-1, self.num_labels), labels.view(-1))
-            loss = self.loss_ratio * loss + self.alpha * cos_loss + self.beta * similarity_loss
+            loss = self.loss_ratio * loss + self.alpha * cos_loss
 
             """
             if sub_labels is not None:
@@ -92,15 +92,10 @@ class CustomBertModel(nn.Module):
                 loss += sub_loss * self.sub_loss_ratio
             """
         else:
-            pert_outputs = self.model(perturbed_input_ids, attention_mask=perturbed_attention_mask)
-            pert_pooled_output = pert_outputs[1]
-            cosine_sim = F.cosine_similarity(pooled, pert_pooled_output, dim=-1)
-            similarity_feature = cosine_sim.unsqueeze(-1)
-            new_pooled_output = torch.cat((pooled_output, similarity_feature), dim=-1)
             logits = self.classifier(new_pooled_output)
 
         output = (logits,) + outputs[2:]
         output = output + (pooled,)
-        return ((loss, cos_loss, similarity_loss) + output) if loss is not None else output
+        return ((loss, cos_loss) + output) if loss is not None else output
 
 

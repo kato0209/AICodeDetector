@@ -231,10 +231,14 @@ def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_
     return data
 
 data = generate_data()
+
+"""
 test_data = {
     "original": data["original"][:1000],
     "sampled": data["sampled"][:1000]
 }
+"""
+test_data = data
 
 cbm = CustomBertModel()
 model_path = 'saved_model/rewrite_model_20240610_022542.pth' 
