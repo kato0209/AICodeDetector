@@ -63,6 +63,7 @@ class CustomBertModel(nn.Module):
         pooled_output = pooled = outputs[1]
         pooled_output = self.dropout(pooled_output)
         similarity_feature = similarity_feature * 1.0
+        pooled_output = pooled_output * 0.5
         new_pooled_output = torch.cat([pooled_output, similarity_feature], dim=-1)
         #sub_logits = self.id_classifier(pooled_output)
 

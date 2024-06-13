@@ -342,7 +342,7 @@ test_data = {
 
 
 def pertube_data(data):
-    perturbation_type = 'rewrite'
+    perturbation_type = 'mask'
     new_data = {
         "original": [],
         "sampled": []
@@ -407,8 +407,12 @@ def pertube_data(data):
             all_AI_masked_codes += AI_masked_codes
             all_AI_perturbed_codes += AI_perturbed_codes
 
-        data["original"] = all_human_codes + all_human_masked_codes + all_human_perturbed_codes
-        data["sampled"] = all_AI_codes + all_AI_masked_codes + all_AI_perturbed_codes
+        for i in range(len(all_human_codes)):
+            new_data["original"].append((all_human_codes[i], all_human_perturbed_codes[i]))
+        
+        for i in range(len(all_AI_codes)):
+            new_data["sampled"].append((all_AI_codes[i][0], all_AI_perturbed_codes[i], all_AI_codes[i][1]))
+        data = new_data
     return data
 
 pertube = True
