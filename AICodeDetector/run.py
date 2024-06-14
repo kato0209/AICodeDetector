@@ -287,6 +287,21 @@ test_data = {
 }
 
 pertube = True
+
+"""
+# train_dataを先頭の10件に
+train_data["original"] = train_data["original"][:10]
+train_data["sampled"] = train_data["sampled"][:10]
+
+# val_dataを先頭の10件に
+val_data["original"] = val_data["original"][:10]
+val_data["sampled"] = val_data["sampled"][:10]
+
+# test_dataを先頭の10件に
+test_data["original"] = test_data["original"][:10]
+test_data["sampled"] = test_data["sampled"][:10]
+"""
+
 train_data = pertube_data(train_data, model_config=model_config, args=args)
 val_data = pertube_data(val_data, model_config=model_config, args=args)
 test_data = pertube_data(test_data, model_config=model_config, args=args)
@@ -353,7 +368,7 @@ optimizer_parameters.append({
         if any(nd in n for nd in group2) and not any(nd in n for nd in no_decay)
     ],
     'weight_decay': args.weight_decay,
-    'lr': base_lr * 2.5
+    'lr': base_lr * 1.25
 })
 optimizer_parameters.append({
     'params': [
@@ -361,7 +376,7 @@ optimizer_parameters.append({
         if any(nd in n for nd in group3) and not any(nd in n for nd in no_decay)
     ],
     'weight_decay': args.weight_decay,
-    'lr': base_lr * 5.0
+    'lr': base_lr * 2.5
 })
 
 # 分類ヘッドのパラメータ
@@ -371,7 +386,7 @@ optimizer_parameters.append({
         if 'classifier' in n and not any(nd in n for nd in no_decay)
     ],
     'weight_decay': args.weight_decay,
-    'lr': base_lr * 5.0  # 分類ヘッドの学習率を指定
+    'lr': base_lr * 2.5  # 分類ヘッドの学習率を指定
 })
 
 optimizer = AdamW(optimizer_parameters, lr=args.learning_rate, eps=args.adam_epsilon)
@@ -391,11 +406,10 @@ for epoch in range(int(args.num_train_epochs)):
         input_ids = batch['input_ids'].to(device)
         attention_mask = batch['attention_mask'].to(device)
         labels = batch['labels'].to(device)
-        sub_labels = batch['sub_label'].to(device)
-        perturbed_input_ids = batch['perturb_input_ids'].to(device)
-        perturbed_attention_mask = batch['perturb_attention_mask'].to(device)
+        original_code = batch['original_code']
+        pertube_code = batch['perturb_code']
 
-        outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels, sub_labels=sub_labels, perturbed_input_ids=perturbed_input_ids, perturbed_attention_mask=perturbed_attention_mask)
+        outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels, original_code=original_code, perturb_code=pertube_code)
         loss, cos_loss = outputs[0], outputs[1]
         loss.backward()
         optimizer.step()
@@ -419,9 +433,9 @@ for epoch in range(int(args.num_train_epochs)):
             input_ids = batch['input_ids'].to(device)
             attention_mask = batch['attention_mask'].to(device)
             labels = batch['labels'].to(device)
-            perturbed_input_ids = batch['perturb_input_ids'].to(device)
-            perturbed_attention_mask = batch['perturb_attention_mask'].to(device)
-            outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels, perturbed_input_ids=perturbed_input_ids, perturbed_attention_mask=perturbed_attention_mask)
+            original_code = batch['original_code']
+            pertube_code = batch['perturb_code']
+            outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels, original_code=original_code, perturb_code=pertube_code)
             loss = outputs[0]
             validation_loss += loss.item()
 
@@ -462,9 +476,9 @@ with torch.no_grad():
     for batch in test_dataloader:
         input_ids = batch['input_ids'].to(device)
         attention_mask = batch['attention_mask'].to(device)
-        perturbed_input_ids = batch['perturb_input_ids'].to(device)
-        perturbed_attention_mask = batch['perturb_attention_mask'].to(device)
-        outputs = cbm(input_ids, attention_mask=attention_mask, perturbed_input_ids=perturbed_input_ids, perturbed_attention_mask=perturbed_attention_mask)
+        original_code = batch['original_code']
+        pertube_code = batch['perturb_code']
+        outputs = cbm(input_ids, attention_mask=attention_mask, original_code=original_code, perturb_code=pertube_code)
         labels = batch["labels"]
         logits = outputs[0]
         predictions = torch.argmax(logits, dim=1)

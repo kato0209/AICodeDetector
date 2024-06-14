@@ -241,7 +241,7 @@ test_data = {
 test_data = data
 
 cbm = CustomBertModel()
-model_path = 'saved_model/model_20240613_140236.pth' 
+model_path = 'saved_model/model_20240614_090912.pth' 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 cbm.load_state_dict(torch.load(model_path, map_location=device))
 cbm.to(device)

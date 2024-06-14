@@ -109,5 +109,7 @@ class CodeDatasetFromCodeSearchNet(Dataset):
                 'labels': torch.tensor(label, dtype=torch.long),
                 'perturb_input_ids': torch.tensor(perturb_input_ids, dtype=torch.long),
                 'perturb_attention_mask': torch.tensor(perturb_attention_mask, dtype=torch.long),
-                'sub_label': torch.tensor(sub_label, dtype=torch.long)
+                'sub_label': torch.tensor(sub_label, dtype=torch.long),
+                "original_code": code,
+                "perturb_code": perturb_code
             }
