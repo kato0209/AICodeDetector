@@ -241,14 +241,14 @@ test_data = {
 test_data = data
 
 cbm = CustomBertModel()
-model_path = 'saved_model/model_20240611_173316.pth' 
+model_path = 'saved_model/model_20240613_140236.pth' 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 cbm.load_state_dict(torch.load(model_path, map_location=device))
 cbm.to(device)
 
 model_config = {}
-#model_config = load_mask_filling_model(args, args.mask_filling_model_name, model_config)
-model_config = load_model(args, args.base_model_name, model_config)
+model_config = load_mask_filling_model(args, args.mask_filling_model_name, model_config)
+#model_config = load_model(args, args.base_model_name, model_config)
 
 test_data = pertube_data(test_data, model_config, args)
 datasets = CodeDatasetFromCodeSearchNet(test_data, model_config, args, perturb=True)

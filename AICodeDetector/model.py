@@ -12,12 +12,15 @@ class CustomClassificationHead(nn.Module):
 
         # similarity feature
         config.hidden_size = 769
+        hidden_size2 = 512
+        hidden_size3 = 256
 
-        self.dense = nn.Linear(config.hidden_size, config.hidden_size)
-        self.batch_norm = nn.BatchNorm1d(config.hidden_size)
+        self.dense = nn.Linear(config.hidden_size, hidden_size2)
+        self.dense2 = nn.Linear(hidden_size2, hidden_size3)
+        self.batch_norm = nn.BatchNorm1d(hidden_size2)
         self.activation = nn.ReLU()
-        self.dropouts = nn.ModuleList([nn.Dropout(0.4) for _ in range(self.N_MSD)])
-        self.regressor = nn.Linear(config.hidden_size, self.num_labels)
+        self.dropouts = nn.ModuleList([nn.Dropout(0.2) for _ in range(self.N_MSD)])
+        self.regressor = nn.Linear(hidden_size3, self.num_labels)
     
     def forward(self, features, **kwargs):
         # featuresの形状は [batch_size, sequence_length, hidden_size] を想定
@@ -30,13 +33,16 @@ class CustomClassificationHead(nn.Module):
         features = self.dense(features)
         features = self.batch_norm(features)
         features = self.activation(features)
+        features = self.dense2(features)
+
         logits = sum([self.regressor(dropout(features)) for dropout in self.dropouts]) / self.N_MSD
         return logits
 
 class CustomBertModel(nn.Module):
     def __init__(self, loss_ratio=0.5, sub_loss_ratio=0.5, alpha=0.5, beta=0.8):
         super(CustomBertModel, self).__init__()
-        self.model = AutoModel.from_pretrained("microsoft/codebert-base")
+        self.model = AutoModel.from_pretrained("microsoft/graphcodebert-base")
+        #self.model = AutoModel.from_pretrained("microsoft/codebert-base")
         self.dropout = nn.Dropout(self.model.config.hidden_dropout_prob)
         self.classifier = CustomClassificationHead(self.model.config, num_labels=2)
         #self.id_classifier = CustomClassificationHead(self.model.config, num_labels=7)

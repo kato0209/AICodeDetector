@@ -27,13 +27,13 @@ def load_mask_filling_model(args, mask_filling_model_name, model_config):
         # preproc_tokenizer = mask_tokenizer
 
     # model_config['preproc_tokenizer'] = preproc_tokenizer
-    model_config['mask_tokenizer'] = mask_tokenizer
-    model_config['mask_model'] = mask_model
+    model_config['tokenizer'] = mask_tokenizer
+    model_config['model'] = mask_model
     return model_config
 
 def load_model(args, model_name, model_config):
     tokenizer = transformers.AutoTokenizer.from_pretrained(model_name)
-    tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.pad_token = tokenizer.eos_tokentm
     model = transformers.AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True, torch_dtype=torch.float16)
     model.to(args.DEVICE)
 

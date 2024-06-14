@@ -62,7 +62,7 @@ def pertubate_code(codes, model_config, args):
     return masked_codes, perturbed_codes 
 
 def pertube_data(data, model_config, args):
-    perturbation_type = 'rewrite'
+    perturbation_type = 'mask'
     new_data = {
         "original": [],
         "sampled": []
@@ -122,11 +122,16 @@ def pertube_data(data, model_config, args):
 
         # AIコードの処理も同様に行う
         for i in range(0, len(all_AI_codes), batch_size):
-            batch_codes = all_AI_codes[i:i + batch_size]
+            batch_codes_pair = all_AI_codes[i:i + batch_size]
+            batch_codes = [x[0] for x in batch_codes_pair]
             AI_masked_codes, AI_perturbed_codes = pertubate_code(batch_codes, model_config, args)
             all_AI_masked_codes += AI_masked_codes
             all_AI_perturbed_codes += AI_perturbed_codes
 
-        data["original"] = all_human_codes + all_human_masked_codes + all_human_perturbed_codes
-        data["sampled"] = all_AI_codes + all_AI_masked_codes + all_AI_perturbed_codes
+        for i in range(len(all_human_codes)):
+            new_data["original"].append((all_human_codes[i], all_human_perturbed_codes[i]))
+        
+        for i in range(len(all_AI_codes)):
+            new_data["sampled"].append((all_AI_codes[i][0], all_AI_perturbed_codes[i], all_AI_codes[i][1]))
+        data = new_data
     return data
