@@ -20,7 +20,7 @@ class CustomClassificationHead(nn.Module):
         self.dense2 = nn.Linear(hidden_size2, hidden_size3)
         self.batch_norm = nn.BatchNorm1d(hidden_size2)
         self.activation = nn.ReLU()
-        self.dropouts = nn.ModuleList([nn.Dropout(0.2) for _ in range(self.N_MSD)])
+        self.dropouts = nn.ModuleList([nn.Dropout(0.4) for _ in range(self.N_MSD)])
         self.regressor = nn.Linear(hidden_size3, self.num_labels)
     
     def forward(self, features, **kwargs):
@@ -54,6 +54,7 @@ class CustomBertModel(nn.Module):
         self.alpha = alpha
         self.beta = beta
         self.sub_loss_ratio = sub_loss_ratio
+        self.batch_size = 32
         
     
     def return_model(self):
@@ -68,8 +69,11 @@ class CustomBertModel(nn.Module):
             sentences.append(code)
         embedings = self.sentence_model.encode(sentences)
         cos_sim = util.cos_sim(embedings, embedings)
-        similarity_scores = [cos_sim[i, 20 + i] for i in range(20)]
+        similarity_scores = [cos_sim[i, len(original_code) + i] for i in range(len(original_code))]
         similarity_scores = torch.tensor(similarity_scores).view(-1, 1).to(input_ids.device)
+        #labelsとsimilarity_scoresのペアを出力
+        print(labels)
+        print(similarity_scores)
 
         outputs = self.model(input_ids, attention_mask=attention_mask)
         pooled_output = pooled = outputs[1]

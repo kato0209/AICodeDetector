@@ -62,7 +62,7 @@ def pertubate_code(codes, model_config, args):
     return masked_codes, perturbed_codes 
 
 def pertube_data(data, model_config, args):
-    perturbation_type = 'mask'
+    perturbation_type = 'rewrite'
     new_data = {
         "original": [],
         "sampled": []

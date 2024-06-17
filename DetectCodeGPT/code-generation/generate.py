@@ -286,7 +286,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--path', type=str, default="data/TheVault")
     parser.add_argument('--max_num', type=int, default=10000)
-    parser.add_argument('--temperature', type=float, default=1.0)
+    parser.add_argument('--temperature', type=float, default=0.2)
     #parser.add_argument('--model_name', type=str, default='codellama/CodeLlama-7b-hf')
     #parser.add_argument('--model_name', type=str, default='facebook/incoder-1B')
     #parser.add_argument('--model_name', type=str, default='AlekseyKorshuk/WizardCoder-3B-V1.0-dpo-beta-0.01')
@@ -308,7 +308,7 @@ if __name__ == "__main__":
     model_names = [
         #"facebook/incoder-1B",
         #"microsoft/phi-1",
-        #"AlekseyKorshuk/WizardCoder-3B-V1.0-dpo-beta-0.01",
+        "AlekseyKorshuk/WizardCoder-3B-V1.0-dpo-beta-0.01",
         "Salesforce/codegen2-3_7B_P",
         "bigcode/starcoderbase-3b",
         #"codellama/CodeLlama-7b-hf",

@@ -241,7 +241,7 @@ test_data = {
 test_data = data
 
 cbm = CustomBertModel()
-model_path = 'saved_model/model_20240614_090912.pth' 
+model_path = 'saved_model/model_20240615_024857.pth' 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 cbm.load_state_dict(torch.load(model_path, map_location=device))
 cbm.to(device)
@@ -269,9 +269,9 @@ with torch.no_grad():
     for batch in test_dataloader:
         input_ids = batch['input_ids'].to(device)
         attention_mask = batch['attention_mask'].to(device)
-        perturbed_input_ids = batch['perturb_input_ids'].to(device)
-        perturbed_attention_mask = batch['perturb_attention_mask'].to(device)
-        outputs = cbm(input_ids, attention_mask=attention_mask, perturbed_input_ids=perturbed_input_ids, perturbed_attention_mask=perturbed_attention_mask)
+        original_code = batch['original_code']
+        perturb_code = batch['perturb_code']
+        outputs = cbm(input_ids, attention_mask=attention_mask, original_code=original_code, perturb_code=perturb_code)
         labels = batch["labels"]
         logits = outputs[0]
         predictions = torch.argmax(logits, dim=1)

@@ -79,7 +79,7 @@ parser.add_argument('--max_todo_num', type=int, default=3)
 parser.add_argument("--learning_rate", default=1e-5, type=float)
 parser.add_argument("--adam_epsilon", default=1e-6, type=float)
 parser.add_argument("--num_train_epochs", default=12, type=float)
-parser.add_argument("--warmup_ratio", default=0.06, type=float)
+parser.add_argument("--warmup_ratio", default=0.01, type=float)
 parser.add_argument("--weight_decay", default=0.01, type=float)
 
 args_dict = {
@@ -95,7 +95,7 @@ args_dict = {
     'n_perturbation_rounds': 1,
     'base_model_name': "codellama/CodeLlama-7b-hf",
     'mask_filling_model_name': "Salesforce/codet5p-770m",
-    'batch_size': 32,
+    'batch_size': 50,
     'chunk_size': 10,
     'n_similarity_samples': 20,
     'int8': False,
@@ -290,16 +290,16 @@ pertube = True
 
 """
 # train_dataを先頭の10件に
-train_data["original"] = train_data["original"][:10]
-train_data["sampled"] = train_data["sampled"][:10]
+train_data["original"] = train_data["original"][:64]
+train_data["sampled"] = train_data["sampled"][:64]
 
 # val_dataを先頭の10件に
-val_data["original"] = val_data["original"][:10]
-val_data["sampled"] = val_data["sampled"][:10]
+val_data["original"] = val_data["original"][:64]
+val_data["sampled"] = val_data["sampled"][:64]
 
 # test_dataを先頭の10件に
-test_data["original"] = test_data["original"][:10]
-test_data["sampled"] = test_data["sampled"][:10]
+test_data["original"] = test_data["original"][:64]
+test_data["sampled"] = test_data["sampled"][:64]
 """
 
 train_data = pertube_data(train_data, model_config=model_config, args=args)
@@ -313,9 +313,9 @@ train_dataloader = DataLoader(train_dataset, args.batch_size, shuffle=True)
 validation_dataloader = DataLoader(val_dataset, args.batch_size, shuffle=False)
 test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle=False)
 
-loss_ration = 1.0
+loss_ration = 0.5
 sub_loss_ratio = 0.5
-alpha = 0.5
+alpha = 1.0
 beta = 0.0
 cbm = CustomBertModel(loss_ratio=loss_ration, sub_loss_ratio=sub_loss_ratio, alpha=alpha, beta=beta)
 cbm.to(device)
