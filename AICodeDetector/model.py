@@ -71,9 +71,6 @@ class CustomBertModel(nn.Module):
         cos_sim = util.cos_sim(embedings, embedings)
         similarity_scores = [cos_sim[i, len(original_code) + i] for i in range(len(original_code))]
         similarity_scores = torch.tensor(similarity_scores).view(-1, 1).to(input_ids.device)
-        #labelsとsimilarity_scoresのペアを出力
-        print(labels)
-        print(similarity_scores)
 
         outputs = self.model(input_ids, attention_mask=attention_mask)
         pooled_output = pooled = outputs[1]

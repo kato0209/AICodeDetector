@@ -290,16 +290,16 @@ pertube = True
 
 """
 # train_dataを先頭の10件に
-train_data["original"] = train_data["original"][:64]
-train_data["sampled"] = train_data["sampled"][:64]
+train_data["original"] = train_data["original"][:10]
+train_data["sampled"] = train_data["sampled"][:10]
 
 # val_dataを先頭の10件に
-val_data["original"] = val_data["original"][:64]
-val_data["sampled"] = val_data["sampled"][:64]
+val_data["original"] = val_data["original"][:10]
+val_data["sampled"] = val_data["sampled"][:10]
 
 # test_dataを先頭の10件に
-test_data["original"] = test_data["original"][:64]
-test_data["sampled"] = test_data["sampled"][:64]
+test_data["original"] = test_data["original"][:10]
+test_data["sampled"] = test_data["sampled"][:10]
 """
 
 train_data = pertube_data(train_data, model_config=model_config, args=args)
@@ -332,6 +332,9 @@ group_all = group1 + group2 + group3
 
 optimizer_parameters = []
 no_decay = ["LayerNorm.weight", "bias"]
+
+for param in cbm.sentence_model.parameters():
+    param.requires_grad = False
 
 # 全レイヤーに含まれないパラメータ（例えば、分類ヘッド）
 optimizer_parameters.append({
