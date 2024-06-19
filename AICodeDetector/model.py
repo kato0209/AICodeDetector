@@ -1,9 +1,11 @@
 import torch.nn as nn
-from transformers import AutoTokenizer, AutoModel
+from transformers import AutoTokenizer, AutoModel,AutoModelForSeq2SeqLM
 import torch
 from torch.nn import CrossEntropyLoss
 import torch.nn.functional as F
 from sentence_transformers import SentenceTransformer, util
+from pertube_data import pertubate_code
+import re
 
 class CustomClassificationHead(nn.Module):
     def __init__(self,config, num_labels):
@@ -102,3 +104,33 @@ class CustomBertModel(nn.Module):
         return ((loss, cos_loss) + output) if loss is not None else output
 
 
+class CustomCodeLlamaModel(nn.Module):
+    def __init__(self, model, tokenizer, sentence_model):
+        super(CustomCodeLlamaModel, self).__init__()
+        self.model = model
+        self.tokenizer = tokenizer
+        self.sentence_model = sentence_model
+
+    def forward(self, original_codes=None, labels=None, args=None, model_config=None):
+        _, perturbed_codes = pertubate_code(original_codes, model_config, args)
+        
+        sentences = []
+        for code in original_codes:
+            sentences.append(code)
+        for code in perturbed_codes:
+            sentences.append(code)
+        embedings = self.sentence_model.encode(sentences)
+        cos_sim = util.cos_sim(embedings, embedings).requires_grad_(True)
+        # original_codesとperturbed_codesのcos類似度を取得
+        similarity_scores = [cos_sim[i, len(original_codes) + i] for i in range(len(original_codes))]
+        similarity_scores = torch.tensor(similarity_scores).view(-1, 1).to(self.model.device).requires_grad_(True)
+        
+        # labelが0のときは類似度が低く、labelが1のときは類似度が高いように学習 reward = (cos_sim[0, 1] if labels == 1 else -cos_sim[0, 1])
+        loss = 0.0
+        for i, label in enumerate(labels):
+            if label == 0:
+                loss += similarity_scores[i]
+            else:
+                loss += -similarity_scores[i]
+
+        return loss, similarity_scores

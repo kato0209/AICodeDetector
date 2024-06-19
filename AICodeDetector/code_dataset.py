@@ -113,3 +113,20 @@ class CodeDatasetFromCodeSearchNet(Dataset):
                 "original_code": code,
                 "perturb_code": perturb_code
             }
+
+class CodeDatasetForLLM(Dataset):
+    def __init__(self, data):
+        self.samples = []
+        
+        for code in data["original"]:
+            self.samples.append((code, 0))
+    
+        for code in data["sampled"]:
+            self.samples.append((code, 1))
+    
+    def __len__(self):
+        return len(self.samples)
+
+    def __getitem__(self, index):
+        code, label = self.samples[index]
+        return {'code': code, 'labels': torch.tensor(label, dtype=torch.long)}
