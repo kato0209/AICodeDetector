@@ -12,9 +12,9 @@ class CustomClassificationHead(nn.Module):
         self.num_labels = num_labels
 
         # similarity feature
-        config.hidden_size = 769
-        hidden_size2 = 512
-        hidden_size3 = 256
+        config.hidden_size = 768 + 768
+        hidden_size2 = 768
+        hidden_size3 = 512
 
         self.dense = nn.Linear(config.hidden_size, hidden_size2)
         self.dense2 = nn.Linear(hidden_size2, hidden_size3)
@@ -54,7 +54,6 @@ class CustomBertModel(nn.Module):
         self.alpha = alpha
         self.beta = beta
         self.sub_loss_ratio = sub_loss_ratio
-        self.batch_size = 32
         
     
     def return_model(self):
@@ -71,6 +70,8 @@ class CustomBertModel(nn.Module):
         cos_sim = util.cos_sim(embedings, embedings)
         similarity_scores = [cos_sim[i, len(original_code) + i] for i in range(len(original_code))]
         similarity_scores = torch.tensor(similarity_scores).view(-1, 1).to(input_ids.device)
+        #similarity_scoresを[size, 1]から[size, 768]に変換
+        similarity_scores = similarity_scores.repeat(1, 768)
 
         outputs = self.model(input_ids, attention_mask=attention_mask)
         pooled_output = pooled = outputs[1]
