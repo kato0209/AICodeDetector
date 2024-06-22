@@ -45,6 +45,7 @@ parser.add_argument('--base_model_name', type=str, default="")
 parser.add_argument('--scoring_model_name', type=str, default="")
 parser.add_argument('--mask_filling_model_name', type=str, default="Salesforce/CodeT5-large")
 parser.add_argument('--batch_size', type=int, default=64)
+parser.add_argument('--token_length', type=int, default=128)
 parser.add_argument('--chunk_size', type=int, default=20)
 parser.add_argument('--n_similarity_samples', type=int, default=20)
 parser.add_argument('--int8', action='store_true')
@@ -272,20 +273,18 @@ test_data = {
     "sampled": data["sampled"][int(len(data["sampled"])*0.8):]
 }
 
-
-"""
+data_num = 100
 # train_dataを先頭の10件に
-train_data["original"] = train_data["original"][:1]
-train_data["sampled"] = train_data["sampled"][:1]
+train_data["original"] = train_data["original"][:data_num]
+train_data["sampled"] = train_data["sampled"][:data_num]
 
 # val_dataを先頭の10件に
-val_data["original"] = val_data["original"][:1]
-val_data["sampled"] = val_data["sampled"][:1]
+val_data["original"] = val_data["original"][:data_num]
+val_data["sampled"] = val_data["sampled"][:data_num]
 
 # test_dataを先頭の10件に
-test_data["original"] = test_data["original"][:1]
-test_data["sampled"] = test_data["sampled"][:1]
-"""
+test_data["original"] = test_data["original"][:data_num]
+test_data["sampled"] = test_data["sampled"][:data_num]
 
 #train_data = pertube_data(train_data, model_config=model_config, args=args)
 #val_data = pertube_data(val_data, model_config=model_config, args=args)
@@ -299,7 +298,7 @@ validation_dataloader = DataLoader(val_dataset, args.batch_size, shuffle=False)
 test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle=False)
 
 model_config = {}
-model_config = load_mask_filling_model(args, args.mask_filling_model_name, model_config)
+model_config = load_model(args, args.base_model_name, model_config)
 sentence_model = SentenceTransformer('Sakil/sentence_similarity_semantic_search')
 cclm = CustomCodeLlamaModel(model=model_config['model'], tokenizer=model_config['tokenizer'], sentence_model=sentence_model)
 cclm.to(device)
@@ -312,13 +311,17 @@ base_lr = args.learning_rate
 optimizer_parameters = []
 no_decay = ["LayerNorm.weight", "bias"]
 
-for param in cclm.sentence_model.parameters():
-    param.requires_grad = False
+# デコーダー部分のパラメータだけを学習可能に設定
+for name, param in cclm.model.named_parameters():
+    if 'decoder' in name:
+        param.requires_grad = True
+    else:
+        param.requires_grad = False
 
 # 正則化を適用しないパラメータ
 optimizer_parameters.append({
     'params': [
-        p for n, p in cclm.named_parameters()
+        p for n, p in cclm.model.named_parameters()
         if any(nd in n for nd in no_decay)
     ],
     'weight_decay': 0.0,
@@ -410,7 +413,7 @@ with torch.no_grad():
         all_labels.extend(labels)
         
         for i in range(len(similarities)):
-            if similarities[i] > 0.999:
+            if similarities[i] > 0.99:
                 pred = 1
             else:
                 pred = 0
