@@ -129,8 +129,12 @@ class CustomCodeLlamaModel(nn.Module):
         loss = 0.0
         for i, label in enumerate(labels):
             if label == 0:
-                loss += similarity_scores[i]
+                #loss += similarity_scores[i]
+                print("human", similarity_scores[i])
+                loss += similarity_scores[i] ** 2
             else:
-                loss += -similarity_scores[i]
+                #loss += -similarity_scores[i]
+                print("machine", similarity_scores[i])
+                loss += similarity_scores[i] ** 2
 
         return loss, similarity_scores

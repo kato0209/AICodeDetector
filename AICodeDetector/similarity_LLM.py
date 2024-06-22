@@ -20,7 +20,7 @@ from utils.model_save import model_save
 from utils.confusion_matrix import plot_confusion_matrix
 from pertube_data import pertube_data
 
-from sklearn.metrics import accuracy_score, roc_auc_score
+from sklearn.metrics import accuracy_score, roc_auc_score, roc_curve, auc, f1_score
 from datetime import datetime
 import random
 import logging
@@ -395,21 +395,50 @@ logging.basicConfig(filename=os.path.join(log_path, f'test_{timestamp}.log'),
                     level=logging.INFO)
 
 cclm.eval()
-label_list, pred_list = [], []
+label_list, pred_list, all_similarities, all_labels = [], [], [], []
 with torch.no_grad():
     for batch in test_dataloader:
         codes = batch['code']
         labels = batch['labels'].to(device)
         outputs = cclm(original_codes=codes, labels=labels, model_config=model_config, args=args)
-        loss, similaries  = outputs[0], outputs[1]
+        loss, similarities = outputs[0], outputs[1]
         
-        for i in range(len(similaries)):
-            if similaries[i] > 0.5:
+        similarities = similarities.detach().cpu().numpy()
+        labels = labels.detach().cpu().numpy()
+        
+        all_similarities.extend(similarities)
+        all_labels.extend(labels)
+        
+        for i in range(len(similarities)):
+            if similarities[i] > 0.999:
                 pred = 1
             else:
                 pred = 0
             pred_list.append(pred)
         label_list += labels.tolist()
+
+# Convert lists to numpy arrays
+all_similarities = np.array(all_similarities)
+all_labels = np.array(all_labels)
+
+# ROC curve based threshold
+fpr, tpr, thresholds = roc_curve(all_labels, all_similarities)
+J = tpr - fpr
+ix = np.argmax(J)
+best_threshold_roc = thresholds[ix]
+print('Best Threshold based on ROC curve=%f' % (best_threshold_roc))
+
+# F1 score based threshold
+best_f1 = 0
+best_threshold_f1 = 0
+for threshold in thresholds:
+    preds = (all_similarities >= threshold).astype(int)
+    f1 = f1_score(all_labels, preds)
+    if f1 > best_f1:
+        best_f1 = f1
+        best_threshold_f1 = threshold
+
+print('Best Threshold based on F1=%f with F1=%f' % (best_threshold_f1, best_f1))
 
 accuracy = accuracy_score(label_list, pred_list)
 print(label_list)
