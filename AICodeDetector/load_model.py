@@ -1,5 +1,6 @@
 import transformers
 import torch
+from torch import cuda,bfloat16
 
 def load_mask_filling_model(args, mask_filling_model_name, model_config):
 
@@ -32,9 +33,15 @@ def load_mask_filling_model(args, mask_filling_model_name, model_config):
     return model_config
 
 def load_model(args, model_name, model_config):
+    quant_config = transformers.BitsAndBytesConfig(
+        load_in_4bit=True,
+        bnb_4bit_quant_type='nf4',
+        bnb_4bit_use_double_quant=True,
+        bnb_4bit_compute_dtype=bfloat16
+    )
     tokenizer = transformers.AutoTokenizer.from_pretrained(model_name)
     tokenizer.pad_token = tokenizer.eos_token
-    model = transformers.AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True, torch_dtype=torch.float16)
+    model = transformers.AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True, quantization_config=quant_config, device_map="auto", torch_dtype=torch.float16)
     model.to(args.DEVICE)
 
     model_config['tokenizer'] = tokenizer

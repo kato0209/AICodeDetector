@@ -82,7 +82,7 @@ parser.add_argument('--cut_def', action='store_true')
 parser.add_argument('--max_todo_num', type=int, default=3)
 parser.add_argument("--learning_rate", default=3e-6, type=float)
 parser.add_argument("--adam_epsilon", default=1e-6, type=float)
-parser.add_argument("--num_train_epochs", default=5, type=float)
+parser.add_argument("--num_train_epochs", default=12, type=float)
 parser.add_argument("--warmup_ratio", default=0.01, type=float)
 parser.add_argument("--weight_decay", default=0.1, type=float)
 
@@ -97,9 +97,7 @@ args_dict = {
     'n_samples': 500,
     'n_perturbation_list': "50",
     'n_perturbation_rounds': 1,
-    #'base_model_name': "codellama/CodeLlama-7b-hf",
-    'base_model_name': "codellama/CodeLlama-13b-Python-hf",
-    #'base_model_name': "meta-llama/CodeLlama-7b-Python-hf",
+    'base_model_name': "codellama/CodeLlama-7b-hf",
     'mask_filling_model_name': "Salesforce/codet5p-770m",
     'batch_size': 32,
     'chunk_size': 10,
@@ -145,7 +143,11 @@ args = parser.parse_args(input_args)
 
 device = args.DEVICE
 
-def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_def_num=5, cut_def=False, max_todo_num=3, path=None):
+def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_def_num=5, cut_def=False, max_todo_num=3):
+
+    #path = f'CodeSearchNetDatasets/outputs_phi1_0.2.txt'
+    path = f'test_CodeSearchNetDatasets/outputs_incoder_1.0.txt'
+    #path = f'TheVaultDatasets/outputs_phi1_0.2.txt'
 
     logger.info(f'Loading data from {path}')
     import json
@@ -219,13 +221,24 @@ def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_
     # random.seed(42)
     # random.shuffle(all_originals)
     # random.shuffle(all_samples)
-    
-    #all_samples = random.sample(all_samples, 800)
-    all_samples = random.sample(all_samples, 70)
+
+    label = None
+    if 'incoder' in path:
+        label = 1
+    elif 'phi1' in path:
+        label = 2
+    elif 'starcoder' in path:
+        label = 3
+    elif 'wizardcoder' in path:
+        label = 4
+    elif 'codegen2' in path:
+        label = 5
+    elif 'Llama' in path:
+        label = 6
 
     data = {
         "original": all_originals,
-        "sampled": all_samples
+        "sampled": [(x, label) for x in all_samples]
     }
 
     return data
@@ -260,138 +273,28 @@ for path in datasets_paths:
 data["original"] = list(set(data["original"]))
 data["sampled"] = list(set(data["sampled"]))
 
-# dataを800件に originalはランダムに抽出
-data["original"] = random.sample(data["original"], 800)
-data["sampled"] = data["sampled"][:800]
-
-train_data = {
-    "original": data["original"][:int(len(data["original"])*0.7)],
-    "sampled": data["sampled"][:int(len(data["sampled"])*0.7)]
-}
-
-val_data = {
-    "original": data["original"][int(len(data["original"])*0.7):int(len(data["original"])*0.8)],
-    "sampled": data["sampled"][int(len(data["sampled"])*0.7):int(len(data["sampled"])*0.8)]
-}
 
 test_data = {
-    "original": data["original"][int(len(data["original"])*0.8):],
-    "sampled": data["sampled"][int(len(data["sampled"])*0.8):]
+    "original": [],
+    "sampled": []
 }
 
 data_num = 32
 # train_dataを先頭の10件に
-train_data["original"] = train_data["original"][:data_num]
-train_data["sampled"] = train_data["sampled"][:data_num]
+test_data["original"] = data["original"][:data_num]
+test_data["sampled"] = data["sampled"][:data_num]
 
-# val_dataを先頭の10件に
-val_data["original"] = val_data["original"][:data_num]
-val_data["sampled"] = val_data["sampled"][:data_num]
-
-# test_dataを先頭の10件に
-test_data["original"] = test_data["original"][:data_num]
-test_data["sampled"] = test_data["sampled"][:data_num]
-
-#train_data = pertube_data(train_data, model_config=model_config, args=args)
-#val_data = pertube_data(val_data, model_config=model_config, args=args)
-#test_data = pertube_data(test_data, model_config=model_config, args=args)
-train_dataset = CodeDatasetForLLM(train_data)
-val_dataset = CodeDatasetForLLM(val_data)
 test_dataset = CodeDatasetForLLM(test_data)
-
-train_dataloader = DataLoader(train_dataset, args.batch_size, shuffle=True)
-validation_dataloader = DataLoader(val_dataset, args.batch_size, shuffle=False)
 test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle=False)
 
 model_config = {}
 model_config = load_model(args, args.base_model_name, model_config)
+
+model_path = 'saved_model/model_allModel_space_line_0.2_1000_humanP_20240526_063612.pth' 
 sentence_model = SentenceTransformer('Sakil/sentence_similarity_semantic_search')
 cclm = CustomCodeLlamaModel(model=model_config['model'], tokenizer=model_config['tokenizer'], sentence_model=sentence_model)
+cclm.load_state_dict(torch.load(model_path, map_location=device))
 cclm.to(device)
-
-total_steps = int(len(train_dataloader) * args.num_train_epochs)
-warmup_steps = int(total_steps * args.warmup_ratio)
-
-base_lr = args.learning_rate
-
-optimizer_parameters = []
-no_decay = ["LayerNorm.weight", "bias"]
-
-# デコーダー部分のパラメータだけを学習可能に設定
-for name, param in cclm.model.named_parameters():
-    if 'decoder' in name:
-        param.requires_grad = True
-    else:
-        param.requires_grad = False
-
-# 正則化を適用しないパラメータ
-optimizer_parameters.append({
-    'params': [
-        p for n, p in cclm.model.named_parameters()
-        if any(nd in n for nd in no_decay)
-    ],
-    'weight_decay': 0.0,
-    'lr': base_lr
-})
-
-optimizer = AdamW(optimizer_parameters, lr=args.learning_rate, eps=args.adam_epsilon)
-scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps, num_training_steps=total_steps)
-
-# Initialize lists to store loss values
-train_loss_values = []
-validation_loss_values = []
-
-cclm.train()
-num_steps = 0
-for epoch in range(int(args.num_train_epochs)):
-    train_loss = 0.0
-    for batch in train_dataloader:
-        codes = batch['code']
-        labels = batch['labels'].to(device)
-        outputs = cclm(original_codes=codes, labels=labels, model_config=model_config, args=args)
-        
-        loss, _ = outputs[0], outputs[1]
-        loss.backward()
-        optimizer.step()
-        scheduler.step()
-        cclm.zero_grad()
-
-        train_loss += loss.item()
-        num_steps += 1
-
-    train_loss /= len(train_dataloader)
-    train_loss_values.append(train_loss)
-    print(f"Epoch: {epoch}, Training Loss: {train_loss}")
-
-    cclm.eval()
-    validation_loss = 0.0
-    with torch.no_grad():
-        for batch in validation_dataloader:
-            codes = batch['code']
-            labels = batch['labels'].to(device)
-            outputs = cclm(original_codes=codes, labels=labels, model_config=model_config, args=args)
-            loss, _  = outputs[0], outputs[1]
-            validation_loss += loss.item()
-
-    validation_loss /= len(validation_dataloader)
-    validation_loss_values.append(validation_loss)
-    print(f"Validation Loss after epoch {epoch}: {validation_loss}")
-    cclm.train()
-
-model_save(cclm)
-print("done training")
-# Plot the learning curve
-plt.figure(figsize=(12, 6))
-
-plt.plot(train_loss_values, label="Training Loss")
-plt.plot(validation_loss_values, label="Validation Loss")
-
-plt.xlabel("Training Steps")
-plt.ylabel("Loss")
-plt.title("Learning Curve")
-plt.legend()
-timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-plt.savefig(f"./learning_result/learning_curve_{timestamp}.png")
 
 # Test the model and print out the confusion matrix
 log_path = './logs'
