@@ -1,6 +1,7 @@
 import transformers
 import torch
 from torch import cuda,bfloat16
+from sentence_transformers import SentenceTransformer, util
 
 def load_mask_filling_model(args, mask_filling_model_name, model_config):
 
@@ -42,8 +43,11 @@ def load_model(args, model_name, model_config):
     tokenizer = transformers.AutoTokenizer.from_pretrained(model_name)
     tokenizer.pad_token = tokenizer.eos_token
     model = transformers.AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True, quantization_config=quant_config, device_map="auto", torch_dtype=torch.float16)
-    model.to(args.DEVICE)
-
+    #sentence_model = SentenceTransformer('Sakil/sentence_similarity_semantic_search')
+    sentence_model_tokenizer = transformers.AutoTokenizer.from_pretrained('microsoft/graphcodebert-base')
+    sentence_model = transformers.AutoModel.from_pretrained('microsoft/graphcodebert-base').to(args.DEVICE)
     model_config['tokenizer'] = tokenizer
     model_config['model'] = model
+    model_config['sentence_model'] = sentence_model
+    model_config['sentence_model_tokenizer'] = sentence_model_tokenizer
     return model_config

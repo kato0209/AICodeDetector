@@ -107,11 +107,12 @@ class CustomBertModel(nn.Module):
 
 
 class CustomCodeLlamaModel(nn.Module):
-    def __init__(self, model, tokenizer, sentence_model):
+    def __init__(self, model, tokenizer, sentence_model, sentence_model_tokenizer):
         super(CustomCodeLlamaModel, self).__init__()
         self.model = model
         self.tokenizer = tokenizer
         self.sentence_model = sentence_model
+        self.sentence_model_tokenizer = sentence_model_tokenizer
     
     def rewrite_code(self, codes, model_config, args):
         prompt = """
@@ -139,18 +140,17 @@ class CustomCodeLlamaModel(nn.Module):
             
             # トークンごとの生成を開始
             output_ids = input_ids
-            output_sentences = []
             j = 0
             for _ in range(128):  # 生成を128トークンに制限
                 outputs = model.generate(output_ids, do_sample=True, max_length=output_ids.size(-1) + 1, 
-                                        top_p=0.95, temperature=0.2, pad_token_id=tokenizer.pad_token_id, use_cache=True)
+                                        top_p=0.95, temperature=0.1, pad_token_id=tokenizer.pad_token_id, use_cache=True)
                 y[i][j] = outputs[:, -1].unsqueeze(-1)
                 state[i][j] = output_ids
                 output_ids = torch.cat([output_ids, outputs[:, -1].unsqueeze(-1)], dim=-1)
                 if output_ids[0, -1] == tokenizer.eos_token_id:
                     break
                 j += 1
-            # y[i]を結合してoutput_sentenceを作成
+            y[i] = [x for x in y[i] if x != 0]
             output_sentence = tokenizer.decode(torch.cat(y[i], dim=-1)[0], skip_special_tokens=True)
             rewrite_codes.append(output_sentence)
             i += 1
@@ -171,7 +171,7 @@ class CustomCodeLlamaModel(nn.Module):
         # original_codesとperturbed_codesのcos類似度を取得
         similarity_scores = [cos_sim[i, len(original_codes) + i] for i in range(len(original_codes))]
         similarity_scores = torch.tensor(similarity_scores).view(-1, 1).to(self.model.device).requires_grad_(True)
-        
+
         ai_similarity = []
         human_similarity = []
         for i in range(len(similarity_scores)):
@@ -179,13 +179,14 @@ class CustomCodeLlamaModel(nn.Module):
                 ai_similarity.append(similarity_scores[i])
             else:
                 human_similarity.append(similarity_scores[i])
-        ai_similarity = torch.tensor(ai_similarity).view(-1, 1).to(self.model.device)
-        human_similarity = torch.tensor(human_similarity).view(-1, 1).to(self.model.device)
+        ai_similarity = torch.tensor(ai_similarity, requires_grad=True).view(-1, 1).to(self.model.device)
+        human_similarity = torch.tensor(human_similarity, requires_grad=True).view(-1, 1).to(self.model.device)
 
         #similarity_scoresの平均をベースラインに
         loss = 0.0
         for n in range(args.batch_size):
-            for t in range(args.token_length):
+            token_length = len(y[n])
+            for t in range(token_length):
                 outputs = self.model(input_ids=state[n][t])
                 logits = outputs.logits
 
@@ -204,6 +205,29 @@ class CustomCodeLlamaModel(nn.Module):
                     reward = 1 - similarity_scores[n].item()
                     R = (reward - baseline) * 0.5
                 loss += -target_token_log_prob * R
-        loss /= args.batch_size * args.token_length
+        loss /= args.batch_size * token_length
 
         return loss, similarity_scores
+    
+    def calc_similarity(self, original_codes, args=None, model_config=None):
+        perturbed_codes, _, _ = self.rewrite_code(original_codes, model_config, args)
+        
+        print(11)
+        similarity_scores = []
+        for i in range(len(original_codes)):
+            encoded_inputs = self.sentence_model_tokenizer(original_codes[i], return_tensors="pt", truncation=True, max_length=128)
+            with torch.no_grad():
+                outputs = self.model(input_ids=encoded_inputs.input_ids)
+            print(19)
+            embeddings1 = outputs.last_hidden_state.mean(dim=1)
+            print(8989)
+
+            encoded_inputs = self.sentence_model_tokenizer(perturbed_codes[i], return_tensors="pt", truncation=True, max_length=128)
+            with torch.no_grad():
+                outputs = self.model(input_ids=encoded_inputs.input_ids)
+            embeddings2 = outputs.last_hidden_state.mean(dim=1)
+
+            cos_sim = util.cos_sim(embeddings1, embeddings2)
+            similarity_scores.append(cos_sim.item())
+        print(22)
+        return similarity_scores
