@@ -212,22 +212,19 @@ class CustomCodeLlamaModel(nn.Module):
     def calc_similarity(self, original_codes, args=None, model_config=None):
         perturbed_codes, _, _ = self.rewrite_code(original_codes, model_config, args)
         
-        print(11)
         similarity_scores = []
         for i in range(len(original_codes)):
-            encoded_inputs = self.sentence_model_tokenizer(original_codes[i], return_tensors="pt", truncation=True, max_length=128)
+            encoded_inputs = self.sentence_model_tokenizer(original_codes[i], return_tensors="pt", truncation=True, max_length=128).to(self.model.device)
             with torch.no_grad():
-                outputs = self.model(input_ids=encoded_inputs.input_ids)
-            print(19)
+                outputs = self.sentence_model(input_ids=encoded_inputs.input_ids)
             embeddings1 = outputs.last_hidden_state.mean(dim=1)
-            print(8989)
 
-            encoded_inputs = self.sentence_model_tokenizer(perturbed_codes[i], return_tensors="pt", truncation=True, max_length=128)
+            encoded_inputs = self.sentence_model_tokenizer(perturbed_codes[i], return_tensors="pt", truncation=True, max_length=128).to(self.model.device)
             with torch.no_grad():
-                outputs = self.model(input_ids=encoded_inputs.input_ids)
+                outputs = self.sentence_model(input_ids=encoded_inputs.input_ids)
             embeddings2 = outputs.last_hidden_state.mean(dim=1)
 
             cos_sim = util.cos_sim(embeddings1, embeddings2)
             similarity_scores.append(cos_sim.item())
-        print(22)
+        similarity_scores = torch.tensor(similarity_scores).view(-1, 1).to(self.model.device)
         return similarity_scores

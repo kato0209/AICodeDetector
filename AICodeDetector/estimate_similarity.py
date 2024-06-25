@@ -261,7 +261,7 @@ data["original"] = list(set(data["original"]))
 data["sampled"] = list(set(data["sampled"]))
 
 # dataを800件に originalはランダムに抽出
-data_num = 1
+data_num = 800
 data["original"] = random.sample(data["original"], data_num)
 data["sampled"] = data["sampled"][:data_num]
 
