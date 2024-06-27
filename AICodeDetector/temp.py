@@ -126,7 +126,6 @@ def rewrite_code(codes, model_config, args):
         input_prompt = prompt.format(code=code)
         input_ids = tokenizer(input_prompt, return_tensors="pt", truncation=True, max_length=128).input_ids
         input_ids = input_ids.to(args.DEVICE)
-        input_ids_len = len(input_ids[0])
         
         # トークンごとの生成を開始
         output_ids = input_ids

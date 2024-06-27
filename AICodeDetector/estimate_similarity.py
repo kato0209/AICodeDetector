@@ -293,13 +293,14 @@ with torch.no_grad():
         similarities = cclm.calc_similarity(codes, model_config=model_config, args=args)
         
         similarities = similarities.detach().cpu().numpy()
+        print(similarities)
         labels = labels.detach().cpu().numpy()
         
         all_similarities.extend(similarities)
         all_labels.extend(labels)
         
         for i in range(len(similarities)):
-            if similarities[i] > 0.99:
+            if similarities[i] > 0.93:
                 pred = 1
             else:
                 pred = 0
