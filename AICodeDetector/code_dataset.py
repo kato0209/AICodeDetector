@@ -72,9 +72,12 @@ class CodeDatasetCS(Dataset):
         # humanのコードを収集
         for code in data["original"]:
             self.samples.append((code, 0))
+
+        """"
         # chatGPTのコードを収集
         for code in data["sampled"]:
-            self.samples.append((code, 1))         
+            self.samples.append((code, 1))       
+        """  
             
     
     def __len__(self):

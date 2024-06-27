@@ -164,18 +164,17 @@ def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_
 
             # cut out the 'def' part after the first generation
             if cut_def:
-                line['output'] = line['output'].split('def')[0]
                 line['solution'] = line['solution'].split('def')[0]
 
             # I don't like there to have too many 'def' in the code
             # ~100/100000 examples have more than 3 'def'
-            if line['solution'].count('def') > max_def_num or line['output'].count('def') > max_def_num:
+            if line['solution'].count('def') > max_def_num:
                 max_def_num_count += 1
                 continue
 
             # avoid examples that are too short (less than min_len words)
             # around 2000/100000 examples have around 55 words
-            if len(line['solution'].split()) < min_len or len(line['output'].split()) < min_len:
+            if len(line['solution'].split()) < min_len:
                 min_len_count += 1
                 continue
 
@@ -183,7 +182,7 @@ def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_
             def count_comment(text):
                 return text.count('#')
 
-            if count_comment(line['solution']) > max_comment_num or count_comment(line['output']) > max_comment_num:
+            if count_comment(line['solution']) > max_comment_num:
                 max_comment_num_count += 1
                 continue
 
@@ -191,18 +190,17 @@ def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_
             def count_todo_comment(text):
                 return text.count('# TODO') + text.count('# todo')
 
-            if count_todo_comment(line['solution']) > max_todo_num or count_todo_comment(line['output']) > max_todo_num:
+            if count_todo_comment(line['solution']) > max_todo_num:
                 max_todo_num_count += 1
                 continue
 
             # the number of text.count("'''") and text.count('"""') should be <1
-            if line['solution'].count("'''") > 0 or line['solution'].count('"""') > 0 or line['output'].count("'''") > 0 or line['output'].count('"""') > 0:
+            if line['solution'].count("'''") > 0 or line['solution'].count('"""') > 0:
                 function_comment_num_count += 1
                 continue
 
             # cut to 128 tokens
             all_originals.append(' '.join(line['solution'].split(' ')[:max_len]))
-            all_samples.append(' '.join(line['output'].split(' ')[:max_len]))
 
     logger.info(f'{max_def_num_count} examples have more than {max_def_num} "def"')
     logger.info(f'{min_len_count} examples have less than {min_len} words')
@@ -218,7 +216,6 @@ def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_
     # random.shuffle(all_samples)
     
     #all_samples = random.sample(all_samples, 800)
-    all_samples = random.sample(all_samples, 700)
 
     data = {
         "original": all_originals,
@@ -243,33 +240,26 @@ datasets_paths = [
 ]
 
 data = {
-    "original": [],
-    "sampled": []
+    "original": []
 }
 i = 0
 for path in datasets_paths:
     sep_data = generate_data(path=path)
     data["original"] = data["original"] + sep_data["original"]
-
-    data["sampled"] = data["sampled"] + sep_data["sampled"]
     i += 1
 
 data["original"] = list(set(data["original"]))
-data["sampled"] = list(set(data["sampled"]))
 
 train_data = {
-    "original": data["original"][:int(len(data["original"])*0.7)],
-    "sampled": data["sampled"][:int(len(data["sampled"])*0.7)]
+    "original": data["original"][:int(len(data["original"])*0.7)]
 }
 
 val_data = {
-    "original": data["original"][int(len(data["original"])*0.7):int(len(data["original"])*0.8)],
-    "sampled": data["sampled"][int(len(data["sampled"])*0.7):int(len(data["sampled"])*0.8)]
+    "original": data["original"][int(len(data["original"])*0.7):int(len(data["original"])*0.8)]
 }
 
 test_data = {
-    "original": data["original"][int(len(data["original"])*0.8):],
-    "sampled": data["sampled"][int(len(data["sampled"])*0.8):]
+    "original": data["original"][int(len(data["original"])*0.8):]
 }
 
 """
