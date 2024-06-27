@@ -228,3 +228,100 @@ class CustomCodeLlamaModel(nn.Module):
             similarity_scores.append(cos_sim.item())
         similarity_scores = torch.tensor(similarity_scores).view(-1, 1).to(self.model.device)
         return similarity_scores
+
+class MLPLayer(nn.Module):
+    """
+    Head for getting sentence representations over RoBERTa/BERT's CLS representation.
+    """
+
+    def __init__(self, config):
+        super().__init__()
+        self.dense = nn.Linear(config.hidden_size, config.hidden_size)
+        self.activation = nn.Tanh()
+
+    def forward(self, features, **kwargs):
+        x = self.dense(features)
+        x = self.activation(x)
+
+        return x
+
+class Similarity(nn.Module):
+    """
+    Dot product or cosine similarity
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.temp = 0.05
+        self.cos = nn.CosineSimilarity(dim=-1)
+
+    def forward(self, x, y):
+        return self.cos(x, y) / self.temp
+
+
+class Pooler(nn.Module):
+    """
+    Parameter-free poolers to get the sentence embedding
+    'cls': [CLS] representation with BERT/RoBERTa's MLP pooler.
+    'cls_before_pooler': [CLS] representation without the original MLP pooler.
+    'avg': average of the last layers' hidden states at each token.
+    'avg_top2': average of the last two layers.
+    'avg_first_last': average of the first and the last layers.
+    """
+    def __init__(self):
+        super().__init__()
+        self.pooler_type = 'cls'
+
+    def forward(self, attention_mask, outputs):
+        last_hidden = outputs.last_hidden_state
+        pooler_output = outputs.pooler_output
+        hidden_states = outputs.hidden_states
+
+        if self.pooler_type in ['cls_before_pooler', 'cls']:
+            return last_hidden[:, 0]
+        elif self.pooler_type == "avg":
+            return ((last_hidden * attention_mask.unsqueeze(-1)).sum(1) / attention_mask.sum(-1).unsqueeze(-1))
+        elif self.pooler_type == "avg_first_last":
+            first_hidden = hidden_states[1]
+            last_hidden = hidden_states[-1]
+            pooled_result = ((first_hidden + last_hidden) / 2.0 * attention_mask.unsqueeze(-1)).sum(1) / attention_mask.sum(-1).unsqueeze(-1)
+            return pooled_result
+        elif self.pooler_type == "avg_top2":
+            second_last_hidden = hidden_states[-2]
+            last_hidden = hidden_states[-1]
+            pooled_result = ((last_hidden + second_last_hidden) / 2.0 * attention_mask.unsqueeze(-1)).sum(1) / attention_mask.sum(-1).unsqueeze(-1)
+            return pooled_result
+        else:
+            raise NotImplementedError
+
+class SimilarityModel(nn.Module):
+    def __init__(self, model_config):
+        super(SimilarityModel, self).__init__()
+        self.model = model_config['model']
+        self.tokenizer = model_config['tokenizer']
+        self.pooler = Pooler()
+        self.MLP = MLPLayer(self.model.config)
+        self.sim = Similarity()
+    
+    def forward(self, input_ids, attention_mask):
+        batch_size = input_ids.size(0)
+        num_sent = input_ids.size(1)
+        input_ids = input_ids.view((-1, input_ids.size(-1)))
+        attention_mask = attention_mask.view((-1, attention_mask.size(-1)))
+
+        outputs = self.model(input_ids, attention_mask=attention_mask)
+        pooled_output = self.pooler(attention_mask, outputs)
+        pooled_output = self.MLP(pooled_output)
+        pooler_output = pooled_output.view((batch_size, num_sent, pooled_output.size(-1)))
+        z1 = pooler_output[:,0]
+
+        outputs2 = self.model(input_ids, attention_mask=attention_mask)
+        pooled_output2 = self.pooler(attention_mask, outputs2)
+        pooled_output2 = self.MLP(pooled_output2)
+        pooler_output2 = pooled_output2.view((batch_size, num_sent, pooled_output2.size(-1)))
+        z2 = pooler_output2[:,0]
+        cos_sim = self.sim(z1.unsqueeze(1), z2.unsqueeze(0))
+        labels = torch.arange(cos_sim.size(0)).long().to(self.model.device)
+        loss_fct = nn.CrossEntropyLoss()
+        loss = loss_fct(cos_sim, labels)
+        return (loss, cos_sim)

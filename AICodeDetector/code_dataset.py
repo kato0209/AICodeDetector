@@ -62,6 +62,32 @@ class CodeDataset(Dataset):
         }
     """
 
+
+class CodeDatasetCS(Dataset):
+    def __init__(self, data, model_config, args):
+        self.samples = []
+        self.model_config = model_config
+        self.args = args
+
+        # humanのコードを収集
+        for code in data["original"]:
+            self.samples.append((code, 0))
+        # chatGPTのコードを収集
+        for code in data["sampled"]:
+            self.samples.append((code, 1))         
+            
+    
+    def __len__(self):
+        return len(self.samples)
+
+    def __getitem__(self, index):
+        code, label = self.samples[index]
+        inputs = self.model_config["tokenizer"](code, padding='max_length', return_tensors="pt", truncation=True, max_length=128)
+        input_ids = inputs['input_ids']
+        attention_mask = inputs['attention_mask']
+        #return {'input_ids': torch.tensor(input_ids, dtype=torch.long), 'attention_mask': torch.tensor(attention_mask, dtype=torch.float), 'labels': torch.tensor(label, dtype=torch.float)}
+        return {'input_ids': torch.tensor(input_ids, dtype=torch.long), 'attention_mask': torch.tensor(attention_mask, dtype=torch.long), 'labels': torch.tensor(label, dtype=torch.long)}
+
 class CodeDatasetFromCodeSearchNet(Dataset):
     def __init__(self, data, model_config, args, perturb=False):
         self.samples = []
