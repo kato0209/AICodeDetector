@@ -305,8 +305,7 @@ test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle=False)
 
 model_config = {}
 model_config = load_model(args, args.base_model_name, model_config)
-sentence_model = SentenceTransformer('Sakil/sentence_similarity_semantic_search')
-cclm = CustomCodeLlamaModel(model=model_config['model'], tokenizer=model_config['tokenizer'], sentence_model=sentence_model)
+cclm = CustomCodeLlamaModel(model=model_config['model'], tokenizer=model_config['tokenizer'], sentence_model=model_config['sentence_model'], sentence_model_tokenizer=model_config['sentence_model_tokenizer'])
 cclm.to(device)
 
 total_steps = int(len(train_dataloader) * args.num_train_epochs)
@@ -419,7 +418,7 @@ with torch.no_grad():
         all_labels.extend(labels)
         
         for i in range(len(similarities)):
-            if similarities[i] > 0.99:
+            if similarities[i] > 0.93:
                 pred = 1
             else:
                 pred = 0

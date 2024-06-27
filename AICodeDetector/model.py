@@ -161,16 +161,7 @@ class CustomCodeLlamaModel(nn.Module):
         #_, perturbed_codes = pertubate_code(original_codes, model_config, args)
         perturbed_codes, y, state = self.rewrite_code(original_codes, model_config, args)
 
-        sentences = []
-        for code in original_codes:
-            sentences.append(code)
-        for code in perturbed_codes:
-            sentences.append(code)
-        embedings = self.sentence_model.encode(sentences)
-        cos_sim = util.cos_sim(embedings, embedings).requires_grad_(True)
-        # original_codesとperturbed_codesのcos類似度を取得
-        similarity_scores = [cos_sim[i, len(original_codes) + i] for i in range(len(original_codes))]
-        similarity_scores = torch.tensor(similarity_scores).view(-1, 1).to(self.model.device).requires_grad_(True)
+        similarity_scores = self._calc_similarity(original_codes, perturbed_codes, args, model_config)
 
         ai_similarity = []
         human_similarity = []
@@ -208,6 +199,49 @@ class CustomCodeLlamaModel(nn.Module):
         loss /= args.batch_size * token_length
 
         return loss, similarity_scores
+    
+    def _calc_similarity(self, original_codes, perturbed_codes, args=None, model_config=None):
+        similarity_scores = []
+        for i in range(len(original_codes)):
+            encoded_inputs = self.sentence_model_tokenizer(original_codes[i], return_tensors="pt", truncation=True, max_length=128).to(self.model.device)
+            with torch.no_grad():
+                outputs = self.sentence_model(input_ids=encoded_inputs.input_ids)
+            embeddings1 = outputs.last_hidden_state.mean(dim=1)
+
+            encoded_inputs = self.sentence_model_tokenizer(perturbed_codes[i], return_tensors="pt", truncation=True, max_length=128).to(self.model.device)
+            with torch.no_grad():
+                outputs = self.sentence_model(input_ids=encoded_inputs.input_ids)
+            embeddings2 = outputs.last_hidden_state.mean(dim=1)
+
+            cos_sim = util.cos_sim(embeddings1, embeddings2)
+            similarity_scores.append(cos_sim.item())
+        similarity_scores = torch.tensor(similarity_scores).view(-1, 1).to(self.model.device)
+        return similarity_scores
+    
+    def _calc_similarity_cutom(self, original_codes, perturbed_codes, args=None, model_config=None):
+        input_ids = []
+        attention_mask = []
+        for i in range(len(original_codes)):
+            encoded_inputs = self.sentence_model_tokenizer(original_codes[i], return_tensors="pt", truncation=True, max_length=128).to(self.model.device)
+            input_ids.append(encoded_inputs.input_ids)
+            attention_mask.append(encoded_inputs.attention_mask)
+        
+        input_ids_p = []
+        attention_mask_p = []
+        for i in range(len(perturbed_codes)):
+            encoded_inputs = self.sentence_model_tokenizer(perturbed_codes[i], return_tensors="pt", truncation=True, max_length=128).to(self.model.device)
+            input_ids_p.append(encoded_inputs.input_ids)
+            attention_mask_p.append(encoded_inputs.attention_mask)
+        
+        similarity_scores = []
+        with torch.no_grad():
+            embeddings1 = self.model.output_embeddings(input_ids, attention_mask)
+            embeddings2 = self.model.output_embeddings(input_ids_p, attention_mask_p)
+        cos_sim = util.cos_sim(embeddings1, embeddings2)
+        for i in range(len(original_codes)):
+            similarity_scores.append(cos_sim[i, i].item())
+        similarity_scores = torch.tensor(similarity_scores).view(-1, 1).to(self.model.device)
+        return similarity_scores
     
     def calc_similarity(self, original_codes, args=None, model_config=None):
         perturbed_codes, _, _ = self.rewrite_code(original_codes, model_config, args)
@@ -325,3 +359,16 @@ class SimilarityModel(nn.Module):
         loss_fct = nn.CrossEntropyLoss()
         loss = loss_fct(cos_sim, labels)
         return (loss, cos_sim)
+    def output_embeddings(self, input_ids, attention_mask):
+        batch_size = input_ids.size(0)
+        num_sent = input_ids.size(1)
+        input_ids = input_ids.view((-1, input_ids.size(-1)))
+        attention_mask = attention_mask.view((-1, attention_mask.size(-1)))
+
+        outputs = self.model(input_ids, attention_mask=attention_mask)
+        pooled_output = self.pooler(attention_mask, outputs)
+        pooled_output = self.MLP(pooled_output)
+        pooler_output = pooled_output.view((batch_size, num_sent, pooled_output.size(-1)))
+        z = pooler_output[:,0]
+
+        return z
