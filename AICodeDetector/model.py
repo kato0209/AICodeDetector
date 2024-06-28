@@ -146,11 +146,11 @@ class CustomCodeLlamaModel(nn.Module):
                                         top_p=0.95, temperature=0.1, pad_token_id=tokenizer.pad_token_id, use_cache=True)
                 y[i][j] = outputs[:, -1].unsqueeze(-1)
                 state[i][j] = output_ids
-                output_ids = torch.cat([output_ids, outputs[:, -1].unsqueeze(-1)], dim=-1)
+                if outputs[:, -1].unsqueeze(-1) == 0:
+                    output_ids = torch.cat([output_ids, outputs[:, -1].unsqueeze(-1)], dim=-1)
                 if output_ids[0, -1] == tokenizer.eos_token_id:
                     break
                 j += 1
-            y[i] = [x for x in y[i] if x != 0]
             output_sentence = tokenizer.decode(torch.cat(y[i], dim=-1)[0], skip_special_tokens=True)
             rewrite_codes.append(output_sentence)
             i += 1
@@ -178,6 +178,8 @@ class CustomCodeLlamaModel(nn.Module):
         for n in range(args.batch_size):
             token_length = len(y[n])
             for t in range(token_length):
+                if y[n][t] == 0:
+                    continue
                 outputs = self.model(input_ids=state[n][t])
                 logits = outputs.logits
 
@@ -235,8 +237,8 @@ class CustomCodeLlamaModel(nn.Module):
         
         similarity_scores = []
         with torch.no_grad():
-            embeddings1 = self.model.output_embeddings(input_ids, attention_mask)
-            embeddings2 = self.model.output_embeddings(input_ids_p, attention_mask_p)
+            embeddings1 = self.sentence_model.output_embeddings(input_ids, attention_mask)
+            embeddings2 = self.sentence_model.output_embeddings(input_ids_p, attention_mask_p)
         cos_sim = util.cos_sim(embeddings1, embeddings2)
         for i in range(len(original_codes)):
             similarity_scores.append(cos_sim[i, i].item())
@@ -260,6 +262,32 @@ class CustomCodeLlamaModel(nn.Module):
 
             cos_sim = util.cos_sim(embeddings1, embeddings2)
             similarity_scores.append(cos_sim.item())
+        similarity_scores = torch.tensor(similarity_scores).view(-1, 1).to(self.model.device)
+        return similarity_scores
+
+    def calc_similarity_custom(self, original_codes, args=None, model_config=None):
+        perturbed_codes, _, _ = self.rewrite_code(original_codes, model_config, args)
+        input_ids = []
+        attention_mask = []
+        for i in range(len(original_codes)):
+            encoded_inputs = self.sentence_model_tokenizer(original_codes[i], return_tensors="pt", truncation=True, max_length=128).to(self.model.device)
+            input_ids.append(encoded_inputs.input_ids)
+            attention_mask.append(encoded_inputs.attention_mask)
+        
+        input_ids_p = []
+        attention_mask_p = []
+        for i in range(len(perturbed_codes)):
+            encoded_inputs = self.sentence_model_tokenizer(perturbed_codes[i], return_tensors="pt", truncation=True, max_length=128).to(self.model.device)
+            input_ids_p.append(encoded_inputs.input_ids)
+            attention_mask_p.append(encoded_inputs.attention_mask)
+        
+        similarity_scores = []
+        with torch.no_grad():
+            embeddings1 = self.sentence_model.output_embeddings(input_ids, attention_mask)
+            embeddings2 = self.sentence_model.output_embeddings(input_ids_p, attention_mask_p)
+        cos_sim = util.cos_sim(embeddings1, embeddings2)
+        for i in range(len(original_codes)):
+            similarity_scores.append(cos_sim[i, i].item())
         similarity_scores = torch.tensor(similarity_scores).view(-1, 1).to(self.model.device)
         return similarity_scores
 

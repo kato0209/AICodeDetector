@@ -13,7 +13,7 @@ import os
 import datetime
 from torch.utils.data import DataLoader, random_split
 
-from model import CustomBertModel, CustomCodeLlamaModel
+from model import CustomBertModel, CustomCodeLlamaModel, SimilarityModel
 from pertubate import rewrite_code
 from transformers.optimization import AdamW, get_linear_schedule_with_warmup
 from utils.model_save import model_save
@@ -271,7 +271,17 @@ dataloader = DataLoader(dataset, args.batch_size, shuffle=True)
 
 model_config = {}
 model_config = load_model(args, args.base_model_name, model_config)
-cclm = CustomCodeLlamaModel(model=model_config['model'], tokenizer=model_config['tokenizer'], sentence_model=model_config['sentence_model'], sentence_model_tokenizer=model_config['sentence_model_tokenizer'])
+
+sm_model_config = {
+    "model": model_config["sentence_model"],
+    "tokenizer": model_config["sentence_model_tokenizer"],
+}
+sm = SimilarityModel(model_config=sm_model_config)
+model_path = 'saved_model/model_sm_20240628_064206.pth' 
+sm.load_state_dict(torch.load(model_path, map_location=device))
+sm.to(device)
+
+cclm = CustomCodeLlamaModel(model=model_config['model'], tokenizer=model_config['tokenizer'], sentence_model=sm, sentence_model_tokenizer=model_config['sentence_model_tokenizer'])
 cclm.to(device)
 
 # Test the model and print out the confusion matrix
@@ -290,7 +300,7 @@ with torch.no_grad():
     for batch in dataloader:
         codes = batch['code']
         labels = batch['labels'].to(device)
-        similarities = cclm.calc_similarity(codes, model_config=model_config, args=args)
+        similarities = cclm.calc_similarity_custom(codes, model_config=model_config, args=args)
         
         similarities = similarities.detach().cpu().numpy()
         print(similarities)
@@ -337,6 +347,22 @@ print(accuracy)
 
 auc = roc_auc_score(label_list, pred_list)
 print(f"ROC AUC : {auc}")
+
+# threthfold score
+pred_list = []
+for i in range(len(all_similarities)):
+    if all_similarities[i] > best_threshold_roc:
+        pred = 1
+    else:
+        pred = 0
+    pred_list.append(pred)
+
+accuracy = accuracy_score(label_list, pred_list)
+print(label_list)
+print(pred_list)
+print(accuracy)
+auc = roc_auc_score(label_list, pred_list)
+print(f"ROC AUC Threshold : {auc}")
 
 
 target_names = ['Human','ChatGPT']

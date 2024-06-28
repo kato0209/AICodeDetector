@@ -261,8 +261,8 @@ data["original"] = list(set(data["original"]))
 data["sampled"] = list(set(data["sampled"]))
 
 # dataを800件に originalはランダムに抽出
-data["original"] = random.sample(data["original"], 800)
-data["sampled"] = data["sampled"][:800]
+data["original"] = random.sample(data["original"], 100)
+data["sampled"] = data["sampled"][:100]
 
 train_data = {
     "original": data["original"][:int(len(data["original"])*0.7)],
@@ -456,6 +456,21 @@ print(accuracy)
 auc = roc_auc_score(label_list, pred_list)
 print(f"ROC AUC : {auc}")
 
+# threthfold score
+pred_list = []
+for i in range(len(all_similarities)):
+    if all_similarities[i] > best_threshold_roc:
+        pred = 1
+    else:
+        pred = 0
+    pred_list.append(pred)
+
+accuracy = accuracy_score(label_list, pred_list)
+print(label_list)
+print(pred_list)
+print(accuracy)
+auc = roc_auc_score(label_list, pred_list)
+print(f"ROC AUC Threshold : {auc}")
 
 target_names = ['Human','ChatGPT']
 logging.info('Confusion Matrix')

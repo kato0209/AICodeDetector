@@ -16,7 +16,7 @@ from torch.utils.data import DataLoader, random_split
 from model import CustomBertModel, SimilarityModel
 from pertubate import rewrite_code
 from transformers.optimization import AdamW, get_linear_schedule_with_warmup
-from utils.model_save import model_save
+from utils.model_save import model_save, similarity_model_save
 from utils.confusion_matrix import plot_confusion_matrix
 from pertube_data import pertube_data
 
@@ -225,18 +225,11 @@ def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_
     return data
 
 datasets_paths = [
-    "CodeSearchNetDatasets/outputs_incoder_0.2.txt",
-    "CodeSearchNetDatasets/outputs_phi1_0.2.txt",
-    "CodeSearchNetDatasets/outputs_starcoder_0.2.txt",
-    "CodeSearchNetDatasets/outputs_wizardcoder_0.2.txt",
-    "CodeSearchNetDatasets/outputs_codegen2_0.2.txt",
-    "CodeSearchNetDatasets/outputs_Llama_0.2.txt",
-    "CodeSearchNetDatasets/outputs_incoder_1.0.txt",
-    "CodeSearchNetDatasets/outputs_phi1_1.0.txt",
-    "CodeSearchNetDatasets/outputs_starcoder_1.0.txt",
-    "CodeSearchNetDatasets/outputs_wizardcoder_1.0.txt",
-    "CodeSearchNetDatasets/outputs_codegen2_1.0.txt",
-    "CodeSearchNetDatasets/outputs_Llama_1.0.txt",
+    "CSHumanDatasets/outputs_train1.txt",
+    "CSHumanDatasets/outputs_train2.txt",
+    "CSHumanDatasets/outputs_train3.txt",
+    "CSHumanDatasets/outputs_train4.txt",
+    "CSHumanDatasets/outputs_train5.txt",
 ]
 
 data = {
@@ -350,7 +343,7 @@ for epoch in range(int(args.num_train_epochs)):
     print(f"Validation Loss after epoch {epoch}: {validation_loss}")
     sm.train()
 
-model_save(sm)
+similarity_model_save(sm)
 print("done training")
 # Plot the learning curve
 plt.figure(figsize=(12, 6))
@@ -363,43 +356,4 @@ plt.ylabel("Loss")
 plt.title("Learning Curve")
 plt.legend()
 timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-plt.savefig(f"./learning_result/learning_curve_{timestamp}.png")
-
-# Test the model and print out the confusion matrix
-log_path = './logs'
-os.makedirs(log_path, exist_ok=True)
-timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-logging.basicConfig(filename=os.path.join(log_path, f'test_{timestamp}.log'),
-                    force=True,
-                    format='%(asctime)s - %(levelname)s - %(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S',
-                    level=logging.INFO)
-
-sm.eval()
-label_list, pred_list = [], []
-with torch.no_grad():
-    for batch in test_dataloader:
-        input_ids = batch['input_ids'].to(device)
-        attention_mask = batch['attention_mask'].to(device)
-        outputs = sm(input_ids, attention_mask=attention_mask)
-        labels = batch["labels"]
-        logits = outputs[1]
-        predictions = torch.argmax(logits, dim=1)
-        label_list += labels.tolist()
-        pred_list += predictions.tolist()
-
-accuracy = accuracy_score(label_list, pred_list)
-print(label_list)
-print(pred_list)
-print(accuracy)
-
-auc = roc_auc_score(label_list, pred_list)
-print(f"ROC AUC : {auc}")
-
-
-target_names = ['Human','ChatGPT']
-logging.info('Confusion Matrix')
-cm = confusion_matrix(label_list, pred_list)
-plot_confusion_matrix(cm, target_names, title='Confusion Matrix')
-logging.info('Classification Report')
-logging.info(classification_report(label_list, pred_list, target_names=target_names))
+plt.savefig(f"./learning_result/learning_curve_sm{timestamp}.png")
