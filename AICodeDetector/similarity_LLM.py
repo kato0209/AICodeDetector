@@ -80,11 +80,11 @@ parser.add_argument('--max_comment_num', type=int, default=10)
 parser.add_argument('--max_def_num', type=int, default=5)
 parser.add_argument('--cut_def', action='store_true')
 parser.add_argument('--max_todo_num', type=int, default=3)
-parser.add_argument("--learning_rate", default=3e-6, type=float)
+parser.add_argument("--learning_rate", default=1e-5, type=float)
 parser.add_argument("--adam_epsilon", default=1e-6, type=float)
 parser.add_argument("--num_train_epochs", default=5, type=float)
 parser.add_argument("--warmup_ratio", default=0.01, type=float)
-parser.add_argument("--weight_decay", default=0.1, type=float)
+parser.add_argument("--weight_decay", default=0.06, type=float)
 
 args_dict = {
     'dataset': "TheVault",
@@ -418,7 +418,7 @@ with torch.no_grad():
         all_labels.extend(labels)
         
         for i in range(len(similarities)):
-            if similarities[i] > 0.93:
+            if similarities[i] > 0.3:
                 pred = 1
             else:
                 pred = 0

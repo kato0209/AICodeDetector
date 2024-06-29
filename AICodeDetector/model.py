@@ -273,6 +273,9 @@ class CustomCodeLlamaModel(nn.Module):
             encoded_inputs = self.sentence_model_tokenizer(original_codes[i], return_tensors="pt", truncation=True, max_length=128).to(self.model.device)
             input_ids.append(encoded_inputs.input_ids)
             attention_mask.append(encoded_inputs.attention_mask)
+        # input_idsをtensorに変換
+        input_ids = torch.cat(input_ids, dim=0)
+        attention_mask = torch.cat(attention_mask, dim=0)
         
         input_ids_p = []
         attention_mask_p = []
@@ -280,6 +283,9 @@ class CustomCodeLlamaModel(nn.Module):
             encoded_inputs = self.sentence_model_tokenizer(perturbed_codes[i], return_tensors="pt", truncation=True, max_length=128).to(self.model.device)
             input_ids_p.append(encoded_inputs.input_ids)
             attention_mask_p.append(encoded_inputs.attention_mask)
+        # input_ids_pをtensorに変換
+        input_ids_p = torch.cat(input_ids_p, dim=0)
+        attention_mask_p = torch.cat(attention_mask_p, dim=0)
         
         similarity_scores = []
         with torch.no_grad():
