@@ -270,7 +270,7 @@ class CustomCodeLlamaModel(nn.Module):
         input_ids = []
         attention_mask = []
         for i in range(len(original_codes)):
-            encoded_inputs = self.sentence_model_tokenizer(original_codes[i], return_tensors="pt", truncation=True, max_length=128).to(self.model.device)
+            encoded_inputs = self.sentence_model_tokenizer(original_codes[i], return_tensors="pt", padding="max_length", truncation=True, max_length=128).to(self.model.device)
             input_ids.append(encoded_inputs.input_ids)
             attention_mask.append(encoded_inputs.attention_mask)
         # input_idsをtensorに変換
@@ -280,22 +280,18 @@ class CustomCodeLlamaModel(nn.Module):
         input_ids_p = []
         attention_mask_p = []
         for i in range(len(perturbed_codes)):
-            encoded_inputs = self.sentence_model_tokenizer(perturbed_codes[i], return_tensors="pt", truncation=True, max_length=128).to(self.model.device)
+            encoded_inputs = self.sentence_model_tokenizer(perturbed_codes[i], return_tensors="pt", padding="max_length", truncation=True, max_length=128).to(self.model.device)
             input_ids_p.append(encoded_inputs.input_ids)
             attention_mask_p.append(encoded_inputs.attention_mask)
         # input_ids_pをtensorに変換
         input_ids_p = torch.cat(input_ids_p, dim=0)
         attention_mask_p = torch.cat(attention_mask_p, dim=0)
         
-        similarity_scores = []
         with torch.no_grad():
             embeddings1 = self.sentence_model.output_embeddings(input_ids, attention_mask)
             embeddings2 = self.sentence_model.output_embeddings(input_ids_p, attention_mask_p)
-        cos_sim = util.cos_sim(embeddings1, embeddings2)
-        for i in range(len(original_codes)):
-            similarity_scores.append(cos_sim[i, i].item())
-        similarity_scores = torch.tensor(similarity_scores).view(-1, 1).to(self.model.device)
-        return similarity_scores
+        cos_sim = self.sentence_model.sim(embeddings1, embeddings2)
+        return cos_sim
 
 class MLPLayer(nn.Module):
     """
@@ -395,14 +391,12 @@ class SimilarityModel(nn.Module):
         return (loss, cos_sim)
     def output_embeddings(self, input_ids, attention_mask):
         batch_size = input_ids.size(0)
-        num_sent = input_ids.size(1)
         input_ids = input_ids.view((-1, input_ids.size(-1)))
         attention_mask = attention_mask.view((-1, attention_mask.size(-1)))
 
         outputs = self.model(input_ids, attention_mask=attention_mask)
         pooled_output = self.pooler(attention_mask, outputs)
         pooled_output = self.MLP(pooled_output)
-        pooler_output = pooled_output.view((batch_size, num_sent, pooled_output.size(-1)))
-        z = pooler_output[:,0]
+        pooler_output = pooled_output.view((batch_size, pooled_output.size(-1)))
 
-        return z
+        return pooler_output

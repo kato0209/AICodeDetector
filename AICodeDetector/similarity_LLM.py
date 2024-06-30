@@ -101,7 +101,7 @@ args_dict = {
     'base_model_name': "codellama/CodeLlama-13b-Python-hf",
     #'base_model_name': "meta-llama/CodeLlama-7b-Python-hf",
     'mask_filling_model_name': "Salesforce/codet5p-770m",
-    'batch_size': 32,
+    'batch_size': 16,
     'chunk_size': 10,
     'n_similarity_samples': 20,
     'int8': False,
@@ -316,12 +316,14 @@ base_lr = args.learning_rate
 optimizer_parameters = []
 no_decay = ["LayerNorm.weight", "bias"]
 
+"""
 # デコーダー部分のパラメータだけを学習可能に設定
 for name, param in cclm.model.named_parameters():
     if 'decoder' in name:
         param.requires_grad = True
     else:
         param.requires_grad = False
+"""
 
 # 正則化を適用しないパラメータ
 optimizer_parameters.append({
