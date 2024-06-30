@@ -266,7 +266,7 @@ data["original"] = list(set(data["original"]))
 data["sampled"] = list(set(data["sampled"]))
 
 # dataを800件に originalはランダムに抽出
-data_num = 800
+data_num = 32
 data["original"] = random.sample(data["original"], data_num)
 data["sampled"] = data["sampled"][:data_num]
 dataset = CodeDatasetForLLM(data)
@@ -281,7 +281,8 @@ sm_model_config = {
     "tokenizer": model_config["sentence_model_tokenizer"],
 }
 sm = SimilarityModel(model_config=sm_model_config)
-model_path = 'saved_model/model_sm_20240628_064206.pth' 
+#model_path = 'saved_model/model_sm_20240628_064206.pth' 
+model_path = 'saved_model/model_sm_20240630_120305.pth' 
 sm.load_state_dict(torch.load(model_path, map_location=device))
 sm.to(device)
 

@@ -143,14 +143,17 @@ class CustomCodeLlamaModel(nn.Module):
             j = 0
             for _ in range(128):  # 生成を128トークンに制限
                 outputs = model.generate(output_ids, do_sample=True, max_length=output_ids.size(-1) + 1, 
-                                        top_p=0.95, temperature=0.1, pad_token_id=tokenizer.pad_token_id, use_cache=True)
-                y[i][j] = outputs[:, -1].unsqueeze(-1)
+                                        top_p=0.95, temperature=0.8, pad_token_id=tokenizer.pad_token_id, use_cache=True)
+                
                 state[i][j] = output_ids
-                if outputs[:, -1].unsqueeze(-1) == 0:
+                if outputs[:, -1].unsqueeze(-1) != 0:
+                    y[i][j] = outputs[:, -1].unsqueeze(-1)
                     output_ids = torch.cat([output_ids, outputs[:, -1].unsqueeze(-1)], dim=-1)
                 if output_ids[0, -1] == tokenizer.eos_token_id:
                     break
                 j += 1
+            # y[i]のトークンから初期値0である要素を削除
+            y[i] = [y[i][k] for k in range(j) if y[i][k] != 0]
             output_sentence = tokenizer.decode(torch.cat(y[i], dim=-1)[0], skip_special_tokens=True)
             rewrite_codes.append(output_sentence)
             i += 1
@@ -267,6 +270,8 @@ class CustomCodeLlamaModel(nn.Module):
 
     def calc_similarity_custom(self, original_codes, args=None, model_config=None):
         perturbed_codes, _, _ = self.rewrite_code(original_codes, model_config, args)
+        print(original_codes)
+        print(perturbed_codes)
         input_ids = []
         attention_mask = []
         for i in range(len(original_codes)):
