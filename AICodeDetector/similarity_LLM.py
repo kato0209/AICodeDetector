@@ -13,11 +13,12 @@ import os
 import datetime
 from torch.utils.data import DataLoader, random_split
 
-from model import CustomBertModel, CustomCodeLlamaModel
+from model import CustomBertModel, CustomCodeLlamaModel, SimilarityModel
 from pertubate import rewrite_code
 from transformers.optimization import AdamW, get_linear_schedule_with_warmup
 from utils.model_save import model_save
 from utils.confusion_matrix import plot_confusion_matrix
+from utils.generate_cs_data import generate_data
 from pertube_data import pertube_data
 
 from sklearn.metrics import accuracy_score, roc_auc_score, roc_curve, auc, f1_score
@@ -145,90 +146,90 @@ args = parser.parse_args(input_args)
 
 device = args.DEVICE
 
-def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_def_num=5, cut_def=False, max_todo_num=3, path=None):
-
-    logger.info(f'Loading data from {path}')
-    import json
-    all_originals = []
-    all_samples = []  # machine generated
-
-    max_def_num_count = 0
-    min_len_count = 0
-    max_comment_num_count = 0
-    function_comment_num_count = 0
-    max_todo_num_count = 0
-
-    with open(path, 'r') as f:
-        for line in tqdm(f, ncols=70):
-            line = line.strip()
-            if line == '':
-                continue
-            line = json.loads(line)
-
-            # cut out the 'def' part after the first generation
-            if cut_def:
-                line['output'] = line['output'].split('def')[0]
-                line['solution'] = line['solution'].split('def')[0]
-
-            # I don't like there to have too many 'def' in the code
-            # ~100/100000 examples have more than 3 'def'
-            if line['solution'].count('def') > max_def_num or line['output'].count('def') > max_def_num:
-                max_def_num_count += 1
-                continue
-
-            # avoid examples that are too short (less than min_len words)
-            # around 2000/100000 examples have around 55 words
-            if len(line['solution'].split()) < min_len or len(line['output'].split()) < min_len:
-                min_len_count += 1
-                continue
-
-            # if the are too many comments, skip
-            def count_comment(text):
-                return text.count('#')
-
-            if count_comment(line['solution']) > max_comment_num or count_comment(line['output']) > max_comment_num:
-                max_comment_num_count += 1
-                continue
-
-            # if there are too many TODOs, skip
-            def count_todo_comment(text):
-                return text.count('# TODO') + text.count('# todo')
-
-            if count_todo_comment(line['solution']) > max_todo_num or count_todo_comment(line['output']) > max_todo_num:
-                max_todo_num_count += 1
-                continue
-
-            # the number of text.count("'''") and text.count('"""') should be <1
-            if line['solution'].count("'''") > 0 or line['solution'].count('"""') > 0 or line['output'].count("'''") > 0 or line['output'].count('"""') > 0:
-                function_comment_num_count += 1
-                continue
-
-            # cut to 128 tokens
-            all_originals.append(' '.join(line['solution'].split(' ')[:max_len]))
-            all_samples.append(' '.join(line['output'].split(' ')[:max_len]))
-
-    logger.info(f'{max_def_num_count} examples have more than {max_def_num} "def"')
-    logger.info(f'{min_len_count} examples have less than {min_len} words')
-    logger.info(f'{max_comment_num_count} examples have more than {max_comment_num} comments')
-    logger.info(f'{max_todo_num_count} examples have more than {max_todo_num} TODOs')
-    logger.info(f'{function_comment_num_count} examples have more than 1 function comment')
-    logger.info(f'Loaded {len(all_originals)} examples after filtering, and will return {min(max_num, len(all_originals))} examples')
-
-    # statistical analysis
-    # import random
-    # random.seed(42)
-    # random.shuffle(all_originals)
-    # random.shuffle(all_samples)
-    
-    #all_samples = random.sample(all_samples, 800)
-    all_samples = random.sample(all_samples, 70)
-
-    data = {
-        "original": all_originals,
-        "sampled": all_samples
-    }
-
-    return data
+#def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_def_num=5, cut_def=False, max_todo_num=3, path=None):
+#
+#    logger.info(f'Loading data from {path}')
+#    import json
+#    all_originals = []
+#    all_samples = []  # machine generated
+#
+#    max_def_num_count = 0
+#    min_len_count = 0
+#    max_comment_num_count = 0
+#    function_comment_num_count = 0
+#    max_todo_num_count = 0
+#
+#    with open(path, 'r') as f:
+#        for line in tqdm(f, ncols=70):
+#            line = line.strip()
+#            if line == '':
+#                continue
+#            line = json.loads(line)
+#
+#            # cut out the 'def' part after the first generation
+#            if cut_def:
+#                line['output'] = line['output'].split('def')[0]
+#                line['solution'] = line['solution'].split('def')[0]
+#
+#            # I don't like there to have too many 'def' in the code
+#            # ~100/100000 examples have more than 3 'def'
+#            if line['solution'].count('def') > max_def_num or line['output'].count('def') > max_def_num:
+#                max_def_num_count += 1
+#                continue
+#
+#            # avoid examples that are too short (less than min_len words)
+#            # around 2000/100000 examples have around 55 words
+#            if len(line['solution'].split()) < min_len or len(line['output'].split()) < min_len:
+#                min_len_count += 1
+#                continue
+#
+#            # if the are too many comments, skip
+#            def count_comment(text):
+#                return text.count('#')
+#
+#            if count_comment(line['solution']) > max_comment_num or count_comment(line['output']) > max_comment_num:
+#                max_comment_num_count += 1
+#                continue
+#
+#            # if there are too many TODOs, skip
+#            def count_todo_comment(text):
+#                return text.count('# TODO') + text.count('# todo')
+#
+#            if count_todo_comment(line['solution']) > max_todo_num or count_todo_comment(line['output']) > max_todo_num:
+#                max_todo_num_count += 1
+#                continue
+#
+#            # the number of text.count("'''") and text.count('"""') should be <1
+#            if line['solution'].count("'''") > 0 or line['solution'].count('"""') > 0 or line['output'].count("'''") > 0 or line['output'].count('"""') > 0:
+#                function_comment_num_count += 1
+#                continue
+#
+#            # cut to 128 tokens
+#            all_originals.append(' '.join(line['solution'].split(' ')[:max_len]))
+#            all_samples.append(' '.join(line['output'].split(' ')[:max_len]))
+#
+#    logger.info(f'{max_def_num_count} examples have more than {max_def_num} "def"')
+#    logger.info(f'{min_len_count} examples have less than {min_len} words')
+#    logger.info(f'{max_comment_num_count} examples have more than {max_comment_num} comments')
+#    logger.info(f'{max_todo_num_count} examples have more than {max_todo_num} TODOs')
+#    logger.info(f'{function_comment_num_count} examples have more than 1 function comment')
+#    logger.info(f'Loaded {len(all_originals)} examples after filtering, and will return {min(max_num, len(all_originals))} examples')
+#
+#    # statistical analysis
+#    # import random
+#    # random.seed(42)
+#    # random.shuffle(all_originals)
+#    # random.shuffle(all_samples)
+#    
+#    #all_samples = random.sample(all_samples, 800)
+#    all_samples = random.sample(all_samples, 70)
+#
+#    data = {
+#        "original": all_originals,
+#        "sampled": all_samples
+#    }
+#
+#    return data
 
 datasets_paths = [
     "CodeSearchNetDatasets/outputs_incoder_0.2.txt",
@@ -261,8 +262,8 @@ data["original"] = list(set(data["original"]))
 data["sampled"] = list(set(data["sampled"]))
 
 # dataを800件に originalはランダムに抽出
-data["original"] = random.sample(data["original"], 100)
-data["sampled"] = data["sampled"][:100]
+data["original"] = random.sample(data["original"], 800)
+data["sampled"] = data["sampled"][:800]
 
 train_data = {
     "original": data["original"][:int(len(data["original"])*0.7)],
@@ -305,7 +306,13 @@ test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle=False)
 
 model_config = {}
 model_config = load_model(args, args.base_model_name, model_config)
-cclm = CustomCodeLlamaModel(model=model_config['model'], tokenizer=model_config['tokenizer'], sentence_model=model_config['sentence_model'], sentence_model_tokenizer=model_config['sentence_model_tokenizer'])
+sm = SimilarityModel(model=model_config['sentence_model'], tokenizer=model_config['sentence_model_tokenizer'])
+#model_path = 'saved_model/model_sm_20240628_064206.pth' 
+model_path = 'saved_model/model_sm_20240630_120305.pth' 
+sm.load_state_dict(torch.load(model_path, map_location=device))
+sm.to(device)
+
+cclm = CustomCodeLlamaModel(model=model_config['model'], tokenizer=model_config['tokenizer'], sentence_model=sm, sentence_model_tokenizer=model_config['sentence_model_tokenizer'])
 cclm.to(device)
 
 total_steps = int(len(train_dataloader) * args.num_train_epochs)
@@ -334,6 +341,7 @@ optimizer_parameters.append({
     'weight_decay': 0.0,
     'lr': base_lr
 })
+
 
 optimizer = AdamW(optimizer_parameters, lr=args.learning_rate, eps=args.adam_epsilon)
 scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps, num_training_steps=total_steps)

@@ -164,7 +164,7 @@ class CustomCodeLlamaModel(nn.Module):
         #_, perturbed_codes = pertubate_code(original_codes, model_config, args)
         perturbed_codes, y, state = self.rewrite_code(original_codes, model_config, args)
 
-        similarity_scores = self._calc_similarity(original_codes, perturbed_codes, args, model_config)
+        similarity_scores = self._calc_similarity_cutom(original_codes, perturbed_codes, args, model_config)
 
         ai_similarity = []
         human_similarity = []
@@ -183,7 +183,8 @@ class CustomCodeLlamaModel(nn.Module):
             for t in range(token_length):
                 if y[n][t] == 0:
                     continue
-                outputs = self.model(input_ids=state[n][t])
+                with torch.no_grad():
+                    outputs = self.model(input_ids=state[n][t])
                 logits = outputs.logits
 
                 # 入力シーケンスの最後のトークンに対するロジットを抽出
@@ -227,25 +228,26 @@ class CustomCodeLlamaModel(nn.Module):
         input_ids = []
         attention_mask = []
         for i in range(len(original_codes)):
-            encoded_inputs = self.sentence_model_tokenizer(original_codes[i], return_tensors="pt", truncation=True, max_length=128).to(self.model.device)
+            encoded_inputs = self.sentence_model_tokenizer(original_codes[i], padding="max_length", return_tensors="pt", truncation=True, max_length=128).to(self.model.device)
             input_ids.append(encoded_inputs.input_ids)
             attention_mask.append(encoded_inputs.attention_mask)
+        input_ids = torch.cat(input_ids, dim=0)
+        attention_mask = torch.cat(attention_mask, dim=0)
         
         input_ids_p = []
         attention_mask_p = []
         for i in range(len(perturbed_codes)):
-            encoded_inputs = self.sentence_model_tokenizer(perturbed_codes[i], return_tensors="pt", truncation=True, max_length=128).to(self.model.device)
+            encoded_inputs = self.sentence_model_tokenizer(perturbed_codes[i], padding="max_length", return_tensors="pt", truncation=True, max_length=128).to(self.model.device)
             input_ids_p.append(encoded_inputs.input_ids)
             attention_mask_p.append(encoded_inputs.attention_mask)
         
-        similarity_scores = []
+        input_ids_p = torch.cat(input_ids_p, dim=0)
+        attention_mask_p = torch.cat(attention_mask_p, dim=0)
+        
         with torch.no_grad():
             embeddings1 = self.sentence_model.output_embeddings(input_ids, attention_mask)
             embeddings2 = self.sentence_model.output_embeddings(input_ids_p, attention_mask_p)
-        cos_sim = util.cos_sim(embeddings1, embeddings2)
-        for i in range(len(original_codes)):
-            similarity_scores.append(cos_sim[i, i].item())
-        similarity_scores = torch.tensor(similarity_scores).view(-1, 1).to(self.model.device)
+        similarity_scores = self.sentence_model.sim(embeddings1, embeddings2)
         return similarity_scores
     
     def calc_similarity(self, original_codes, args=None, model_config=None):
@@ -270,8 +272,6 @@ class CustomCodeLlamaModel(nn.Module):
 
     def calc_similarity_custom(self, original_codes, args=None, model_config=None):
         perturbed_codes, _, _ = self.rewrite_code(original_codes, model_config, args)
-        print(original_codes)
-        print(perturbed_codes)
         input_ids = []
         attention_mask = []
         for i in range(len(original_codes)):
@@ -364,10 +364,10 @@ class Pooler(nn.Module):
             raise NotImplementedError
 
 class SimilarityModel(nn.Module):
-    def __init__(self, model_config):
+    def __init__(self, model, tokenizer):
         super(SimilarityModel, self).__init__()
-        self.model = model_config['model']
-        self.tokenizer = model_config['tokenizer']
+        self.model = model
+        self.tokenizer = tokenizer
         self.pooler = Pooler()
         self.MLP = MLPLayer(self.model.config)
         self.sim = Similarity()
