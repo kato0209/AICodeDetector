@@ -200,11 +200,19 @@ if __name__ == "__main__":
     batch_size = args.batch_size
 
     data_paths = [
-        "data/CodeSearchNet/python/final/jsonl/train/python_train_1.jsonl.gz",
-        "data/CodeSearchNet/python/final/jsonl/train/python_train_2.jsonl.gz",
-        "data/CodeSearchNet/python/final/jsonl/train/python_train_3.jsonl.gz",
-        "data/CodeSearchNet/python/final/jsonl/train/python_train_4.jsonl.gz",
-        "data/CodeSearchNet/python/final/jsonl/train/python_train_5.jsonl.gz",
+        #"data/CodeSearchNet/python/final/jsonl/train/python_train_1.jsonl.gz",
+        #"data/CodeSearchNet/python/final/jsonl/train/python_train_2.jsonl.gz",
+        #"data/CodeSearchNet/python/final/jsonl/train/python_train_3.jsonl.gz",
+        #"data/CodeSearchNet/python/final/jsonl/train/python_train_4.jsonl.gz",
+        #"data/CodeSearchNet/python/final/jsonl/train/python_train_5.jsonl.gz",
+        "data/CodeSearchNet/python/final/jsonl/train/python_train_6.jsonl.gz",
+        "data/CodeSearchNet/python/final/jsonl/train/python_train_7.jsonl.gz",
+        "data/CodeSearchNet/python/final/jsonl/train/python_train_8.jsonl.gz",
+        "data/CodeSearchNet/python/final/jsonl/train/python_train_9.jsonl.gz",
+        "data/CodeSearchNet/python/final/jsonl/train/python_train_10.jsonl.gz",
+        "data/CodeSearchNet/python/final/jsonl/train/python_train_11.jsonl.gz",
+        "data/CodeSearchNet/python/final/jsonl/train/python_train_12.jsonl.gz",
+        "data/CodeSearchNet/python/final/jsonl/train/python_train_13.jsonl.gz",
     ]
 
     # max_num = 100000

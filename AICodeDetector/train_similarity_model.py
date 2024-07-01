@@ -231,6 +231,14 @@ datasets_paths = [
     "CSHumanDatasets/outputs_train3.txt",
     "CSHumanDatasets/outputs_train4.txt",
     "CSHumanDatasets/outputs_train5.txt",
+    "CSHumanDatasets/outputs_train6.txt",
+    "CSHumanDatasets/outputs_train7.txt",
+    "CSHumanDatasets/outputs_train8.txt",
+    "CSHumanDatasets/outputs_train9.txt",
+    "CSHumanDatasets/outputs_train10.txt",
+    "CSHumanDatasets/outputs_train11.txt",
+    "CSHumanDatasets/outputs_train12.txt",
+    "CSHumanDatasets/outputs_train13.txt",
 ]
 
 data = {
@@ -278,7 +286,7 @@ train_dataloader = DataLoader(train_dataset, args.batch_size, shuffle=True)
 validation_dataloader = DataLoader(val_dataset, args.batch_size, shuffle=False)
 test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle=False)
 
-sm = SimilarityModel(model_config=model_config)
+sm = SimilarityModel(model=model_config["model"], tokenizer=model_config["tokenizer"])
 sm.to(device)
 
 total_steps = int(len(train_dataloader) * args.num_train_epochs)
