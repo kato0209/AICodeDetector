@@ -164,8 +164,11 @@ class CustomCodeLlamaModel(nn.Module):
         #_, perturbed_codes = pertubate_code(original_codes, model_config, args)
         perturbed_codes, y, state = self.rewrite_code(original_codes, model_config, args)
 
-        similarity_scores = self._calc_similarity_cutom(original_codes, perturbed_codes, args, model_config)
+        with torch.no_grad():
+            similarity_scores = self._calc_similarity_cutom(original_codes, perturbed_codes, args, model_config)
+            similarity_scores = similarity_scores.detach()
 
+        """
         ai_similarity = []
         human_similarity = []
         for i in range(len(similarity_scores)):
@@ -175,7 +178,8 @@ class CustomCodeLlamaModel(nn.Module):
                 human_similarity.append(similarity_scores[i])
         ai_similarity = torch.tensor(ai_similarity, requires_grad=True).view(-1, 1).to(self.model.device)
         human_similarity = torch.tensor(human_similarity, requires_grad=True).view(-1, 1).to(self.model.device)
-
+        """
+        
         #similarity_scoresの平均をベースラインに
         loss = 0.0
         for n in range(args.batch_size):
@@ -183,26 +187,26 @@ class CustomCodeLlamaModel(nn.Module):
             for t in range(token_length):
                 if y[n][t] == 0:
                     continue
-                with torch.no_grad():
-                    outputs = self.model(input_ids=state[n][t])
+                outputs = self.model(input_ids=state[n][t])
+            
                 logits = outputs.logits
-
-                # 入力シーケンスの最後のトークンに対するロジットを抽出
                 last_token_logits = logits[0, -1, :]
+
                 # ログ確率を計算
                 log_probs = F.log_softmax(last_token_logits, dim=-1)
                 target_token_log_prob = log_probs[y[n][t].item()]
 
                 if labels[n] == 1:
-                    baseline = torch.mean(ai_similarity)
+                    baseline = torch.mean(similarity_scores)
                     reward = similarity_scores[n].item()
-                    R = reward - baseline
+                    R = reward / baseline
                 else:
-                    baseline = 1 - torch.mean(human_similarity)
-                    reward = 1 - similarity_scores[n].item()
-                    R = (reward - baseline) * 0.5
-                loss += -target_token_log_prob * R
+                    baseline = 1 / torch.mean(similarity_scores)
+                    reward = 1 / similarity_scores[n].item()
+                    R = (reward / baseline) * 0.5
+                loss += (target_token_log_prob * R).detach()
         loss /= args.batch_size * token_length
+        loss = loss.requires_grad_()
 
         return loss, similarity_scores
     
@@ -297,6 +301,77 @@ class CustomCodeLlamaModel(nn.Module):
             embeddings2 = self.sentence_model.output_embeddings(input_ids_p, attention_mask_p)
         cos_sim = self.sentence_model.sim(embeddings1, embeddings2)
         return cos_sim
+    
+    def rewrite_code2(self, codes, model_config, args):
+        prompt = """
+        Generate the following Python code rewrite according to your idea.
+        Please do not output anything other than the rewritten Python code.
+        ```
+        {code}
+        ```
+        """
+
+        tokenizer = model_config['tokenizer']
+        model = model_config['model']
+
+        # [batch_size, token_length]の配列を用意
+        y = []
+        state = []
+        
+
+        rewrite_codes = []
+        i = 0
+        for code in codes:
+            input_prompt = prompt.format(code=code)
+            input_ids = tokenizer(input_prompt, return_tensors="pt", truncation=True, max_length=128).input_ids
+            input_ids = input_ids.to(args.DEVICE)
+            input_ids_len = len(input_ids[0])   
+            
+            outputs = model.generate(input_ids, do_sample=True, max_length=128+input_ids_len, top_p=0.95, temperature=0.2, pad_token_id=tokenizer.pad_token_id, use_cache=True)
+            output_sentence = tokenizer.decode(outputs[0], skip_special_tokens=True)
+            pattern = r"```(.*?)```"
+            rewritten_code = re.findall(pattern, output_sentence, re.DOTALL)
+            if rewritten_code:
+                rewrite_codes.append(rewritten_code[0].strip())
+            else:
+                rewrite_codes.append("")
+            
+            state.append(input_ids)
+            y.append(outputs[0])
+            i += 1
+        
+        return rewrite_codes, y, state
+    
+    def _forward(self, original_codes=None, labels=None, args=None, model_config=None):
+        #_, perturbed_codes = pertubate_code(original_codes, model_config, args)
+        perturbed_codes, y, state = self.rewrite_code2(original_codes, model_config, args)
+
+        with torch.no_grad():
+            similarity_scores = self._calc_similarity_cutom(original_codes, perturbed_codes, args, model_config)
+            similarity_scores = similarity_scores.detach()
+
+        #similarity_scoresの平均をベースラインに
+        loss = 0.0
+        for n in range(args.batch_size):
+            outputs = self.model(input_ids=state[n])
+            logits = outputs.logits
+            probs = torch.nn.functional.softmax(logits, dim=-1)
+            target_token_log_prob = probs.gather(2, state[n].unsqueeze(-1)).squeeze(-1).prod(dim=-1)
+            
+            if labels[n] == 1:
+                baseline = torch.mean(similarity_scores)
+                reward = similarity_scores[n].item()
+                R = reward / baseline
+            else:
+                baseline = 1 / torch.mean(similarity_scores)
+                reward = 1 / similarity_scores[n].item()
+                R = (reward / baseline) * 0.5
+            loss += target_token_log_prob * R
+        loss /= args.batch_size
+
+        return loss, similarity_scores
+    
+
 
 class MLPLayer(nn.Module):
     """
