@@ -181,6 +181,7 @@ class CustomCodeLlamaModel(nn.Module):
         """
         
         #similarity_scoresの平均をベースラインに
+        initial_loss_computation = True
         loss = 0.0
         for n in range(args.batch_size):
             token_length = len(y[n])
@@ -204,9 +205,13 @@ class CustomCodeLlamaModel(nn.Module):
                     baseline = 1 / torch.mean(similarity_scores)
                     reward = 1 / similarity_scores[n].item()
                     R = (reward / baseline) * 0.5
-                loss += (target_token_log_prob * R).detach()
+
+                if initial_loss_computation:
+                    loss += target_token_log_prob * R
+                    initial_loss_computation = False
+                else:
+                    loss += target_token_log_prob.detach() * R
         loss /= args.batch_size * token_length
-        loss = loss.requires_grad_()
 
         return loss, similarity_scores
     

@@ -280,6 +280,7 @@ test_data = {
     "sampled": data["sampled"][int(len(data["sampled"])*0.8):]
 }
 
+"""
 data_num = 32
 # train_dataを先頭の10件に
 train_data["original"] = train_data["original"][:data_num]
@@ -292,6 +293,7 @@ val_data["sampled"] = val_data["sampled"][:data_num]
 # test_dataを先頭の10件に
 test_data["original"] = test_data["original"][:data_num]
 test_data["sampled"] = test_data["sampled"][:data_num]
+"""
 
 #train_data = pertube_data(train_data, model_config=model_config, args=args)
 #val_data = pertube_data(val_data, model_config=model_config, args=args)
