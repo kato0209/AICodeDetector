@@ -9,6 +9,9 @@ import re
 
 from pertubate import rewrite_code
 
+from torchviz import make_dot
+from IPython.display import display
+
 class CustomClassificationHead(nn.Module):
     def __init__(self,config, num_labels):
         super(CustomClassificationHead, self).__init__()
@@ -154,6 +157,10 @@ class CustomCodeLlamaModel(nn.Module):
                 j += 1
             # y[i]のトークンから初期値0である要素を削除
             y[i] = [y[i][k] for k in range(j) if y[i][k] != 0]
+            if len(y[i]) == 0:
+                i += 1
+                rewrite_codes.append("")
+                continue
             output_sentence = tokenizer.decode(torch.cat(y[i], dim=-1)[0], skip_special_tokens=True)
             rewrite_codes.append(output_sentence)
             i += 1
@@ -180,7 +187,7 @@ class CustomCodeLlamaModel(nn.Module):
         human_similarity = torch.tensor(human_similarity, requires_grad=True).view(-1, 1).to(self.model.device)
         """
         
-        #similarity_scoresの平均をベースラインに
+        # 初回の計算グラフのみを保持し、以降は計算グラフを切り離す
         initial_loss_computation = True
         loss = 0.0
         for n in range(args.batch_size):
@@ -189,10 +196,10 @@ class CustomCodeLlamaModel(nn.Module):
                 if y[n][t] == 0:
                     continue
                 outputs = self.model(input_ids=state[n][t])
-            
                 logits = outputs.logits
-                last_token_logits = logits[0, -1, :]
 
+                # 入力シーケンスの最後のトークンに対するロジットを抽出
+                last_token_logits = logits[0, -1, :]
                 # ログ確率を計算
                 log_probs = F.log_softmax(last_token_logits, dim=-1)
                 target_token_log_prob = log_probs[y[n][t].item()]
@@ -205,12 +212,13 @@ class CustomCodeLlamaModel(nn.Module):
                     baseline = 1 / torch.mean(similarity_scores)
                     reward = 1 / similarity_scores[n].item()
                     R = (reward / baseline) * 0.5
-
+                
                 if initial_loss_computation:
                     loss += target_token_log_prob * R
                     initial_loss_computation = False
                 else:
                     loss += target_token_log_prob.detach() * R
+
         loss /= args.batch_size * token_length
 
         return loss, similarity_scores

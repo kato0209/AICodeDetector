@@ -99,8 +99,8 @@ args_dict = {
     'n_perturbation_list': "50",
     'n_perturbation_rounds': 1,
     #'base_model_name': "codellama/CodeLlama-7b-hf",
-    'base_model_name': "codellama/CodeLlama-13b-Python-hf",
-    #'base_model_name': "meta-llama/CodeLlama-7b-Python-hf",
+    #'base_model_name': "codellama/CodeLlama-13b-Python-hf",
+    'base_model_name': "meta-llama/CodeLlama-7b-Python-hf",
     'mask_filling_model_name': "Salesforce/codet5p-770m",
     'batch_size': 4,
     'chunk_size': 10,
@@ -316,6 +316,66 @@ sm.to(device)
 
 cclm = CustomCodeLlamaModel(model=model_config['model'], tokenizer=model_config['tokenizer'], sentence_model=sm, sentence_model_tokenizer=model_config['sentence_model_tokenizer'])
 cclm.to(device)
+
+selected_params = [
+    # 初期層
+    "model.embed_tokens.weight",
+
+    # 第1層の全パラメータ
+    "model.layers.0.self_attn.q_proj.weight",
+    "model.layers.0.self_attn.k_proj.weight",
+    "model.layers.0.self_attn.v_proj.weight",
+    "model.layers.0.self_attn.o_proj.weight",
+    "model.layers.0.mlp.gate_proj.weight",
+    "model.layers.0.mlp.up_proj.weight",
+    "model.layers.0.mlp.down_proj.weight",
+    "model.layers.0.input_layernorm.weight",
+    "model.layers.0.post_attention_layernorm.weight",
+
+    # 中間層の一部
+    "model.layers.10.self_attn.q_proj.weight",
+    "model.layers.10.self_attn.k_proj.weight",
+    "model.layers.10.self_attn.v_proj.weight",
+    "model.layers.10.self_attn.o_proj.weight",
+    "model.layers.10.mlp.gate_proj.weight",
+    "model.layers.10.mlp.up_proj.weight",
+    "model.layers.10.mlp.down_proj.weight",
+    "model.layers.10.input_layernorm.weight",
+    "model.layers.10.post_attention_layernorm.weight",
+
+    "model.layers.20.self_attn.q_proj.weight",
+    "model.layers.20.self_attn.k_proj.weight",
+    "model.layers.20.self_attn.v_proj.weight",
+    "model.layers.20.self_attn.o_proj.weight",
+    "model.layers.20.mlp.gate_proj.weight",
+    "model.layers.20.mlp.up_proj.weight",
+    "model.layers.20.mlp.down_proj.weight",
+    "model.layers.20.input_layernorm.weight",
+    "model.layers.20.post_attention_layernorm.weight",
+
+    # 最終層
+    "model.layers.31.self_attn.q_proj.weight",
+    "model.layers.31.self_attn.k_proj.weight",
+    "model.layers.31.self_attn.v_proj.weight",
+    "model.layers.31.self_attn.o_proj.weight",
+    "model.layers.31.mlp.gate_proj.weight",
+    "model.layers.31.mlp.up_proj.weight",
+    "model.layers.31.mlp.down_proj.weight",
+    "model.layers.31.input_layernorm.weight",
+    "model.layers.31.post_attention_layernorm.weight",
+
+    # 正規化層と出力層
+    "model.norm.weight",
+    "lm_head.weight"
+]
+
+# すべてのパラメータをループして、必要なものを浮動小数点に変換する
+for name, param in cclm.model.named_parameters():
+    if name in selected_params:
+        param.requires_grad = True
+    else:
+        param.requires_grad = False
+
 
 total_steps = int(len(train_dataloader) * args.num_train_epochs)
 warmup_steps = int(total_steps * args.warmup_ratio)
