@@ -209,9 +209,13 @@ class CustomCodeLlamaModel(nn.Module):
                     reward = similarity_scores[n].item()
                     R = reward / baseline
                 else:
-                    baseline = 1 / torch.mean(similarity_scores)
-                    reward = 1 / similarity_scores[n].item()
-                    R = (reward / baseline) * 0.5
+                    # similarity_scoresが0の場合の処理を追加
+                    if similarity_scores[n].item() == 0:
+                        R = 0
+                    else:
+                        baseline = 1 / torch.mean(similarity_scores)
+                        reward = 1 / similarity_scores[n].item()
+                        R = (reward / baseline) * 0.5
                 
                 if initial_loss_computation:
                     loss += target_token_log_prob * R
