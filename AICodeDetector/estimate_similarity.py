@@ -276,11 +276,7 @@ dataloader = DataLoader(dataset, args.batch_size, shuffle=True)
 model_config = {}
 model_config = load_model(args, args.base_model_name, model_config)
 
-sm_model_config = {
-    "model": model_config["sentence_model"],
-    "tokenizer": model_config["sentence_model_tokenizer"],
-}
-sm = SimilarityModel(model_config=sm_model_config)
+sm = SimilarityModel(model=model_config['sentence_model'], tokenizer=model_config['sentence_model_tokenizer'])
 #model_path = 'saved_model/model_sm_20240628_064206.pth' 
 model_path = 'saved_model/model_sm_20240630_120305.pth' 
 sm.load_state_dict(torch.load(model_path, map_location=device))

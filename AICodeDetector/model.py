@@ -200,8 +200,15 @@ class CustomCodeLlamaModel(nn.Module):
 
                 # 入力シーケンスの最後のトークンに対するロジットを抽出
                 last_token_logits = logits[0, -1, :]
-                # ログ確率を計算
-                log_probs = F.log_softmax(last_token_logits, dim=-1)
+                # Logitsの平均と標準偏差を計算
+                mean = torch.mean(last_token_logits)
+                std = torch.std(last_token_logits)
+
+                # 標準化
+                standardized_logits = (last_token_logits - mean) / std
+
+                # ログ確率を計算(infにならないように）
+                log_probs = torch.nn.functional.log_softmax(standardized_logits, dim=-1)
                 target_token_log_prob = log_probs[y[n][t].item()]
 
                 if labels[n] == 1:
@@ -293,6 +300,8 @@ class CustomCodeLlamaModel(nn.Module):
 
     def calc_similarity_custom(self, original_codes, args=None, model_config=None):
         perturbed_codes, _, _ = self.rewrite_code(original_codes, model_config, args)
+        print(original_codes[0])
+        print(perturbed_codes[0])
         input_ids = []
         attention_mask = []
         for i in range(len(original_codes)):
