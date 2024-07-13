@@ -33,7 +33,7 @@ def load_mask_filling_model(args, mask_filling_model_name, model_config):
     model_config['model'] = mask_model
     return model_config
 
-
+"""
 def load_model(args, model_name, model_config):
     quant_config = transformers.BitsAndBytesConfig(
         load_in_4bit=True,
@@ -52,9 +52,8 @@ def load_model(args, model_name, model_config):
     model_config['sentence_model'] = sentence_model
     model_config['sentence_model_tokenizer'] = sentence_model_tokenizer
     return model_config
-
-
 """
+
 def load_model(args, model_name, model_config):
     tokenizer = transformers.AutoTokenizer.from_pretrained(model_name)
     tokenizer.pad_token = tokenizer.eos_token
@@ -67,7 +66,6 @@ def load_model(args, model_name, model_config):
     model_config['sentence_model'] = sentence_model
     model_config['sentence_model_tokenizer'] = sentence_model_tokenizer
     return model_config
-"""
 
 def load_model2(args, model_name, model_config):
     tokenizer = transformers.AutoTokenizer.from_pretrained('microsoft/graphcodebert-base')

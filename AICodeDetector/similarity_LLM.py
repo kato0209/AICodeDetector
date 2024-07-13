@@ -102,7 +102,7 @@ args_dict = {
     #'base_model_name': "codellama/CodeLlama-13b-Python-hf",
     'base_model_name': "meta-llama/CodeLlama-7b-Python-hf",
     'mask_filling_model_name': "Salesforce/codet5p-770m",
-    'batch_size': 4,
+    'batch_size': 16,
     'chunk_size': 10,
     'n_similarity_samples': 20,
     'int8': False,
