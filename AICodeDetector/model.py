@@ -200,15 +200,9 @@ class CustomCodeLlamaModel(nn.Module):
 
                 # 入力シーケンスの最後のトークンに対するロジットを抽出
                 last_token_logits = logits[0, -1, :]
-                # Logitsの平均と標準偏差を計算
-                mean = torch.mean(last_token_logits)
-                std = torch.std(last_token_logits)
-
-                # 標準化
-                standardized_logits = (last_token_logits - mean) / std
 
                 # ログ確率を計算(infにならないように）
-                log_probs = torch.nn.functional.log_softmax(standardized_logits, dim=-1)
+                log_probs = torch.nn.functional.log_softmax(last_token_logits, dim=-1)
                 target_token_log_prob = log_probs[y[n][t].item()]
 
                 if labels[n] == 1:
@@ -225,10 +219,14 @@ class CustomCodeLlamaModel(nn.Module):
                         R = (reward / baseline) * 0.5
                 
                 if initial_loss_computation:
-                    loss += target_token_log_prob * R
+                    temp_loss = target_token_log_prob * R
                     initial_loss_computation = False
                 else:
-                    loss += target_token_log_prob.detach() * R
+                    temp_loss = target_token_log_prob.detach() * R
+                    
+                if temp_loss == float('-inf'):
+                    continue
+                loss += temp_loss
 
         loss /= args.batch_size * token_length
 
