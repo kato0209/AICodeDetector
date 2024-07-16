@@ -108,7 +108,7 @@ class CustomBertModel(nn.Module):
         output = output + (pooled,)
         return ((loss, cos_loss) + output) if loss is not None else output
 
-
+import time
 class CustomCodeLlamaModel(nn.Module):
     def __init__(self, model, tokenizer, sentence_model, sentence_model_tokenizer):
         super(CustomCodeLlamaModel, self).__init__()
@@ -124,6 +124,7 @@ class CustomCodeLlamaModel(nn.Module):
         ```
         {code}
         ```
+
         """
 
         tokenizer = model_config['tokenizer']
@@ -138,7 +139,7 @@ class CustomCodeLlamaModel(nn.Module):
         i = 0
         for code in codes:
             input_prompt = prompt.format(code=code)
-            input_ids = tokenizer(input_prompt, return_tensors="pt", truncation=True, max_length=128).input_ids
+            input_ids = tokenizer(input_prompt, return_tensors="pt").input_ids
             input_ids = input_ids.to(args.DEVICE)
             
             # トークンごとの生成を開始
@@ -146,9 +147,14 @@ class CustomCodeLlamaModel(nn.Module):
             j = 0
             for _ in range(128):  # 生成を128トークンに制限
                 outputs = model.generate(output_ids, do_sample=True, max_length=output_ids.size(-1) + 1, 
-                                        top_p=0.95, temperature=0.8, pad_token_id=tokenizer.pad_token_id, use_cache=True)
+                                        top_p=0.95, temperature=0.2, pad_token_id=tokenizer.pad_token_id, use_cache=True)
                 
                 state[i][j] = output_ids
+                """
+                print(tokenizer.decode(output_ids[0], skip_special_tokens=True))
+                print("-------------")
+                time.sleep(1)
+                """
                 if outputs[:, -1].unsqueeze(-1) != 0:
                     y[i][j] = outputs[:, -1].unsqueeze(-1)
                     output_ids = torch.cat([output_ids, outputs[:, -1].unsqueeze(-1)], dim=-1)
@@ -298,8 +304,16 @@ class CustomCodeLlamaModel(nn.Module):
 
     def calc_similarity_custom(self, original_codes, args=None, model_config=None):
         perturbed_codes, _, _ = self.rewrite_code(original_codes, model_config, args)
-        print(original_codes[0])
-        print(perturbed_codes[0])
+        
+        """
+        for i in range(len(original_codes)):
+            print("S---------")
+            print(original_codes[i])
+            print("-----------------")
+            print(perturbed_codes[i])
+            print("E---------")
+        """
+
         input_ids = []
         attention_mask = []
         for i in range(len(original_codes)):
