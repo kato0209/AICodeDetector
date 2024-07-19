@@ -119,11 +119,20 @@ class CustomCodeLlamaModel(nn.Module):
     
     def rewrite_code(self, codes, model_config, args):
         prompt = """
-        Generate the following Python code rewrite according to your idea.
-        Please do not output anything other than the rewritten Python code.
+        Instruction:
+
         ```
         {code}
         ```
+
+        Please first explain the functionality of the
+        python code above. Then generate a possible
+        rewrite for this python code according to your
+        explanation.
+        Let's generate Python code rewrite step by step.
+        Please do not output anything other than the rewritten Python code.
+
+        REWRITE:
 
         """
 
@@ -147,7 +156,7 @@ class CustomCodeLlamaModel(nn.Module):
             j = 0
             for _ in range(128):  # 生成を128トークンに制限
                 outputs = model.generate(output_ids, do_sample=True, max_length=output_ids.size(-1) + 1, 
-                                        top_p=0.95, temperature=0.2, pad_token_id=tokenizer.pad_token_id, use_cache=True)
+                                        top_p=0.95, temperature=0.8, pad_token_id=tokenizer.pad_token_id, use_cache=True)
                 
                 state[i][j] = output_ids
                 """
@@ -163,11 +172,13 @@ class CustomCodeLlamaModel(nn.Module):
                 j += 1
             # y[i]のトークンから初期値0である要素を削除
             y[i] = [y[i][k] for k in range(j) if y[i][k] != 0]
+            
             if len(y[i]) == 0:
                 i += 1
                 rewrite_codes.append("")
                 continue
             output_sentence = tokenizer.decode(torch.cat(y[i], dim=-1)[0], skip_special_tokens=True)
+            output_sentence = output_sentence.rstrip()
             rewrite_codes.append(output_sentence)
             i += 1
         
@@ -303,7 +314,7 @@ class CustomCodeLlamaModel(nn.Module):
         return similarity_scores
 
     def calc_similarity_custom(self, original_codes, args=None, model_config=None):
-        perturbed_codes, _, _ = self.rewrite_code(original_codes, model_config, args)
+        perturbed_codes, _, _ = self.rewrite_code2(original_codes, model_config, args)
         
         """
         for i in range(len(original_codes)):
@@ -338,15 +349,30 @@ class CustomCodeLlamaModel(nn.Module):
             embeddings1 = self.sentence_model.output_embeddings(input_ids, attention_mask)
             embeddings2 = self.sentence_model.output_embeddings(input_ids_p, attention_mask_p)
         cos_sim = self.sentence_model.sim(embeddings1, embeddings2)
-        return cos_sim
+        return cos_sim, original_codes, perturbed_codes
     
     def rewrite_code2(self, codes, model_config, args):
-        prompt = """
-        Generate the following Python code rewrite according to your idea.
-        Please do not output anything other than the rewritten Python code.
+        explain_prompt = """
+        Instruction:
+
         ```
         {code}
         ```
+
+        Please explain the functionality of the
+        python code above.
+
+        """
+
+        prompt = """
+        Instruction:
+
+        {explain}
+
+        Following the instructions above, output the python code.
+        Please organize all the code in a single markdown code block. 
+        Please do not add any clarifications after the rewritten code.
+
         """
 
         tokenizer = model_config['tokenizer']
@@ -360,13 +386,23 @@ class CustomCodeLlamaModel(nn.Module):
         rewrite_codes = []
         i = 0
         for code in codes:
-            input_prompt = prompt.format(code=code)
-            input_ids = tokenizer(input_prompt, return_tensors="pt", truncation=True, max_length=128).input_ids
+            explain_input_prompt = explain_prompt.format(code=code)
+            explain_input_ids = tokenizer(explain_input_prompt, return_tensors="pt").input_ids
+            explain_input_ids = explain_input_ids.to(args.DEVICE)
+            explain_input_ids_len = len(explain_input_ids[0])   
+            
+            outputs = model.generate(explain_input_ids, do_sample=True, max_length=1000+explain_input_ids_len, top_p=0.95, temperature=0.8, pad_token_id=tokenizer.pad_token_id)
+            explain = tokenizer.decode(outputs[0], skip_special_tokens=True)
+            print(explain)
+            print("-------------")
+
+            input_prompt = prompt.format(explain=explain)
+            input_ids = tokenizer(input_prompt, return_tensors="pt").input_ids
             input_ids = input_ids.to(args.DEVICE)
             input_ids_len = len(input_ids[0])   
-            
-            outputs = model.generate(input_ids, do_sample=True, max_length=128+input_ids_len, top_p=0.95, temperature=0.2, pad_token_id=tokenizer.pad_token_id, use_cache=True)
+            outputs = model.generate(input_ids, do_sample=True, max_length=128+input_ids_len, top_p=0.95, temperature=0.8, pad_token_id=tokenizer.pad_token_id)
             output_sentence = tokenizer.decode(outputs[0], skip_special_tokens=True)
+
             pattern = r"```(.*?)```"
             rewritten_code = re.findall(pattern, output_sentence, re.DOTALL)
             if rewritten_code:

@@ -35,11 +35,15 @@ def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_
             # cut to 128 tokens
             # def_strを先頭にくっつける
 
+            
             line['solution'] = ' '.join(def_str) + ' ' + ' '.join(line['solution'].split(' '))
             line['output'] = ' '.join(def_str) + ' ' + ' '.join(line['output'].split(' '))
+            
 
-            all_originals.append(' '.join(line['solution'].split(' ')[:max_len]))
-            all_samples.append(' '.join(line['output'].split(' ')[:max_len]))
+            if len(' '.join(line['solution'].split(' ')[:max_len])) > 100:
+                all_originals.append(' '.join(line['solution'].split(' ')[:max_len]))
+            if len(' '.join(line['output'].split(' ')[:max_len])) > 100:
+                all_samples.append(' '.join(line['output'].split(' ')[:max_len]))
 
     all_samples = random.sample(all_samples, 70)
 

@@ -100,8 +100,16 @@ args_dict = {
     'n_perturbation_list': "50",
     'n_perturbation_rounds': 1,
     #'base_model_name': "codellama/CodeLlama-7b-hf",
-    'base_model_name': "codellama/CodeLlama-13b-Python-hf",
+    #'base_model_name': "codellama/CodeLlama-7b-Python-hf",
+    #'base_model_name': "codellama/CodeLlama-13b-Python-hf",
+    #'base_model_name': "meta-llama/CodeLlama-7b-hf",
+    #'base_model_name': "Salesforce/codet5p-770m",
+    #'base_model_name': "facebook/bart-base",
+    #'base_model_name': "HuggingFaceH4/starchat-alpha",
+    'base_model_name': "meta-llama/Meta-Llama-3-8B-Instruct",
+    #'base_model_name': "meta-llama/CodeLlama-7b-Instruct-hf",
     #'base_model_name': "meta-llama/CodeLlama-7b-Python-hf",
+    #'base_model_name': "microsoft/codebert-base",
     'mask_filling_model_name': "Salesforce/codet5p-770m",
     'batch_size': 32,
     'chunk_size': 10,
@@ -277,8 +285,10 @@ model_config = {}
 model_config = load_model(args, args.base_model_name, model_config)
 
 sm = SimilarityModel(model=model_config['sentence_model'], tokenizer=model_config['sentence_model_tokenizer'])
-#model_path = 'saved_model/model_sm_20240628_064206.pth' 
-model_path = 'saved_model/model_sm_20240630_120305.pth' 
+
+#model_path = 'saved_model/model_sm_20240630_120305.pth' 
+model_path = 'saved_model/SM_model_sm_20240715_210228.pth' 
+
 sm.load_state_dict(torch.load(model_path, map_location=device))
 sm.to(device)
 
@@ -301,12 +311,21 @@ with torch.no_grad():
     for batch in dataloader:
         codes = batch['code']
         labels = batch['labels'].to(device)
-        similarities = cclm.calc_similarity_custom(codes, model_config=model_config, args=args)
+        similarities, original_codes, per_codes = cclm.calc_similarity_custom(codes, model_config=model_config, args=args)
         
         similarities = similarities.detach().cpu().numpy()
-        print(similarities)
         labels = labels.detach().cpu().numpy()
-        print(labels)
+        
+        for i in range(len(similarities)):
+            print("S------------------")
+            print(original_codes[i])
+            print("------------------")
+            print(per_codes[i])
+            print("------------------")
+            print(similarities[i])
+            print("------------------")
+            print(labels[i])
+            print("E------------------")
         
         all_similarities.extend(similarities)
         all_labels.extend(labels)
