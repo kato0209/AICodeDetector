@@ -39,6 +39,9 @@ def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_
             line['solution'] = ' '.join(def_str) + ' ' + ' '.join(line['solution'].split(' '))
             line['output'] = ' '.join(def_str) + ' ' + ' '.join(line['output'].split(' '))
             
+            line['solution'] = line['solution'].rstrip()
+            line['output'] = line['output'].rstrip()
+            
 
             if len(' '.join(line['solution'].split(' ')[:max_len])) > 100:
                 all_originals.append(' '.join(line['solution'].split(' ')[:max_len]))
