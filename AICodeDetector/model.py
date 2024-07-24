@@ -231,8 +231,6 @@ class CustomCodeLlamaModel(nn.Module):
         human_similarity = torch.tensor(human_similarity, requires_grad=True).view(-1, 1).to(self.model.device)
         """
         
-        # 初回の計算グラフのみを保持し、以降は計算グラフを切り離す
-        initial_loss_computation = True
         loss = 0.0
         for n in range(args.batch_size):
             token_length = len(y[n])
@@ -262,14 +260,7 @@ class CustomCodeLlamaModel(nn.Module):
                         reward = 1 / similarity_scores[n].item()
                         R = (reward / baseline) * 0.5
                 
-                if initial_loss_computation:
-                    temp_loss = target_token_log_prob * R
-                    initial_loss_computation = False
-                else:
-                    temp_loss = target_token_log_prob.detach() * R
-                    
-                if temp_loss == float('-inf'):
-                    continue
+                temp_loss = target_token_log_prob * R
                 loss += temp_loss
 
         loss /= args.batch_size * token_length

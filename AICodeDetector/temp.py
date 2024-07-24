@@ -1,168 +1,49 @@
-import re
-import transformers
 import torch
-from load_model import load_mask_filling_model, load_model
-import argparse
+from matplotlib import pyplot as plt
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--dataset', type=str, default="writing")
-parser.add_argument('--dataset_key', type=str, default="document")
-parser.add_argument('--pct_words_masked', type=float, default=0.3)
-parser.add_argument('--span_length', type=int, default=2)
-parser.add_argument('--n_samples', type=int, default=5)
-parser.add_argument('--n_perturbation_list', type=str, default="10")
-parser.add_argument('--n_perturbation_rounds', type=int, default=1)
-parser.add_argument('--base_model_name', type=str, default="")
-parser.add_argument('--scoring_model_name', type=str, default="")
-parser.add_argument('--mask_filling_model_name', type=str, default="Salesforce/CodeT5-large")
-parser.add_argument('--batch_size', type=int, default=64)
-parser.add_argument('--chunk_size', type=int, default=20)
-parser.add_argument('--n_similarity_samples', type=int, default=20)
-parser.add_argument('--int8', action='store_true')
-parser.add_argument('--half', action='store_true')
-parser.add_argument('--base_half', action='store_true')
-parser.add_argument('--do_top_k', action='store_true')
-parser.add_argument('--top_k', type=int, default=40)
-parser.add_argument('--do_top_p', action='store_true')
-parser.add_argument('--top_p', type=float, default=0.96)
-parser.add_argument('--output_name', type=str, default="test_ipynb")
-parser.add_argument('--openai_model', type=str, default=None)
-parser.add_argument('--openai_key', type=str)
-parser.add_argument('--DEVICE', type=str, default='cuda')
-parser.add_argument('--buffer_size', type=int, default=1)
-parser.add_argument('--mask_top_p', type=float, default=1.0)
-parser.add_argument('--mask_temperature', type=float, default=1.0)
-parser.add_argument('--pre_perturb_pct', type=float, default=0.0)
-parser.add_argument('--pre_perturb_span_length', type=int, default=5)
-parser.add_argument('--random_fills', action='store_true')
-parser.add_argument('--random_fills_tokens', action='store_true')
-parser.add_argument('--cache_dir', type=str, default="~/.cache/huggingface/hub")
-parser.add_argument('--prompt_len', type=int, default=30)
-parser.add_argument('--generation_len', type=int, default=200)
-parser.add_argument('--min_words', type=int, default=55)
-parser.add_argument('--temperature', type=float, default=1)
-parser.add_argument('--baselines', type=str, default="LRR,DetectGPT,NPR")
-parser.add_argument('--perturb_type', type=str, default="random")
-parser.add_argument('--pct_identifiers_masked', type=float, default=0.5)
-parser.add_argument('--min_len', type=int, default=0)
-parser.add_argument('--max_len', type=int, default=128)
-parser.add_argument('--max_comment_num', type=int, default=10)
-parser.add_argument('--max_def_num', type=int, default=5)
-parser.add_argument('--cut_def', action='store_true')
-parser.add_argument('--max_todo_num', type=int, default=3)
-parser.add_argument("--learning_rate", default=2e-6, type=float)
-parser.add_argument("--adam_epsilon", default=1e-6, type=float)
-parser.add_argument("--num_train_epochs", default=20, type=float)
-parser.add_argument("--warmup_ratio", default=0.01, type=float)
-parser.add_argument("--weight_decay", default=0.05, type=float)
-args_dict = {
-    'dataset': "TheVault",
-    # 'dataset': "CodeSearchNet",
-    'dataset_key': "CodeLlama-7b-hf-10000-tp0.2",
-    # 'dataset_key': "CodeLlama-7b-hf-10000-tp1.0",
-    'pct_words_masked': 0.5,
-    'pct_identifiers_masked': 0.75,
-    'span_length': 2,
-    'n_samples': 500,
-    'n_perturbation_list': "50",
-    'n_perturbation_rounds': 1,
-    'base_model_name': "codellama/CodeLlama-7b-hf",
-    'mask_filling_model_name': "Salesforce/codet5p-770m",
-    'batch_size': 64,
-    'chunk_size': 10,
-    'n_similarity_samples': 20,
-    'int8': False,
-    'half': False,
-    'base_half': False,
-    'do_top_k': False,
-    'top_k': 40,
-    'do_top_p': False,
-    'top_p': 0.96,
-    'output_name': "test_ipynb",
-    'openai_model': None,
-    'openai_key': None,
-    'buffer_size': 1,
-    'mask_top_p': 1.0,
-    'mask_temperature': 1,
-    'pre_perturb_pct': 0.0,
-    'pre_perturb_span_length': 5,
-    'random_fills': False,
-    'random_fills_tokens': False,
-    'cache_dir': "~/.cache/huggingface/hub",
-    'prompt_len': 30,
-    'generation_len': 200,
-    'min_words': 55,
-    'temperature': 1,
-    'baselines': "LRR,DetectGPT,NPR",
-    'perturb_type': "random-insert-space+newline",
-    'min_len': 0,
-    'max_len': 128,
-    'max_comment_num': 10,
-    'max_def_num': 5,
-    'cut_def': False,
-    'max_todo_num': 3
-}
+# データポイント
+x = torch.Tensor([1, 2])
+t = torch.Tensor([3, 5])
 
-input_args = []
-for key, value in args_dict.items():
-    if value:
-        input_args.append(f"--{key}={value}")
+plt.scatter(x, t)
+plt.xlim((0, 6))
+plt.ylim((0, 6))
 
-args = parser.parse_args(input_args)
+# パラメータの初期化
+a = torch.tensor(1., requires_grad=True)
+b = torch.tensor(0., requires_grad=True)
 
-def rewrite_code(codes, model_config, args):
-    prompt = """
-    Please first explain the functionality of the python code below. Then generate a possible rewrite for this python code according to your explanation. Please organize all the code in a single markdown code block. Please do not add any clarifications after the rewritten code.
-    ```
-    {code}
-    ```
-    """
+# 学習設定
+learning_rate = 0.1
+batch_size = 10
+n_iterations = 100
 
-    tokenizer = model_config['tokenizer']
-    model = model_config['model']
-
-    rewrite_codes = []
-    for code in codes:
-        input_prompt = prompt.format(code=code)
-        input_ids = tokenizer(input_prompt, return_tensors="pt", truncation=True, max_length=128).input_ids
-        input_ids = input_ids.to(args.DEVICE)
-        
-        # トークンごとの生成を開始
-        output_ids = input_ids
-        for _ in range(128):  # 生成を128トークンに制限
-            outputs = model.generate(output_ids, do_sample=True, max_length=output_ids.size(-1) + 1, 
-                                     top_p=0.95, temperature=0.2, pad_token_id=tokenizer.pad_token_id, use_cache=True)
-            output_ids = torch.cat([output_ids, outputs[:, -1].unsqueeze(-1)], dim=-1)
-            if output_ids[0, -1] == tokenizer.eos_token_id:
-                break
-        
-        decoded_output = tokenizer.decode(output_ids[0], skip_special_tokens=True)
-        print(decoded_output)
-        pattern = r"```(.*?)```"
-        rewritten_code = re.findall(pattern, decoded_output, re.DOTALL)
-        if rewritten_code:
-            rewrite_codes.append(rewritten_code[0].strip())
-        else:
-            rewrite_codes.append("")
+loss = 0.0
+for i in range(n_iterations):
+    y = a * x + b
+    plt.plot(x, y.detach())
     
-    return rewrite_codes
+    # 損失の計算
+    if i % 2 == 0:
+        e = torch.mean((t - y) ** 2)
+    else:
+        e = torch.mean((t - y) ** 2) * 0.1
+    e.backward()
+    #e.backward()
+    
+    
+    # 10ループごとに勾配を使ってパラメータを更新
+    if (i + 1) % batch_size == 0:
+        print(a.grad, b.grad)
+        print("--------------")
+        # パラメータの更新
+        a.data -= learning_rate * a.grad / batch_size
+        b.data -= learning_rate * b.grad / batch_size
+        
 
-codes = [
-"""
-fruit1 = input('Enter the name of the first fruit:\n')
-fruit2 = input('Enter the name of the second fruit:\n')
+        # 勾配をリセット
+        a.grad.zero_()
+        b.grad.zero_()
 
-if fruit1 < fruit2:
-    print(fruit1 + " comes before " + fruit2 + " in the dictionary.")
-elif fruit1 > fruit2:
-    print(fruit1 + " comes after " + fruit2 + " in the dictionary.")
-else:
-    print(fruit1 + " and " + fruit2 + " are the same.")
-"""
-]
-
-model_config = {}
-model_config = load_model(args, args.base_model_name, model_config)
-
-rcodes = rewrite_code(codes, model_config, args)
-print(rcodes)
+print(a, b)
+plt.show()
