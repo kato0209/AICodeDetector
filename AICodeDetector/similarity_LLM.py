@@ -100,7 +100,8 @@ args_dict = {
     'n_perturbation_rounds': 1,
     #'base_model_name': "codellama/CodeLlama-7b-hf",
     #'base_model_name': "codellama/CodeLlama-13b-Python-hf",
-    'base_model_name': "meta-llama/CodeLlama-7b-Python-hf",
+    #'base_model_name': "meta-llama/CodeLlama-7b-Python-hf",
+    'base_model_name': "meta-llama/Meta-Llama-3-8B-Instruct",
     'mask_filling_model_name': "Salesforce/codet5p-770m",
     'batch_size': 16,
     'chunk_size': 10,
@@ -309,8 +310,8 @@ test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle=False)
 model_config = {}
 model_config = load_model(args, args.base_model_name, model_config)
 sm = SimilarityModel(model=model_config['sentence_model'], tokenizer=model_config['sentence_model_tokenizer'])
-#model_path = 'saved_model/model_sm_20240628_064206.pth' 
-model_path = 'saved_model/model_sm_20240630_120305.pth' 
+model_path = 'saved_model/model_sm_20240628_064206.pth' 
+#model_path = 'saved_model/model_sm_20240630_120305.pth' 
 sm.load_state_dict(torch.load(model_path, map_location=device))
 sm.to(device)
 
@@ -319,39 +320,39 @@ cclm.to(device)
 
 selected_params = [
     # 初期層
-    "model.embed_tokens.weight",
+    #"model.embed_tokens.weight",
 
     # 第1層の全パラメータ
-    "model.layers.0.self_attn.q_proj.weight",
-    "model.layers.0.self_attn.k_proj.weight",
-    "model.layers.0.self_attn.v_proj.weight",
-    "model.layers.0.self_attn.o_proj.weight",
-    "model.layers.0.mlp.gate_proj.weight",
-    "model.layers.0.mlp.up_proj.weight",
-    "model.layers.0.mlp.down_proj.weight",
-    "model.layers.0.input_layernorm.weight",
-    "model.layers.0.post_attention_layernorm.weight",
+    #"model.layers.0.self_attn.q_proj.weight",
+    #"model.layers.0.self_attn.k_proj.weight",
+    #"model.layers.0.self_attn.v_proj.weight",
+    #"model.layers.0.self_attn.o_proj.weight",
+    #"model.layers.0.mlp.gate_proj.weight",
+    #"model.layers.0.mlp.up_proj.weight",
+    #"model.layers.0.mlp.down_proj.weight",
+    #"model.layers.0.input_layernorm.weight",
+    #"model.layers.0.post_attention_layernorm.weight",
 
     # 中間層の一部
-    "model.layers.10.self_attn.q_proj.weight",
-    "model.layers.10.self_attn.k_proj.weight",
-    "model.layers.10.self_attn.v_proj.weight",
-    "model.layers.10.self_attn.o_proj.weight",
-    "model.layers.10.mlp.gate_proj.weight",
-    "model.layers.10.mlp.up_proj.weight",
-    "model.layers.10.mlp.down_proj.weight",
-    "model.layers.10.input_layernorm.weight",
-    "model.layers.10.post_attention_layernorm.weight",
-
-    "model.layers.20.self_attn.q_proj.weight",
-    "model.layers.20.self_attn.k_proj.weight",
-    "model.layers.20.self_attn.v_proj.weight",
-    "model.layers.20.self_attn.o_proj.weight",
-    "model.layers.20.mlp.gate_proj.weight",
-    "model.layers.20.mlp.up_proj.weight",
-    "model.layers.20.mlp.down_proj.weight",
-    "model.layers.20.input_layernorm.weight",
-    "model.layers.20.post_attention_layernorm.weight",
+    #"model.layers.10.self_attn.q_proj.weight",
+    #"model.layers.10.self_attn.k_proj.weight",
+    #"model.layers.10.self_attn.v_proj.weight",
+    #"model.layers.10.self_attn.o_proj.weight",
+    #"model.layers.10.mlp.gate_proj.weight",
+    #"model.layers.10.mlp.up_proj.weight",
+    #"model.layers.10.mlp.down_proj.weight",
+    #"model.layers.10.input_layernorm.weight",
+    #"model.layers.10.post_attention_layernorm.weight",
+#
+    #"model.layers.20.self_attn.q_proj.weight",
+    #"model.layers.20.self_attn.k_proj.weight",
+    #"model.layers.20.self_attn.v_proj.weight",
+    #"model.layers.20.self_attn.o_proj.weight",
+    #"model.layers.20.mlp.gate_proj.weight",
+    #"model.layers.20.mlp.up_proj.weight",
+    #"model.layers.20.mlp.down_proj.weight",
+    #"model.layers.20.input_layernorm.weight",
+    #"model.layers.20.post_attention_layernorm.weight",
 
     # 最終層
     "model.layers.31.self_attn.q_proj.weight",
@@ -365,34 +366,28 @@ selected_params = [
     "model.layers.31.post_attention_layernorm.weight",
 
     # 正規化層と出力層
-    "model.norm.weight",
+    #"model.norm.weight",
     "lm_head.weight"
 ]
 
+optimizer_parameters = []
 # すべてのパラメータをループして、必要なものを浮動小数点に変換する
 for name, param in cclm.model.named_parameters():
     if name in selected_params:
         param.requires_grad = True
+        optimizer_parameters.append(param)
     else:
         param.requires_grad = False
-
 
 total_steps = int(len(train_dataloader) * args.num_train_epochs)
 warmup_steps = int(total_steps * args.warmup_ratio)
 
 base_lr = args.learning_rate
 
-optimizer_parameters = []
-no_decay = ["LayerNorm.weight", "bias"]
+
 
 """
-# デコーダー部分のパラメータだけを学習可能に設定
-for name, param in cclm.model.named_parameters():
-    if 'decoder' in name:
-        param.requires_grad = True
-    else:
-        param.requires_grad = False
-"""
+no_decay = ["LayerNorm.weight", "bias"]
 
 # 正則化を適用しないパラメータ
 optimizer_parameters.append({
@@ -403,7 +398,7 @@ optimizer_parameters.append({
     'weight_decay': 0.0,
     'lr': base_lr
 })
-
+"""
 
 optimizer = AdamW(optimizer_parameters, lr=args.learning_rate, eps=args.adam_epsilon)
 scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps, num_training_steps=total_steps)
@@ -422,12 +417,13 @@ for epoch in range(int(args.num_train_epochs)):
         outputs = cclm(original_codes=codes, labels=labels, model_config=model_config, args=args)
         
         loss, _ = outputs[0], outputs[1]
-        loss.backward()
+        #loss.backward()
         optimizer.step()
         scheduler.step()
         cclm.zero_grad()
 
-        train_loss += loss.item()
+        #train_loss += loss.item()
+        train_loss += loss
         num_steps += 1
 
     train_loss /= len(train_dataloader)
