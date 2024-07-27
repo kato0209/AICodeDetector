@@ -34,11 +34,7 @@ class CodeDataset(Dataset):
 
     def __getitem__(self, index):
         code, label = self.samples[index]
-        inputs = self.model_config["mask_tokenizer"].encode_plus(code, padding='max_length', max_length=128, truncation=True)
-        input_ids = inputs['input_ids']
-        attention_mask = inputs['attention_mask']
-        #return {'input_ids': torch.tensor(input_ids, dtype=torch.long), 'attention_mask': torch.tensor(attention_mask, dtype=torch.float), 'labels': torch.tensor(label, dtype=torch.float)}
-        return {'input_ids': torch.tensor(input_ids, dtype=torch.long), 'attention_mask': torch.tensor(attention_mask, dtype=torch.long), 'labels': torch.tensor(label, dtype=torch.long)}
+        return {'code': code, 'labels': torch.tensor(label, dtype=torch.long)}
 
     """
     def __getitem__(self, index):

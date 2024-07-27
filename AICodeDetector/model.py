@@ -118,30 +118,15 @@ class CustomCodeLlamaModel(nn.Module):
         self.sentence_model_tokenizer = sentence_model_tokenizer
     
     def rewrite_code(self, codes, model_config, args):
-        explain_prompt = """
-
-        ```
-        {code}
-        ```
-
-        Please explain the functionality of the python code above.
-        Please organize all the explanation in a single markdown code block. 
-
-        EXPLANATION:
-
-        """
-
         prompt = """
 
-        {code}
+        Generate the following Python code rewrite according to your idea.
+        Please do not output anything other than the rewritten Python code.
+        Please do not output the exact same source code as the input.\n
 
-        {explain}
-
-        Please rewrite the source code by referring to the above explanation and the original code.
-        Please do not output anything other than the rewritten code.
-        Please do not add any clarifications after the rewritten code.
+        {code}\n
         
-        RWRITTEN CODE:
+        OUTPUT:\n
 
         """
 
@@ -156,23 +141,10 @@ class CustomCodeLlamaModel(nn.Module):
         rewrite_codes = []
         i = 0
         for code in codes:
-            explain_input_prompt = explain_prompt.format(code=code)
-            explain_input_ids = tokenizer(explain_input_prompt, return_tensors="pt").input_ids
-            explain_input_ids = explain_input_ids.to(args.DEVICE)
-            explain_input_ids_len = len(explain_input_ids[0])   
-            
-            outputs = model.generate(explain_input_ids, do_sample=True, max_length=200+explain_input_ids_len, top_p=0.95, temperature=0.1, pad_token_id=tokenizer.eos_token_id)
-            explain_out = tokenizer.decode(outputs[0], skip_special_tokens=True)
-            explanation_pattern = r"EXPLANATION:(.*)"
-            explain = re.findall(explanation_pattern, explain_out, re.DOTALL)
-            explain = explain[0].strip()
-            print("E----------------")
-            print(explain)
-
             print("C----------------")
             print(code)
 
-            input_prompt = prompt.format(explain=explain, code=code)
+            input_prompt = prompt.format(code=code)
             input_ids = tokenizer(input_prompt, return_tensors="pt").input_ids
             input_ids = input_ids.to(args.DEVICE)
             
@@ -408,7 +380,7 @@ class CustomCodeLlamaModel(nn.Module):
             input_ids = tokenizer(input_prompt, return_tensors="pt").input_ids
             input_ids = input_ids.to(args.DEVICE)
             input_ids_len = len(input_ids[0])   
-            outputs = model.generate(input_ids, max_length=input_ids_len+128, do_sample=True, top_p=0.5, temperature=1.0)
+            outputs = model.generate(input_ids, max_length=input_ids_len+128, do_sample=True, top_p=0.5, temperature=1.0, pad_token_id=tokenizer.eos_token_id)
             output_sentence = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
             print(code)

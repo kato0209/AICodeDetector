@@ -100,8 +100,9 @@ args_dict = {
     'n_perturbation_list': "50",
     'n_perturbation_rounds': 1,
     #'base_model_name': "codellama/CodeLlama-7b-hf",
-    'base_model_name': "codellama/CodeLlama-7b-Python-hf",
+    #'base_model_name': "codellama/CodeLlama-7b-Python-hf",
     #'base_model_name': "codellama/CodeLlama-13b-Python-hf",
+    'base_model_name': "codellama/CodeLlama-34b-Python-hf",
     #'base_model_name': "meta-llama/CodeLlama-7b-hf",
     #'base_model_name': "Salesforce/codet5p-770m",
     #'base_model_name': "facebook/bart-base",
@@ -288,7 +289,8 @@ model_config = load_model(args, args.base_model_name, model_config)
 sm = SimilarityModel(model=model_config['sentence_model'], tokenizer=model_config['sentence_model_tokenizer'])
 
 #model_path = 'saved_model/model_sm_20240630_120305.pth' 
-model_path = 'saved_model/SM_model_sm_20240715_210228.pth' 
+model_path = 'saved_model/model_sm_20240628_064206.pth' 
+#model_path = 'saved_model/SM_model_sm_20240715_210228.pth' 
 
 sm.load_state_dict(torch.load(model_path, map_location=device))
 sm.to(device)
