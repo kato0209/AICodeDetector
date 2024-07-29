@@ -6,6 +6,7 @@ from preprocessing import preprocess_and_save
 from load_model import load_mask_filling_model
 from filling_mask import replace_masks
 from extract_fill import extract_fills, apply_extracted_fills
+from masking import tokenize_and_mask
 
 class CodeDataset(Dataset):
     def __init__(self, directory_path, model_config, args):
@@ -140,18 +141,24 @@ class CodeDatasetFromCodeSearchNet(Dataset):
             }
 
 class CodeDatasetForLLM(Dataset):
-    def __init__(self, data):
+    def __init__(self, data, args):
         self.samples = []
+
+        masked_original = []
+        masked_sampled = []
+        for i in range(len(data["original"])):
+            masked_original.append(tokenize_and_mask(data["original"][i], buffer_size=args.buffer_size, span_length=args.span_length, pct=args.pct_words_masked))
+            masked_sampled.append(tokenize_and_mask(data["sampled"][i], buffer_size=args.buffer_size, span_length=args.span_length, pct=args.pct_words_masked))
         
-        for code in data["original"]:
-            self.samples.append((code, 0))
+        for i in range(len(data["original"])):
+            self.samples.append((data["original"][i], masked_original[i], 0))
     
-        for code in data["sampled"]:
-            self.samples.append((code, 1))
+        for i in range(len(data["sampled"])):
+            self.samples.append((data["sampled"][i], masked_sampled[i], 1))
     
     def __len__(self):
         return len(self.samples)
 
     def __getitem__(self, index):
-        code, label = self.samples[index]
-        return {'code': code, 'labels': torch.tensor(label, dtype=torch.long)}
+        code, masked_code, label = self.samples[index]
+        return {'code': code, 'masked_code': masked_code, 'labels': torch.tensor(label, dtype=torch.long)}

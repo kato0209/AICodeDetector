@@ -12,6 +12,8 @@ from pertubate import rewrite_code
 from torchviz import make_dot
 from IPython.display import display
 
+from test import query_chatgpt_and_save
+
 class CustomClassificationHead(nn.Module):
     def __init__(self,config, num_labels):
         super(CustomClassificationHead, self).__init__()
@@ -120,9 +122,7 @@ class CustomCodeLlamaModel(nn.Module):
     def rewrite_code(self, codes, model_config, args):
         prompt = """
 
-        Generate the following Python code rewrite according to your idea.
-        Please do not output anything other than the rewritten Python code.
-        Please do not output the exact same source code as the input.\n
+        Fill in the <<<mask>>> in the python code below to complete the code.\n
 
         {code}\n
         
@@ -145,14 +145,15 @@ class CustomCodeLlamaModel(nn.Module):
             print(code)
 
             input_prompt = prompt.format(code=code)
-            input_ids = tokenizer(input_prompt, return_tensors="pt").input_ids
-            input_ids = input_ids.to(args.DEVICE)
+            inputs = tokenizer(input_prompt, return_tensors="pt")
+            input_ids = inputs.input_ids.to(args.DEVICE)
+            attention_mask = inputs.attention_mask.to(args.DEVICE)
             
             # トークンごとの生成を開始
             output_ids = input_ids
             j = 0
             for _ in range(128):  # 生成を128トークンに制限
-                outputs = model.generate(output_ids, do_sample=True, max_length=output_ids.size(-1) + 1, 
+                outputs = model.generate(output_ids, attention_mask=attention_mask, do_sample=True, max_length=output_ids.size(-1) + 1, 
                                         top_p=0.95, temperature=0.1, pad_token_id=tokenizer.eos_token_id)
                 
                 state[i][j] = output_ids
@@ -164,6 +165,7 @@ class CustomCodeLlamaModel(nn.Module):
                 if outputs[:, -1].unsqueeze(-1) != 0:
                     y[i][j] = outputs[:, -1].unsqueeze(-1)
                     output_ids = torch.cat([output_ids, outputs[:, -1].unsqueeze(-1)], dim=-1)
+                    attention_mask = torch.cat([attention_mask, torch.tensor([[1]]).to(args.DEVICE)], dim=-1)
                 if output_ids[0, -1] == tokenizer.eos_token_id:
                     break
                 j += 1
@@ -310,8 +312,12 @@ class CustomCodeLlamaModel(nn.Module):
         similarity_scores = torch.tensor(similarity_scores).view(-1, 1).to(self.model.device)
         return similarity_scores
 
-    def calc_similarity_custom(self, original_codes, args=None, model_config=None):
-        perturbed_codes, _, _ = self.rewrite_code(original_codes, model_config, args)
+    def calc_similarity_custom(self, original_codes, masked_codes, args=None, model_config=None):
+        from check_rewrite_dataset import return_codes
+        human_codes, human_rewritten_codes, AI_codes, AI_rewritten_codes = return_codes()
+        original_codes = human_codes + AI_codes
+        perturbed_codes = human_rewritten_codes + AI_rewritten_codes
+        #perturbed_codes, _, _ = self.rewrite_code(original_codes, model_config, args)
         
         """
         for i in range(len(original_codes)):
@@ -320,7 +326,7 @@ class CustomCodeLlamaModel(nn.Module):
             print("-----------------")
             print(perturbed_codes[i])
             print("E---------")
-        """
+
 
         input_ids = []
         attention_mask = []
@@ -346,22 +352,36 @@ class CustomCodeLlamaModel(nn.Module):
             embeddings1 = self.sentence_model.output_embeddings(input_ids, attention_mask)
             embeddings2 = self.sentence_model.output_embeddings(input_ids_p, attention_mask_p)
         cos_sim = self.sentence_model.sim(embeddings1, embeddings2)
-        return cos_sim, original_codes, perturbed_codes
+        """
+        similarity_scores = []
+        for i in range(len(original_codes)):
+            encoded_inputs = self.sentence_model_tokenizer(original_codes[i], return_tensors="pt", truncation=True, max_length=128).to(self.model.device)
+            with torch.no_grad():
+                outputs = self.sentence_model(input_ids=encoded_inputs.input_ids)
+            embeddings1 = outputs.last_hidden_state.mean(dim=1)
+
+            encoded_inputs = self.sentence_model_tokenizer(perturbed_codes[i], return_tensors="pt", truncation=True, max_length=128).to(self.model.device)
+            with torch.no_grad():
+                outputs = self.sentence_model(input_ids=encoded_inputs.input_ids)
+            embeddings2 = outputs.last_hidden_state.mean(dim=1)
+
+            cos_sim = util.cos_sim(embeddings1, embeddings2)
+            similarity_scores.append(cos_sim.item())
+        similarity_scores = torch.tensor(similarity_scores).view(-1, 1).to(self.model.device)
+        return similarity_scores, original_codes, perturbed_codes
     
     def rewrite_code2(self, codes, model_config, args):
         prompt = """
 
         Instruction:
 
-        ```
         {code}
-        ```
 
-        Please first explain the functionality of the python code above. 
-        Then generate a possible rewrite for this python code according to your explanation.  
-        Please do not add any clarifications after the rewritten code.
+        Fill in the <<<mask>>> in the python code above to complete the code.
+        Please organize all the code in a single markdown code block.
 
-        REWRITE CODE:
+        OUTPUT: 
+
 
         """
 
@@ -377,17 +397,18 @@ class CustomCodeLlamaModel(nn.Module):
         i = 0
         for code in codes:
             input_prompt = prompt.format(code=code)
-            input_ids = tokenizer(input_prompt, return_tensors="pt").input_ids
-            input_ids = input_ids.to(args.DEVICE)
+            inputs = tokenizer(input_prompt, return_tensors="pt")
+            input_ids = inputs.input_ids.to(args.DEVICE)
+            attention_mask = inputs.attention_mask.to(args.DEVICE)
             input_ids_len = len(input_ids[0])   
-            outputs = model.generate(input_ids, max_length=input_ids_len+128, do_sample=True, top_p=0.5, temperature=1.0, pad_token_id=tokenizer.eos_token_id)
+            outputs = model.generate(input_ids, attention_mask=attention_mask, max_length=input_ids_len+128, do_sample=True, top_p=0.95, temperature=0.1, pad_token_id=tokenizer.eos_token_id)
             output_sentence = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
             print(code)
             print("C-------------")
             print(output_sentence)
             print("O-------------")
-            pattern = r"REWRITE CODE:(.*)"
+            pattern = r"OUTPUT:(.*)"
             rewritten_code = re.findall(pattern, output_sentence, re.DOTALL)
             if rewritten_code:
                 rewrite_code = rewritten_code[0].strip().rstrip()
@@ -399,15 +420,16 @@ class CustomCodeLlamaModel(nn.Module):
             y.append(outputs[0])
             i += 1
         
-        rewrite_num = 5
+        rewrite_num = 3
         for r in range(rewrite_num):
             new_rewrite_codes = []
             for code in rewrite_codes:
                 input_prompt = prompt.format(code=code)
-                input_ids = tokenizer(input_prompt, return_tensors="pt").input_ids
-                input_ids = input_ids.to(args.DEVICE)
+                inputs = tokenizer(input_prompt, return_tensors="pt")
+                input_ids = inputs.input_ids.to(args.DEVICE)
+                attention_mask = inputs.attention_mask.to(args.DEVICE)
                 input_ids_len = len(input_ids[0])   
-                outputs = model.generate(input_ids, max_length=input_ids_len+128, do_sample=True, top_p=0.5, temperature=1.0)
+                outputs = model.generate(input_ids, attention_mask=attention_mask, max_length=input_ids_len+128, do_sample=True, top_p=0.95, temperature=0.1, pad_token_id=tokenizer.eos_token_id)
                 output_sentence = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
                 pattern = r"REWRITE CODE:(.*)"
@@ -418,6 +440,42 @@ class CustomCodeLlamaModel(nn.Module):
                 else:
                     new_rewrite_codes.append("")
             rewrite_codes = new_rewrite_codes
+            
+        
+        return rewrite_codes, y, state
+    
+    def rewrite_code3(self, codes, model_config, args):
+        import os
+        api_key = os.environ['OPENAI_API_KEY']
+        y = []
+        state = []
+
+        prompt = """
+
+        Generate the following Python code rewrite according to your idea.
+        Please do not output anything other than the rewritten Python code.
+        Please organize all the code in a single markdown code block.
+
+        {code}\n
+        
+        OUTPUT:\n
+
+        """
+        
+
+        rewrite_codes = []
+        i = 0
+        for code in codes:
+            input_prompt = prompt.format(code=code)
+            response_text = query_chatgpt_and_save(input_prompt, api_key, "", "", temperature=0.2)
+            pattern = r"```(.*)```"
+            rewritten_code = re.findall(pattern, response_text, re.DOTALL)
+            if rewritten_code:
+                rewrite_code = rewritten_code[0].strip().rstrip()
+                rewrite_codes.append(rewrite_code)
+            else:
+                rewrite_codes.append("")
+            i += 1
             
         
         return rewrite_codes, y, state

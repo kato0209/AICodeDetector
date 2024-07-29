@@ -32,6 +32,7 @@ def choose_word(words, probabilities):
         if rand_value <= prob:
             return words[i]
 
+"""
 def tokenize_and_mask(code, buffer_size=1, span_length=2, pct=0.3, ceil_pct=False, mask_threshold = 0.4):
     probability_list = yake_code(code)
     tokens = code.split()
@@ -77,3 +78,62 @@ def tokenize_and_mask(code, buffer_size=1, span_length=2, pct=0.3, ceil_pct=Fals
     text = ' '.join(tokens)
     return text
 
+
+def tokenize_and_mask(code, buffer_size=1, span_length=2, pct=0.3, ceil_pct=False, mask_threshold = 0.4):
+    probability_list = yake_code(code)
+    tokens = code.split()
+
+    mask_string = '<<<mask>>>'
+
+    n_spans = pct * len(tokens) / (span_length + buffer_size * 2)
+    if ceil_pct:
+        n_spans = np.ceil(n_spans)
+    n_spans = int(n_spans)
+
+    if len(probability_list) == 0:
+        return code
+
+    n_masks = 0
+    while n_masks < n_spans:
+        if len(probability_list) == 0:
+            break
+        words, probabilities = zip(*probability_list)
+        selected_word = choose_word(words, probabilities)
+        word_found = False
+        for idx, token in enumerate(tokens):
+            if token == selected_word:
+                tokens[idx] = mask_string
+                n_masks += 1
+                word_found = True
+                break
+        if not word_found:
+            # selected_wordがtokens内にない場合、probability_listから削除
+            probability_list = [(word, prob) for word, prob in probability_list if word != selected_word]
+    
+    if len(tokens) > 128:
+        tokens = tokens[:128]
+
+    text = ' '.join(tokens)
+    return text
+"""
+
+    
+def tokenize_and_mask(code, buffer_size=1, span_length=2, pct=0.3, ceil_pct=False, mask_threshold=0.4):
+    # 入力コードをトークンに分割
+    tokens = code.split()
+    
+    mask_string = '<<<mask>>>'
+
+    # マスクするトークンの数を計算
+    num_to_mask = int(len(tokens) * pct)
+    if ceil_pct:
+        num_to_mask = -(-num_to_mask // 1)  # 切り上げ
+
+    # ランダムにトークンを選択してマスク
+    mask_indices = random.sample(range(len(tokens)), min(num_to_mask, len(tokens)))
+    for idx in mask_indices:
+        tokens[idx] = mask_string
+
+    # トークンを再結合してテキストにする
+    masked_text = ' '.join(tokens)
+    return masked_text
