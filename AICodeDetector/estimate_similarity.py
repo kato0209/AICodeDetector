@@ -105,12 +105,12 @@ args_dict = {
     #'base_model_name': "codellama/CodeLlama-13b-Python-hf",
     #'base_model_name': "codellama/CodeLlama-34b-Python-hf",
     #'base_model_name': "meta-llama/CodeLlama-34b-Instruct-hf",
-    'base_model_name': "codellama/CodeLlama-13b-Instruct-hf",
+    #'base_model_name': "codellama/CodeLlama-13b-Instruct-hf",
     #'base_model_name': "meta-llama/CodeLlama-7b-hf",
     #'base_model_name': "Salesforce/codet5p-770m",
     #'base_model_name': "facebook/bart-base",
     #'base_model_name': "HuggingFaceH4/starchat-alpha",
-    #'base_model_name': "meta-llama/Meta-Llama-3-8B-Instruct",
+    'base_model_name': "meta-llama/Meta-Llama-3-8B-Instruct",
     #'base_model_name': "meta-llama/CodeLlama-7b-Instruct-hf",
     #'base_model_name': "meta-llama/CodeLlama-7b-Python-hf",
     #'base_model_name': "microsoft/codebert-base",
@@ -298,7 +298,7 @@ model_path = 'saved_model/SM_model_sm_20240715_210228.pth'
 sm.load_state_dict(torch.load(model_path, map_location=device))
 sm.to(device)
 
-cclm = CustomCodeLlamaModel(model=model_config['model'], tokenizer=model_config['tokenizer'], sentence_model=model_config['sentence_model'], sentence_model_tokenizer=model_config['sentence_model_tokenizer'])
+cclm = CustomCodeLlamaModel(model=model_config['model'], tokenizer=model_config['tokenizer'], sentence_model=sm, sentence_model_tokenizer=model_config['sentence_model_tokenizer'])
 cclm.to(device)
 
 # Test the model and print out the confusion matrix
@@ -317,8 +317,7 @@ with torch.no_grad():
     for batch in dataloader:
         codes = batch['code']
         masked_codes = batch['masked_code']
-        #labels = batch['labels'].to(device)
-        labels = [0] * 10 + [1] * 10
+        labels = batch['labels'].to(device)
         labels = torch.tensor(labels).to(device)
         similarities, original_codes, per_codes = cclm.calc_similarity_custom(codes, masked_codes, model_config=model_config, args=args)
         

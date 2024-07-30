@@ -313,13 +313,8 @@ class CustomCodeLlamaModel(nn.Module):
         return similarity_scores
 
     def calc_similarity_custom(self, original_codes, masked_codes, args=None, model_config=None):
-        from check_rewrite_dataset import return_codes
-        human_codes, human_rewritten_codes, AI_codes, AI_rewritten_codes = return_codes()
-        original_codes = human_codes + AI_codes
-        perturbed_codes = human_rewritten_codes + AI_rewritten_codes
-        #perturbed_codes, _, _ = self.rewrite_code(original_codes, model_config, args)
+        perturbed_codes, _, _ = self.rewrite_code(original_codes, model_config, args)
         
-        """
         for i in range(len(original_codes)):
             print("S---------")
             print(original_codes[i])
@@ -352,38 +347,12 @@ class CustomCodeLlamaModel(nn.Module):
             embeddings1 = self.sentence_model.output_embeddings(input_ids, attention_mask)
             embeddings2 = self.sentence_model.output_embeddings(input_ids_p, attention_mask_p)
         cos_sim = self.sentence_model.sim(embeddings1, embeddings2)
-        """
-        similarity_scores = []
-        for i in range(len(original_codes)):
-            encoded_inputs = self.sentence_model_tokenizer(original_codes[i], return_tensors="pt", truncation=True, max_length=128).to(self.model.device)
-            with torch.no_grad():
-                outputs = self.sentence_model(input_ids=encoded_inputs.input_ids)
-            embeddings1 = outputs.last_hidden_state.mean(dim=1)
-
-            encoded_inputs = self.sentence_model_tokenizer(perturbed_codes[i], return_tensors="pt", truncation=True, max_length=128).to(self.model.device)
-            with torch.no_grad():
-                outputs = self.sentence_model(input_ids=encoded_inputs.input_ids)
-            embeddings2 = outputs.last_hidden_state.mean(dim=1)
-
-            cos_sim = util.cos_sim(embeddings1, embeddings2)
-            similarity_scores.append(cos_sim.item())
-        similarity_scores = torch.tensor(similarity_scores).view(-1, 1).to(self.model.device)
-        return similarity_scores, original_codes, perturbed_codes
+    
+        return cos_sim, original_codes, perturbed_codes
     
     def rewrite_code2(self, codes, model_config, args):
-        prompt = """
-
-        Instruction:
-
-        {code}
-
-        Fill in the <<<mask>>> in the python code above to complete the code.
-        Please organize all the code in a single markdown code block.
-
-        OUTPUT: 
-
-
-        """
+        prompt_str = "Revise the code with your best effort"
+        prefix = ". No need to explain. Just write code:"
 
         tokenizer = model_config['tokenizer']
         model = model_config['model']
@@ -396,7 +365,7 @@ class CustomCodeLlamaModel(nn.Module):
         rewrite_codes = []
         i = 0
         for code in codes:
-            input_prompt = prompt.format(code=code)
+            input_prompt = f"{prompt_str}: \"{code}\" {prefix}"
             inputs = tokenizer(input_prompt, return_tensors="pt")
             input_ids = inputs.input_ids.to(args.DEVICE)
             attention_mask = inputs.attention_mask.to(args.DEVICE)
@@ -420,6 +389,7 @@ class CustomCodeLlamaModel(nn.Module):
             y.append(outputs[0])
             i += 1
         
+        """
         rewrite_num = 3
         for r in range(rewrite_num):
             new_rewrite_codes = []
@@ -440,6 +410,7 @@ class CustomCodeLlamaModel(nn.Module):
                 else:
                     new_rewrite_codes.append("")
             rewrite_codes = new_rewrite_codes
+        """
             
         
         return rewrite_codes, y, state
