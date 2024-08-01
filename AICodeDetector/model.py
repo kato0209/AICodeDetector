@@ -120,15 +120,11 @@ class CustomCodeLlamaModel(nn.Module):
         self.sentence_model_tokenizer = sentence_model_tokenizer
     
     def rewrite_code(self, codes, model_config, args):
-        prompt = """
-
-        Fill in the <<<mask>>> in the python code below to complete the code.\n
-
-        {code}\n
-        
-        OUTPUT:\n
-
-        """
+        def tokenize_and_normalize(sentence):
+            # Tokenization and normalization
+            return [word.lower().strip() for word in sentence.split()]
+        prompt_str = "Refine this for me please"
+        prefix = "OUTPUT:"
 
         tokenizer = model_config['tokenizer']
         model = model_config['model']
@@ -144,16 +140,17 @@ class CustomCodeLlamaModel(nn.Module):
             print("C----------------")
             print(code)
 
-            input_prompt = prompt.format(code=code)
-            inputs = tokenizer(input_prompt, return_tensors="pt")
+            input_prompt = f"{prompt_str}: \"{code}\" \"{prefix}\""
+            token_length = len(tokenize_and_normalize(input_prompt))
+            inputs = tokenizer(input_prompt, return_tensors="pt").to(args.DEVICE)
             input_ids = inputs.input_ids.to(args.DEVICE)
             attention_mask = inputs.attention_mask.to(args.DEVICE)
             
             # トークンごとの生成を開始
             output_ids = input_ids
             j = 0
-            for _ in range(128):  # 生成を128トークンに制限
-                outputs = model.generate(output_ids, attention_mask=attention_mask, do_sample=True, max_length=output_ids.size(-1) + 1, 
+            for _ in range(token_length):  # 生成を128トークンに制限
+                outputs = model.generate(output_ids, attention_mask=attention_mask, do_sample=True, max_new_tokens=1, 
                                         top_p=0.95, temperature=0.1, pad_token_id=tokenizer.eos_token_id)
                 
                 state[i][j] = output_ids
@@ -313,8 +310,8 @@ class CustomCodeLlamaModel(nn.Module):
         return similarity_scores
 
     def calc_similarity_custom(self, original_codes, masked_codes, args=None, model_config=None):
-        perturbed_codes, _, _ = self.rewrite_code(original_codes, model_config, args)
-        
+        #perturbed_codes, _, _ = self.rewrite_code2(original_codes, model_config, args)
+        perturbed_codes = masked_codes
         for i in range(len(original_codes)):
             print("S---------")
             print(original_codes[i])
@@ -351,6 +348,9 @@ class CustomCodeLlamaModel(nn.Module):
         return cos_sim, original_codes, perturbed_codes
     
     def rewrite_code2(self, codes, model_config, args):
+        def tokenize_and_normalize(sentence):
+            # Tokenization and normalization
+            return [word.lower().strip() for word in sentence.split()]
         prompt_str = "Revise the code with your best effort"
         prefix = ". No need to explain. Just write code:"
 
@@ -366,18 +366,16 @@ class CustomCodeLlamaModel(nn.Module):
         i = 0
         for code in codes:
             input_prompt = f"{prompt_str}: \"{code}\" {prefix}"
-            inputs = tokenizer(input_prompt, return_tensors="pt")
-            input_ids = inputs.input_ids.to(args.DEVICE)
-            attention_mask = inputs.attention_mask.to(args.DEVICE)
-            input_ids_len = len(input_ids[0])   
-            outputs = model.generate(input_ids, attention_mask=attention_mask, max_length=input_ids_len+128, do_sample=True, top_p=0.95, temperature=0.1, pad_token_id=tokenizer.eos_token_id)
+            inputs = tokenizer(input_prompt, return_tensors="pt").to(args.DEVICE)
+            inputs.pop("token_type_ids", None)
+            outputs = model.generate(inputs.input_ids, attention_mask=inputs.attention_mask, max_new_tokens=len(tokenize_and_normalize(code)), do_sample=True, top_p=0.95, temperature=0.1, pad_token_id=tokenizer.eos_token_id)
             output_sentence = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
             print(code)
             print("C-------------")
             print(output_sentence)
             print("O-------------")
-            pattern = r"OUTPUT:(.*)"
+            pattern = r"Revise the code with your best effort:(.*)"
             rewritten_code = re.findall(pattern, output_sentence, re.DOTALL)
             if rewritten_code:
                 rewrite_code = rewritten_code[0].strip().rstrip()
@@ -385,7 +383,7 @@ class CustomCodeLlamaModel(nn.Module):
             else:
                 rewrite_codes.append("")
             
-            state.append(input_ids)
+            state.append([])
             y.append(outputs[0])
             i += 1
         

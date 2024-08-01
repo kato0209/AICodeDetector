@@ -282,6 +282,29 @@ data_num = 32
 data["original"] = random.sample(data["original"], data_num)
 data["sampled"] = data["sampled"][:data_num]
 
+import json
+with open('json_data/rewrite_code_human_inv.json', 'r') as file:
+    AI_entries = json.load(file)
+
+with open('json_data/rewrite_code_GPT_inv.json', 'r') as file:
+    human_entries = json.load(file)
+
+original_human_codes = []
+pertube_human_codes = []
+original_AI_codes = []
+pertube_AI_codes = []
+for entry in AI_entries:
+    input_code = entry['input']
+    revised_code = entry['Revise the code with your best effort']
+    original_human_codes.append(input_code)
+    pertube_human_codes.append(revised_code)
+
+for entry in human_entries:
+    input_code = entry['input']
+    revised_code = entry['Revise the code with your best effort']
+    original_AI_codes.append(input_code)
+    pertube_AI_codes.append(revised_code)
+
 dataset = CodeDatasetForLLM(data, args)
 
 dataloader = DataLoader(dataset, args.batch_size, shuffle=True)
@@ -313,13 +336,19 @@ logging.basicConfig(filename=os.path.join(log_path, f'test_{timestamp}.log'),
 
 cclm.eval()
 label_list, pred_list, all_similarities, all_labels = [], [], [], []
+i = 0
 with torch.no_grad():
     for batch in dataloader:
-        codes = batch['code']
-        masked_codes = batch['masked_code']
-        labels = batch['labels'].to(device)
+        if i > 0:
+            break
+        #codes = batch['code']
+        codes = original_human_codes+original_AI_codes
+        pertube_codes = pertube_human_codes+pertube_AI_codes
+        #masked_codes = batch['masked_code']
+        #labels = batch['labels'].to(device)
+        labels = [0]*len(original_human_codes)+[1]*len(original_AI_codes)
         labels = torch.tensor(labels).to(device)
-        similarities, original_codes, per_codes = cclm.calc_similarity_custom(codes, masked_codes, model_config=model_config, args=args)
+        similarities, original_codes, per_codes = cclm.calc_similarity_custom(codes, pertube_codes, model_config=model_config, args=args)
         
         similarities = similarities.detach().cpu().numpy()
         labels = labels.detach().cpu().numpy()
@@ -345,6 +374,7 @@ with torch.no_grad():
                 pred = 0
             pred_list.append(pred)
         label_list += labels.tolist()
+        i+=1
 
 # Convert lists to numpy arrays
 all_similarities = np.array(all_similarities)
