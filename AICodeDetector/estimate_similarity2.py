@@ -111,9 +111,9 @@ args_dict = {
     #'base_model_name': "facebook/bart-base",
     #'base_model_name': "HuggingFaceH4/starchat-alpha",
     #'base_model_name': "meta-llama/Meta-Llama-3-8B-Instruct",
+    'base_model_name': "meta-llama/Llama-2-7b-chat-hf",
     #'base_model_name': "meta-llama/CodeLlama-7b-Instruct-hf",
     #'base_model_name': "meta-llama/CodeLlama-7b-Python-hf",
-    'base_model_name': "meta-llama/Llama-2-7b-chat-hf",
     #'base_model_name': "microsoft/codebert-base",
     'mask_filling_model_name': "Salesforce/codet5p-770m",
     'batch_size': 32,
@@ -161,91 +161,6 @@ args = parser.parse_args(input_args)
 device = args.DEVICE
 
 
-#def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_def_num=5, cut_def=False, max_todo_num=3, path=None):
-#
-#    logger.info(f'Loading data from {path}')
-#    import json
-#    all_originals = []
-#    all_samples = []  # machine generated
-#
-#    max_def_num_count = 0
-#    min_len_count = 0
-#    max_comment_num_count = 0
-#    function_comment_num_count = 0
-#    max_todo_num_count = 0
-#
-#    with open(path, 'r') as f:
-#        for line in tqdm(f, ncols=70):
-#            line = line.strip()
-#            if line == '':
-#                continue
-#            line = json.loads(line)
-#
-#            # cut out the 'def' part after the first generation
-#            if cut_def:
-#                line['output'] = line['output'].split('def')[0]
-#                line['solution'] = line['solution'].split('def')[0]
-#
-#            # I don't like there to have too many 'def' in the code
-#            # ~100/100000 examples have more than 3 'def'
-#            if line['solution'].count('def') > max_def_num or line['output'].count('def') > max_def_num:
-#                max_def_num_count += 1
-#                continue
-#
-#            # avoid examples that are too short (less than min_len words)
-#            # around 2000/100000 examples have around 55 words
-#            if len(line['solution'].split()) < min_len or len(line['output'].split()) < min_len:
-#                min_len_count += 1
-#                continue
-#
-#            # if the are too many comments, skip
-#            def count_comment(text):
-#                return text.count('#')
-#
-#            if count_comment(line['solution']) > max_comment_num or count_comment(line['output']) > max_comment_num:
-#                max_comment_num_count += 1
-#                continue
-#
-#            # if there are too many TODOs, skip
-#            def count_todo_comment(text):
-#                return text.count('# TODO') + text.count('# todo')
-#
-#            if count_todo_comment(line['solution']) > max_todo_num or count_todo_comment(line['output']) > max_todo_num:
-#                max_todo_num_count += 1
-#                continue
-#
-#            # the number of text.count("'''") and text.count('"""') should be <1
-#            if line['solution'].count("'''") > 0 or line['solution'].count('"""') > 0 or line['output'].count("'''") > 0 or line['output'].count('"""') > 0:
-#                function_comment_num_count += 1
-#                continue
-#
-#            # cut to 128 tokens
-#            all_originals.append(' '.join(line['solution'].split(' ')[:max_len]))
-#            all_samples.append(' '.join(line['output'].split(' ')[:max_len]))
-#
-#    logger.info(f'{max_def_num_count} examples have more than {max_def_num} "def"')
-#    logger.info(f'{min_len_count} examples have less than {min_len} words')
-#    logger.info(f'{max_comment_num_count} examples have more than {max_comment_num} comments')
-#    logger.info(f'{max_todo_num_count} examples have more than {max_todo_num} TODOs')
-#    logger.info(f'{function_comment_num_count} examples have more than 1 function comment')
-#    logger.info(f'Loaded {len(all_originals)} examples after filtering, and will return {min(max_num, len(all_originals))} examples')
-#
-#    # statistical analysis
-#    # import random
-#    # random.seed(42)
-#    # random.shuffle(all_originals)
-#    # random.shuffle(all_samples)
-#    
-#    #all_samples = random.sample(all_samples, 800)
-#    all_samples = random.sample(all_samples, 70)
-#
-#    data = {
-#        "original": all_originals,
-#        "sampled": all_samples
-#    }
-#
-#    return data
-
 
 
 datasets_paths = [
@@ -267,21 +182,19 @@ data = {
     "original": [],
     "sampled": []
 }
-i = 0
-for path in datasets_paths:
-    sep_data = generate_data(path=path)
-    data["original"] = data["original"] + sep_data["original"]
 
-    data["sampled"] = data["sampled"] + sep_data["sampled"]
-    i += 1
+import json
+with open(f'json_data/code_human-v2.json', 'r') as file:
+    human = json.load(file)
 
-data["original"] = list(set(data["original"]))
-data["sampled"] = list(set(data["sampled"]))
+with open(f'json_data/code_GPT-v2.json', 'r') as file:
+    GPT = json.load(file)
 
-# dataを800件に originalはランダムに抽出
-data_num = 32
-data["original"] = random.sample(data["original"], data_num)
-data["sampled"] = data["sampled"][:data_num]
+for cc, d in enumerate(human):
+    data["original"].append(d[0]+d[1])
+
+for cc, d in enumerate(GPT):
+    data["sampled"].append(d[1])
 
 dataset = CodeDatasetForLLM(data, args)
 

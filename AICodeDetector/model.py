@@ -123,7 +123,7 @@ class CustomCodeLlamaModel(nn.Module):
         def tokenize_and_normalize(sentence):
             # Tokenization and normalization
             return [word.lower().strip() for word in sentence.split()]
-        prompt_str = "Refine this for me please"
+        prompt_str = "Revise the code with your best effort"
         prefix = "OUTPUT:"
 
         tokenizer = model_config['tokenizer']
@@ -310,8 +310,7 @@ class CustomCodeLlamaModel(nn.Module):
         return similarity_scores
 
     def calc_similarity_custom(self, original_codes, masked_codes, args=None, model_config=None):
-        #perturbed_codes, _, _ = self.rewrite_code2(original_codes, model_config, args)
-        perturbed_codes = masked_codes
+        perturbed_codes, _, _ = self.rewrite_code(original_codes, model_config, args)
         for i in range(len(original_codes)):
             print("S---------")
             print(original_codes[i])
