@@ -182,9 +182,6 @@ class CustomCodeLlamaModel(nn.Module):
         
         return rewrite_codes, y, state
 
-    def print_allocated_memory(self):
-        print("{:.2f} GB".format(torch.cuda.memory_allocated() / 1024 ** 3))
-
     def forward(self, original_codes=None, labels=None, args=None, model_config=None):
         #_, perturbed_codes = pertubate_code(original_codes, model_config, args)
         perturbed_codes, y, state = self.rewrite_code(original_codes, model_config, args)
@@ -199,24 +196,14 @@ class CustomCodeLlamaModel(nn.Module):
                 if y[n][t] == 0:
                     continue
                 outputs = self.model(input_ids=state[n][t].detach())
-                print("S----------------")
-                self.print_allocated_memory()
                 logits = outputs.logits
-                print(1111)
-                self.print_allocated_memory()
 
                 # 入力シーケンスの最後のトークンに対するロジットを抽出
                 last_token_logits = logits[0, -1, :]
-                print(2222)
-                self.print_allocated_memory()
 
                 # ログ確率を計算(infにならないように）
                 log_probs = torch.nn.functional.log_softmax(last_token_logits, dim=-1)
-                print(3333)
-                self.print_allocated_memory()
                 target_token_log_prob = log_probs[y[n][t].detach().item()]
-                print(444)
-                self.print_allocated_memory()
 
                 if labels[n] == 1:
                     baseline = torch.mean(similarity_scores)
@@ -230,13 +217,9 @@ class CustomCodeLlamaModel(nn.Module):
                         baseline = 1 / torch.mean(similarity_scores)
                         reward = 1 / similarity_scores[n].item()
                         R = (reward / baseline) * 0.5
-                print(55555)
-                self.print_allocated_memory()
 
                 loss = target_token_log_prob * R / args.batch_size * token_length  
-                print(666666)
-                self.print_allocated_memory()
-                print("E-----------------")
+
                 #print(loss.grad_fn)
                 loss.backward()
                 loss_value += loss.detach().item()

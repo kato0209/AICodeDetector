@@ -34,6 +34,8 @@ import matplotlib.pyplot as plt
 from transformers import AutoTokenizer, AutoModel,AutoModelForSeq2SeqLM
 from sentence_transformers import SentenceTransformer, util
 
+from peft import get_peft_model, LoraConfig, TaskType
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', type=str, default="writing")
 parser.add_argument('--dataset_key', type=str, default="document")
@@ -99,9 +101,9 @@ args_dict = {
     'n_perturbation_list': "50",
     'n_perturbation_rounds': 1,
     #'base_model_name': "codellama/CodeLlama-7b-hf",
-    #'base_model_name': "codellama/CodeLlama-13b-Python-hf",
+    'base_model_name': "codellama/CodeLlama-13b-Python-hf",
     #'base_model_name': "meta-llama/CodeLlama-7b-Python-hf",
-    'base_model_name': "meta-llama/Meta-Llama-3-8B-Instruct",
+    #'base_model_name': "meta-llama/Meta-Llama-3-8B-Instruct",
     'mask_filling_model_name': "Salesforce/codet5p-770m",
     'batch_size': 16,
     'chunk_size': 10,
@@ -146,91 +148,6 @@ for key, value in args_dict.items():
 args = parser.parse_args(input_args)
 
 device = args.DEVICE
-
-#def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_def_num=5, cut_def=False, max_todo_num=3, path=None):
-#
-#    logger.info(f'Loading data from {path}')
-#    import json
-#    all_originals = []
-#    all_samples = []  # machine generated
-#
-#    max_def_num_count = 0
-#    min_len_count = 0
-#    max_comment_num_count = 0
-#    function_comment_num_count = 0
-#    max_todo_num_count = 0
-#
-#    with open(path, 'r') as f:
-#        for line in tqdm(f, ncols=70):
-#            line = line.strip()
-#            if line == '':
-#                continue
-#            line = json.loads(line)
-#
-#            # cut out the 'def' part after the first generation
-#            if cut_def:
-#                line['output'] = line['output'].split('def')[0]
-#                line['solution'] = line['solution'].split('def')[0]
-#
-#            # I don't like there to have too many 'def' in the code
-#            # ~100/100000 examples have more than 3 'def'
-#            if line['solution'].count('def') > max_def_num or line['output'].count('def') > max_def_num:
-#                max_def_num_count += 1
-#                continue
-#
-#            # avoid examples that are too short (less than min_len words)
-#            # around 2000/100000 examples have around 55 words
-#            if len(line['solution'].split()) < min_len or len(line['output'].split()) < min_len:
-#                min_len_count += 1
-#                continue
-#
-#            # if the are too many comments, skip
-#            def count_comment(text):
-#                return text.count('#')
-#
-#            if count_comment(line['solution']) > max_comment_num or count_comment(line['output']) > max_comment_num:
-#                max_comment_num_count += 1
-#                continue
-#
-#            # if there are too many TODOs, skip
-#            def count_todo_comment(text):
-#                return text.count('# TODO') + text.count('# todo')
-#
-#            if count_todo_comment(line['solution']) > max_todo_num or count_todo_comment(line['output']) > max_todo_num:
-#                max_todo_num_count += 1
-#                continue
-#
-#            # the number of text.count("'''") and text.count('"""') should be <1
-#            if line['solution'].count("'''") > 0 or line['solution'].count('"""') > 0 or line['output'].count("'''") > 0 or line['output'].count('"""') > 0:
-#                function_comment_num_count += 1
-#                continue
-#
-#            # cut to 128 tokens
-#            all_originals.append(' '.join(line['solution'].split(' ')[:max_len]))
-#            all_samples.append(' '.join(line['output'].split(' ')[:max_len]))
-#
-#    logger.info(f'{max_def_num_count} examples have more than {max_def_num} "def"')
-#    logger.info(f'{min_len_count} examples have less than {min_len} words')
-#    logger.info(f'{max_comment_num_count} examples have more than {max_comment_num} comments')
-#    logger.info(f'{max_todo_num_count} examples have more than {max_todo_num} TODOs')
-#    logger.info(f'{function_comment_num_count} examples have more than 1 function comment')
-#    logger.info(f'Loaded {len(all_originals)} examples after filtering, and will return {min(max_num, len(all_originals))} examples')
-#
-#    # statistical analysis
-#    # import random
-#    # random.seed(42)
-#    # random.shuffle(all_originals)
-#    # random.shuffle(all_samples)
-#    
-#    #all_samples = random.sample(all_samples, 800)
-#    all_samples = random.sample(all_samples, 70)
-#
-#    data = {
-#        "original": all_originals,
-#        "sampled": all_samples
-#    }
-#
-#    return data
 
 datasets_paths = [
     "CodeSearchNetDatasets/outputs_incoder_0.2.txt",
@@ -281,7 +198,7 @@ test_data = {
     "sampled": data["sampled"][int(len(data["sampled"])*0.8):]
 }
 
-"""
+
 data_num = 32
 # train_dataを先頭の10件に
 train_data["original"] = train_data["original"][:data_num]
@@ -294,14 +211,14 @@ val_data["sampled"] = val_data["sampled"][:data_num]
 # test_dataを先頭の10件に
 test_data["original"] = test_data["original"][:data_num]
 test_data["sampled"] = test_data["sampled"][:data_num]
-"""
+
 
 #train_data = pertube_data(train_data, model_config=model_config, args=args)
 #val_data = pertube_data(val_data, model_config=model_config, args=args)
 #test_data = pertube_data(test_data, model_config=model_config, args=args)
-train_dataset = CodeDatasetForLLM(train_data)
-val_dataset = CodeDatasetForLLM(val_data)
-test_dataset = CodeDatasetForLLM(test_data)
+train_dataset = CodeDatasetForLLM(train_data, args)
+val_dataset = CodeDatasetForLLM(val_data, args)
+test_dataset = CodeDatasetForLLM(test_data, args)
 
 train_dataloader = DataLoader(train_dataset, args.batch_size, shuffle=True)
 validation_dataloader = DataLoader(val_dataset, args.batch_size, shuffle=False)
@@ -318,73 +235,28 @@ sm.to(device)
 cclm = CustomCodeLlamaModel(model=model_config['model'], tokenizer=model_config['tokenizer'], sentence_model=sm, sentence_model_tokenizer=model_config['sentence_model_tokenizer'])
 cclm.to(device)
 
-selected_params = [
-    # 初期層
-    #"model.embed_tokens.weight",
+lora_config = LoraConfig(
+    r=8,
+    lora_alpha=32,
+    target_modules=[
+        "q_proj",
+        "k_proj",
+        "v_proj",
+        "o_proj",
+    ],
+    lora_dropout=0.05,
+    bias="none",
+    fan_in_fan_out=False,
+    task_type=TaskType.CAUSAL_LM
+)
 
-    # 第1層の全パラメータ
-    #"model.layers.0.self_attn.q_proj.weight",
-    #"model.layers.0.self_attn.k_proj.weight",
-    #"model.layers.0.self_attn.v_proj.weight",
-    #"model.layers.0.self_attn.o_proj.weight",
-    #"model.layers.0.mlp.gate_proj.weight",
-    #"model.layers.0.mlp.up_proj.weight",
-    #"model.layers.0.mlp.down_proj.weight",
-    #"model.layers.0.input_layernorm.weight",
-    #"model.layers.0.post_attention_layernorm.weight",
+model_config['model'] = get_peft_model(model_config['model'], lora_config)
 
-    # 中間層の一部
-    #"model.layers.10.self_attn.q_proj.weight",
-    #"model.layers.10.self_attn.k_proj.weight",
-    #"model.layers.10.self_attn.v_proj.weight",
-    #"model.layers.10.self_attn.o_proj.weight",
-    #"model.layers.10.mlp.gate_proj.weight",
-    #"model.layers.10.mlp.up_proj.weight",
-    #"model.layers.10.mlp.down_proj.weight",
-    #"model.layers.10.input_layernorm.weight",
-    #"model.layers.10.post_attention_layernorm.weight",
-#
-    #"model.layers.20.self_attn.q_proj.weight",
-    #"model.layers.20.self_attn.k_proj.weight",
-    #"model.layers.20.self_attn.v_proj.weight",
-    #"model.layers.20.self_attn.o_proj.weight",
-    #"model.layers.20.mlp.gate_proj.weight",
-    #"model.layers.20.mlp.up_proj.weight",
-    #"model.layers.20.mlp.down_proj.weight",
-    #"model.layers.20.input_layernorm.weight",
-    #"model.layers.20.post_attention_layernorm.weight",
-
-    # 最終層
-    "model.layers.31.self_attn.q_proj.weight",
-    "model.layers.31.self_attn.k_proj.weight",
-    "model.layers.31.self_attn.v_proj.weight",
-    "model.layers.31.self_attn.o_proj.weight",
-    "model.layers.31.mlp.gate_proj.weight",
-    "model.layers.31.mlp.up_proj.weight",
-    "model.layers.31.mlp.down_proj.weight",
-    "model.layers.31.input_layernorm.weight",
-    "model.layers.31.post_attention_layernorm.weight",
-
-    # 正規化層と出力層
-    #"model.norm.weight",
-    "lm_head.weight"
+optimizer_parameters = [
+    {'params': model_config['model'].parameters(), 'lr': args.learning_rate}
 ]
-
-optimizer_parameters = []
-# すべてのパラメータをループして、必要なものを浮動小数点に変換する
-for name, param in cclm.model.named_parameters():
-    if name in selected_params:
-        param.requires_grad = True
-        optimizer_parameters.append(param)
-    else:
-        param.requires_grad = False
-
 total_steps = int(len(train_dataloader) * args.num_train_epochs)
 warmup_steps = int(total_steps * args.warmup_ratio)
-
-base_lr = args.learning_rate
-
-
 
 """
 no_decay = ["LayerNorm.weight", "bias"]

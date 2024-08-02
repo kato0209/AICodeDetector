@@ -5,6 +5,9 @@ build:
 run:
 	docker run -it --gpus all -v /home/kato/AICodeDetectorWorkspace/AICodeDetector:/work detector
 
+exec:
+	docker exec -it focused_mahavira bash
+
 ssh-to-sub:
 	ssh kato@192.168.11.114
 
