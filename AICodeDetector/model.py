@@ -182,10 +182,11 @@ class CustomCodeLlamaModel(nn.Module):
         
         return rewrite_codes, y, state
 
-    def forward(self, original_codes=None, labels=None, args=None, model_config=None):
+    def forward(self, original_codes=None, labels=None, args=None, model_config=None, eval=False):
         #_, perturbed_codes = pertubate_code(original_codes, model_config, args)
         perturbed_codes, y, state = self.rewrite_code(original_codes, model_config, args)
-
+        
+        # dummyのy, stateを作成
         similarity_scores = self._calc_similarity_cutom(original_codes, perturbed_codes, args, model_config)
         similarity_scores = similarity_scores.detach()
         
@@ -221,7 +222,8 @@ class CustomCodeLlamaModel(nn.Module):
                 loss = target_token_log_prob * R / args.batch_size * token_length  
 
                 #print(loss.grad_fn)
-                loss.backward()
+                if eval == False:
+                    loss.backward()
                 loss_value += loss.detach().item()
                 del outputs, logits, last_token_logits, log_probs, target_token_log_prob, baseline, reward, R, loss
                 torch.cuda.empty_cache()

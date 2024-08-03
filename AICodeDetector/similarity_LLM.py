@@ -34,7 +34,7 @@ import matplotlib.pyplot as plt
 from transformers import AutoTokenizer, AutoModel,AutoModelForSeq2SeqLM
 from sentence_transformers import SentenceTransformer, util
 
-from peft import get_peft_model, LoraConfig, TaskType
+from peft import get_peft_model, LoraConfig, TaskType, prepare_model_for_kbit_training
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', type=str, default="writing")
@@ -101,7 +101,8 @@ args_dict = {
     'n_perturbation_list': "50",
     'n_perturbation_rounds': 1,
     #'base_model_name': "codellama/CodeLlama-7b-hf",
-    'base_model_name': "codellama/CodeLlama-13b-Python-hf",
+    #'base_model_name': "codellama/CodeLlama-13b-Python-hf",
+    'base_model_name': "codellama/CodeLlama-13b-Instruct-hf",
     #'base_model_name': "meta-llama/CodeLlama-7b-Python-hf",
     #'base_model_name': "meta-llama/Meta-Llama-3-8B-Instruct",
     'mask_filling_model_name': "Salesforce/codet5p-770m",
@@ -232,8 +233,7 @@ model_path = 'saved_model/model_sm_20240628_064206.pth'
 sm.load_state_dict(torch.load(model_path, map_location=device))
 sm.to(device)
 
-cclm = CustomCodeLlamaModel(model=model_config['model'], tokenizer=model_config['tokenizer'], sentence_model=sm, sentence_model_tokenizer=model_config['sentence_model_tokenizer'])
-cclm.to(device)
+model_config['model'] = prepare_model_for_kbit_training(model_config['model'])
 
 lora_config = LoraConfig(
     r=8,
@@ -251,10 +251,14 @@ lora_config = LoraConfig(
 )
 
 model_config['model'] = get_peft_model(model_config['model'], lora_config)
+model_config['model'].enable_input_require_grads()  
+model_config['model'].gradient_checkpointing_enable() 
 
-optimizer_parameters = [
-    {'params': model_config['model'].parameters(), 'lr': args.learning_rate}
-]
+cclm = CustomCodeLlamaModel(model=model_config['model'], tokenizer=model_config['tokenizer'], sentence_model=sm, sentence_model_tokenizer=model_config['sentence_model_tokenizer'])
+cclm.to(device)
+
+optimizer_parameters = [p for p in model_config['model'].parameters()]
+
 total_steps = int(len(train_dataloader) * args.num_train_epochs)
 warmup_steps = int(total_steps * args.warmup_ratio)
 
@@ -279,7 +283,7 @@ scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=warmup_s
 train_loss_values = []
 validation_loss_values = []
 
-cclm.train()
+cclm.model.train()
 num_steps = 0
 for epoch in range(int(args.num_train_epochs)):
     train_loss = 0.0
@@ -297,27 +301,29 @@ for epoch in range(int(args.num_train_epochs)):
         #train_loss += loss.item()
         train_loss += loss
         num_steps += 1
-
+    
     train_loss /= len(train_dataloader)
     train_loss_values.append(train_loss)
     print(f"Epoch: {epoch}, Training Loss: {train_loss}")
 
-    cclm.eval()
+    cclm.model.eval()
     validation_loss = 0.0
     with torch.no_grad():
         for batch in validation_dataloader:
             codes = batch['code']
             labels = batch['labels'].to(device)
-            outputs = cclm(original_codes=codes, labels=labels, model_config=model_config, args=args)
+            outputs = cclm(original_codes=codes, labels=labels, model_config=model_config, args=args, eval=True)
             loss, _  = outputs[0], outputs[1]
-            validation_loss += loss.item()
+            validation_loss += loss
 
     validation_loss /= len(validation_dataloader)
     validation_loss_values.append(validation_loss)
     print(f"Validation Loss after epoch {epoch}: {validation_loss}")
-    cclm.train()
+    cclm.model.train()
 
-model_save(cclm)
+#model_save(cclm)
+timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+cclm.model.save_pretrained("./saved_model/LoRA/model_"+timestamp)
 print("done training")
 # Plot the learning curve
 plt.figure(figsize=(12, 6))
@@ -348,7 +354,7 @@ with torch.no_grad():
     for batch in test_dataloader:
         codes = batch['code']
         labels = batch['labels'].to(device)
-        outputs = cclm(original_codes=codes, labels=labels, model_config=model_config, args=args)
+        outputs = cclm(original_codes=codes, labels=labels, model_config=model_config, args=args, eval=True)
         loss, similarities = outputs[0], outputs[1]
         
         similarities = similarities.detach().cpu().numpy()
