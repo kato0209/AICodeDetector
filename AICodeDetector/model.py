@@ -110,7 +110,6 @@ class CustomBertModel(nn.Module):
         output = output + (pooled,)
         return ((loss, cos_loss) + output) if loss is not None else output
 
-import time
 class CustomCodeLlamaModel(nn.Module):
     def __init__(self, model, tokenizer, sentence_model, sentence_model_tokenizer):
         super(CustomCodeLlamaModel, self).__init__()
@@ -120,10 +119,7 @@ class CustomCodeLlamaModel(nn.Module):
         self.sentence_model_tokenizer = sentence_model_tokenizer
     
     def rewrite_code(self, codes, model_config, args):
-        def tokenize_and_normalize(sentence):
-            # Tokenization and normalization
-            return [word.lower().strip() for word in sentence.split()]
-        prompt_str = "Revise the code with your best effort"
+        prompt_str = "Generate the following code rewrites according to your idea."
         prefix = "OUTPUT:"
 
         tokenizer = model_config['tokenizer']
@@ -141,7 +137,10 @@ class CustomCodeLlamaModel(nn.Module):
             print(code)
 
             input_prompt = f"{prompt_str}: \"{code}\" \"{prefix}\""
-            token_length = len(tokenize_and_normalize(input_prompt))
+            code_tokens = tokenizer.tokenize(code)
+            token_length = len(code_tokens)
+            if token_length > 128:
+                token_length = 128
             inputs = tokenizer(input_prompt, return_tensors="pt").to(args.DEVICE)
             input_ids = inputs.input_ids.to(args.DEVICE)
             attention_mask = inputs.attention_mask.to(args.DEVICE)
@@ -228,7 +227,7 @@ class CustomCodeLlamaModel(nn.Module):
                 del outputs, logits, last_token_logits, log_probs, target_token_log_prob, baseline, reward, R, loss
                 torch.cuda.empty_cache()
 
-        return loss_value, similarity_scores
+        return loss_value, similarity_scores, perturbed_codes
     
     def _calc_similarity(self, original_codes, perturbed_codes, args=None, model_config=None):
         similarity_scores = []

@@ -355,10 +355,20 @@ with torch.no_grad():
         codes = batch['code']
         labels = batch['labels'].to(device)
         outputs = cclm(original_codes=codes, labels=labels, model_config=model_config, args=args, eval=True)
-        loss, similarities = outputs[0], outputs[1]
+        loss, similarities, per_codes = outputs[0], outputs[1], outputs[2]
         
         similarities = similarities.detach().cpu().numpy()
         labels = labels.detach().cpu().numpy()
+        for i in range(len(similarities)):
+            print("S------------------")
+            print(codes[i])
+            print("------------------")
+            print(per_codes[i])
+            print("------------------")
+            print(similarities[i])
+            print("------------------")
+            print(labels[i])
+            print("E------------------")
         
         all_similarities.extend(similarities)
         all_labels.extend(labels)
