@@ -36,13 +36,8 @@ def rewrite_code(codes, model_config, args):
         )
         
         response_text = response.choices[0].message.content
-
-        response_text = remove_code_block_indicator(response_text)
-        if response_text:
-            rewrite_code = response_text[0].strip().rstrip()
-            rewrite_codes.append(rewrite_code)
-        else:
-            rewrite_codes.append("")
+        #response_text = remove_code_block_indicator(response_text)
+        rewrite_codes.append(response_text)
         i += 1
     
     return rewrite_codes
