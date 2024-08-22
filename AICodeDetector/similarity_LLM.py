@@ -85,7 +85,7 @@ parser.add_argument('--cut_def', action='store_true')
 parser.add_argument('--max_todo_num', type=int, default=3)
 parser.add_argument("--learning_rate", default=1e-5, type=float)
 parser.add_argument("--adam_epsilon", default=1e-6, type=float)
-parser.add_argument("--num_train_epochs", default=5, type=float)
+parser.add_argument("--num_train_epochs", default=3, type=float)
 parser.add_argument("--warmup_ratio", default=0.01, type=float)
 parser.add_argument("--weight_decay", default=0.06, type=float)
 
@@ -292,7 +292,19 @@ for epoch in range(int(args.num_train_epochs)):
         labels = batch['labels'].to(device)
         outputs = cclm(original_codes=codes, labels=labels, model_config=model_config, args=args)
         
-        loss, _ = outputs[0], outputs[1]
+        loss, similarities, per_codes = outputs[0], outputs[1], outputs[2]
+        similarities = similarities.detach().cpu().numpy()
+        labels = labels.detach().cpu().numpy()
+        for i in range(len(similarities)):
+            print("tS------------------")
+            print(codes[i])
+            print("------------------")
+            print(per_codes[i])
+            print("------------------")
+            print(similarities[i])
+            print("------------------")
+            print(labels[i])
+            print("tE------------------")
         #loss.backward()
         optimizer.step()
         scheduler.step()
@@ -313,7 +325,19 @@ for epoch in range(int(args.num_train_epochs)):
             codes = batch['code']
             labels = batch['labels'].to(device)
             outputs = cclm(original_codes=codes, labels=labels, model_config=model_config, args=args, eval=True)
-            loss, _  = outputs[0], outputs[1]
+            loss, similarities, per_codes = outputs[0], outputs[1], outputs[2]
+            similarities = similarities.detach().cpu().numpy()
+            labels = labels.detach().cpu().numpy()
+            for i in range(len(similarities)):
+                print("vS------------------")
+                print(codes[i])
+                print("------------------")
+                print(per_codes[i])
+                print("------------------")
+                print(similarities[i])
+                print("------------------")
+                print(labels[i])
+                print("vE------------------")
             validation_loss += loss
 
     validation_loss /= len(validation_dataloader)

@@ -133,8 +133,8 @@ class CustomCodeLlamaModel(nn.Module):
         rewrite_codes = []
         i = 0
         for code in codes:
-            print("C----------------")
-            print(code)
+            #print("C----------------")
+            #print(code)
 
             input_prompt = f"{prompt_str}: \"{code}\" \"{prefix}\""
             code_tokens = tokenizer.tokenize(code)
@@ -175,8 +175,8 @@ class CustomCodeLlamaModel(nn.Module):
             output_sentence = tokenizer.decode(torch.cat(y[i], dim=-1)[0], skip_special_tokens=True)
             output_sentence = output_sentence.rstrip()
             rewrite_codes.append(output_sentence)
-            print("O------------------")
-            print(output_sentence)
+            #print("O------------------")
+            #print(output_sentence)
             i += 1
         
         return rewrite_codes, y, state
@@ -188,6 +188,9 @@ class CustomCodeLlamaModel(nn.Module):
         # dummyのy, stateを作成
         similarity_scores = self._calc_similarity_cutom(original_codes, perturbed_codes, args, model_config)
         similarity_scores = similarity_scores.detach()
+
+        max_sismilarity = similarity_scores.max()
+        normailized_similarity_scores = similarity_scores / max_sismilarity
         
         loss_value = 0.0
         for n in range(args.batch_size):
@@ -205,21 +208,28 @@ class CustomCodeLlamaModel(nn.Module):
                 log_probs = torch.nn.functional.log_softmax(last_token_logits, dim=-1)
                 target_token_log_prob = log_probs[y[n][t].detach().item()]
 
-                if labels[n] == 1:
-                    baseline = torch.mean(similarity_scores)
-                    reward = similarity_scores[n].item()
-                    R = reward / baseline
-                else:
-                    # similarity_scoresが0の場合の処理を追加
-                    if similarity_scores[n].item() == 0:
-                        R = 0
-                    else:
-                        baseline = 1 / torch.mean(similarity_scores)
-                        reward = 1 / similarity_scores[n].item()
-                        R = (reward / baseline) * 0.5
+                #if labels[n] == 1:
+                #    baseline = torch.mean(normailized_similarity_scores)
+                #    reward = normailized_similarity_scores[n].item()
+                #    R = reward / baseline
+                #else:
+                #    ## similarity_scoresが0の場合の処理を追加
+                #    #if normailized_similarity_scores[n].item() == 0:
+                #    #    R = 0
+                #    #else:
+                #    #    baseline = 1 / torch.mean(normailized_similarity_scores)
+                #    #    reward = 1 / normailized_similarity_scores[n].item()
+                #    #    R = (reward / baseline) * 0.5
+                #    reward = 0
+                #    baseline = 0
+                #    R = 0
+                baseline = torch.mean(normailized_similarity_scores)
+                reward = normailized_similarity_scores[n].item()
+                R = reward / baseline
 
-                loss = target_token_log_prob * R / args.batch_size * token_length  
+                loss = target_token_log_prob * R / args.batch_size / token_length  
 
+                print(loss)
                 #print(loss.grad_fn)
                 if eval == False:
                     loss.backward()
@@ -227,7 +237,7 @@ class CustomCodeLlamaModel(nn.Module):
                 del outputs, logits, last_token_logits, log_probs, target_token_log_prob, baseline, reward, R, loss
                 torch.cuda.empty_cache()
 
-        return loss_value, similarity_scores, perturbed_codes
+        return loss_value, normailized_similarity_scores, perturbed_codes
     
     def _calc_similarity(self, original_codes, perturbed_codes, args=None, model_config=None):
         similarity_scores = []
