@@ -140,6 +140,27 @@ class CodeDatasetFromCodeSearchNet(Dataset):
                 "perturb_code": perturb_code
             }
 
+class CodeDatasetRewriting(Dataset):
+    def __init__(self, data, model_config, args):
+        self.samples = []
+        self.model_config = model_config
+        self.args = args
+
+        for code in data["original"]:
+            self.samples.append((code, 0))
+    
+        for code in data["sampled"]:
+            self.samples.append((code, 1))
+    
+    def __len__(self):
+        return len(self.samples)
+
+    def __getitem__(self, index):
+
+        code, label = self.samples[index]
+        
+        return {'code': code, 'labels': torch.tensor(label, dtype=torch.long)}
+
 class CodeDatasetForLLM(Dataset):
     def __init__(self, data, args):
         self.samples = []

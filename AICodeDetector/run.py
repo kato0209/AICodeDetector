@@ -6,7 +6,7 @@ from preprocessing import preprocess_and_save
 from load_model import load_mask_filling_model, load_model
 from filling_mask import replace_masks
 from extract_fill import extract_fills, apply_extracted_fills
-from code_dataset import CodeDataset, CodeDatasetFromCodeSearchNet
+from code_dataset import CodeDataset, CodeDatasetFromCodeSearchNet, CodeDatasetRewriting
 import argparse
 import torch
 import os
@@ -25,6 +25,7 @@ from datetime import datetime
 import random
 import logging
 from sklearn.metrics import classification_report, confusion_matrix
+from utils.generate_data import generate_data
 
 import numpy as np
 import scipy.stats
@@ -142,105 +143,6 @@ model_config = {}
 model_config = load_mask_filling_model(args, args.mask_filling_model_name, model_config)
 #model_config = load_model(args, args.base_model_name, model_config)
 
-def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_def_num=5, cut_def=False, max_todo_num=3, path=None):
-
-    logger.info(f'Loading data from {path}')
-    import json
-    all_originals = []
-    all_samples = []  # machine generated
-
-    max_def_num_count = 0
-    min_len_count = 0
-    max_comment_num_count = 0
-    function_comment_num_count = 0
-    max_todo_num_count = 0
-
-    with open(path, 'r') as f:
-        for line in tqdm(f, ncols=70):
-            line = line.strip()
-            if line == '':
-                continue
-            line = json.loads(line)
-
-            # cut out the 'def' part after the first generation
-            if cut_def:
-                line['output'] = line['output'].split('def')[0]
-                line['solution'] = line['solution'].split('def')[0]
-
-            # I don't like there to have too many 'def' in the code
-            # ~100/100000 examples have more than 3 'def'
-            if line['solution'].count('def') > max_def_num or line['output'].count('def') > max_def_num:
-                max_def_num_count += 1
-                continue
-
-            # avoid examples that are too short (less than min_len words)
-            # around 2000/100000 examples have around 55 words
-            if len(line['solution'].split()) < min_len or len(line['output'].split()) < min_len:
-                min_len_count += 1
-                continue
-
-            # if the are too many comments, skip
-            def count_comment(text):
-                return text.count('#')
-
-            if count_comment(line['solution']) > max_comment_num or count_comment(line['output']) > max_comment_num:
-                max_comment_num_count += 1
-                continue
-
-            # if there are too many TODOs, skip
-            def count_todo_comment(text):
-                return text.count('# TODO') + text.count('# todo')
-
-            if count_todo_comment(line['solution']) > max_todo_num or count_todo_comment(line['output']) > max_todo_num:
-                max_todo_num_count += 1
-                continue
-
-            # the number of text.count("'''") and text.count('"""') should be <1
-            if line['solution'].count("'''") > 0 or line['solution'].count('"""') > 0 or line['output'].count("'''") > 0 or line['output'].count('"""') > 0:
-                function_comment_num_count += 1
-                continue
-
-            # cut to 128 tokens
-            all_originals.append(' '.join(line['solution'].split(' ')[:max_len]))
-            all_samples.append(' '.join(line['output'].split(' ')[:max_len]))
-
-    logger.info(f'{max_def_num_count} examples have more than {max_def_num} "def"')
-    logger.info(f'{min_len_count} examples have less than {min_len} words')
-    logger.info(f'{max_comment_num_count} examples have more than {max_comment_num} comments')
-    logger.info(f'{max_todo_num_count} examples have more than {max_todo_num} TODOs')
-    logger.info(f'{function_comment_num_count} examples have more than 1 function comment')
-    logger.info(f'Loaded {len(all_originals)} examples after filtering, and will return {min(max_num, len(all_originals))} examples')
-
-    # statistical analysis
-    # import random
-    # random.seed(42)
-    # random.shuffle(all_originals)
-    # random.shuffle(all_samples)
-    
-    #all_samples = random.sample(all_samples, 800)
-    all_samples = random.sample(all_samples, 700)
-
-    label = None
-    if 'incoder' in path:
-        label = 1
-    elif 'phi1' in path:
-        label = 2
-    elif 'starcoder' in path:
-        label = 3
-    elif 'wizardcoder' in path:
-        label = 4
-    elif 'codegen2' in path:
-        label = 5
-    elif 'Llama' in path:
-        label = 6
-
-    data = {
-        "original": all_originals,
-        "sampled": [(x, label) for x in all_samples]
-    }
-
-    return data
-
 datasets_paths = [
     "CodeSearchNetDatasets/outputs_incoder_0.2.txt",
     "CodeSearchNetDatasets/outputs_phi1_0.2.txt",
@@ -302,12 +204,9 @@ test_data["original"] = test_data["original"][:1]
 test_data["sampled"] = test_data["sampled"][:1]
 """
 
-train_data = pertube_data(train_data, model_config=model_config, args=args)
-val_data = pertube_data(val_data, model_config=model_config, args=args)
-test_data = pertube_data(test_data, model_config=model_config, args=args)
-train_dataset = CodeDatasetFromCodeSearchNet(train_data, model_config, args, perturb=pertube)
-val_dataset = CodeDatasetFromCodeSearchNet(val_data, model_config, args, perturb=pertube)
-test_dataset = CodeDatasetFromCodeSearchNet(test_data, model_config, args, perturb=pertube)
+train_dataset = CodeDatasetRewriting(train_data, model_config, args, perturb=pertube)
+val_dataset = CodeDatasetRewriting(val_data, model_config, args, perturb=pertube)
+test_dataset = CodeDatasetRewriting(test_data, model_config, args, perturb=pertube)
 
 train_dataloader = DataLoader(train_dataset, args.batch_size, shuffle=True)
 validation_dataloader = DataLoader(val_dataset, args.batch_size, shuffle=False)
@@ -325,72 +224,10 @@ warmup_steps = int(total_steps * args.warmup_ratio)
 
 base_lr = args.learning_rate
 
-group1 = ['encoder.layer.0.', 'encoder.layer.1.', 'encoder.layer.2.', 'encoder.layer.3.']
-group2 = ['encoder.layer.4.', 'encoder.layer.5.', 'encoder.layer.6.', 'encoder.layer.7.']
-group3 = ['encoder.layer.8.', 'encoder.layer.9.', 'encoder.layer.10.', 'encoder.layer.11.']
-group_all = group1 + group2 + group3
-
 optimizer_parameters = []
-no_decay = ["LayerNorm.weight", "bias"]
 
 for param in cbm.sentence_model.parameters():
     param.requires_grad = False
-
-# 全レイヤーに含まれないパラメータ（例えば、分類ヘッド）
-optimizer_parameters.append({
-    'params': [
-        p for n, p in cbm.named_parameters()
-        if not any(nd in n for nd in group_all) and 'classifier' not in n and not any(nd in n for nd in no_decay)
-    ],
-    'weight_decay': args.weight_decay,
-    'lr': base_lr
-})
-
-# 正則化を適用しないパラメータ
-optimizer_parameters.append({
-    'params': [
-        p for n, p in cbm.named_parameters()
-        if any(nd in n for nd in no_decay)
-    ],
-    'weight_decay': 0.0,
-    'lr': base_lr
-})
-
-# グループごとのパラメータと学習率
-optimizer_parameters.append({
-    'params': [
-        p for n, p in cbm.named_parameters()
-        if any(nd in n for nd in group1) and not any(nd in n for nd in no_decay)
-    ],
-    'weight_decay': args.weight_decay,
-    'lr': base_lr
-})
-optimizer_parameters.append({
-    'params': [
-        p for n, p in cbm.named_parameters()
-        if any(nd in n for nd in group2) and not any(nd in n for nd in no_decay)
-    ],
-    'weight_decay': args.weight_decay,
-    'lr': base_lr * 1.25
-})
-optimizer_parameters.append({
-    'params': [
-        p for n, p in cbm.named_parameters()
-        if any(nd in n for nd in group3) and not any(nd in n for nd in no_decay)
-    ],
-    'weight_decay': args.weight_decay,
-    'lr': base_lr * 1.5
-})
-
-# 分類ヘッドのパラメータ
-optimizer_parameters.append({
-    'params': [
-        p for n, p in cbm.named_parameters()
-        if 'classifier' in n and not any(nd in n for nd in no_decay)
-    ],
-    'weight_decay': args.weight_decay,
-    'lr': base_lr * 1.5  # 分類ヘッドの学習率を指定
-})
 
 optimizer = AdamW(optimizer_parameters, lr=args.learning_rate, eps=args.adam_epsilon)
 scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps, num_training_steps=total_steps)
