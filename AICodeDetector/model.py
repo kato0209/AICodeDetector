@@ -303,13 +303,13 @@ class CustomCodeLlamaModel(nn.Module):
         similarity_scores = torch.tensor(similarity_scores).view(-1, 1).to(self.model.device)
         return similarity_scores
 
-    def calc_similarity_custom(self, original_codes, masked_codes, args=None, model_config=None):
-        perturbed_codes, _, _ = self.rewrite_code(original_codes, model_config, args)
+    def calc_similarity_custom(self, original_codes, rewrite_codes, args=None, model_config=None):
+        #perturbed_codes, _, _ = self.rewrite_code(original_codes, model_config, args)
         for i in range(len(original_codes)):
             print("S---------")
             print(original_codes[i])
             print("-----------------")
-            print(perturbed_codes[i])
+            print(rewrite_codes[i])
             print("E---------")
 
 
@@ -325,8 +325,8 @@ class CustomCodeLlamaModel(nn.Module):
         
         input_ids_p = []
         attention_mask_p = []
-        for i in range(len(perturbed_codes)):
-            encoded_inputs = self.sentence_model_tokenizer(perturbed_codes[i], return_tensors="pt", padding="max_length", truncation=True, max_length=128).to(self.model.device)
+        for i in range(len(rewrite_codes)):
+            encoded_inputs = self.sentence_model_tokenizer(rewrite_codes[i], return_tensors="pt", padding="max_length", truncation=True, max_length=128).to(self.model.device)
             input_ids_p.append(encoded_inputs.input_ids)
             attention_mask_p.append(encoded_inputs.attention_mask)
         # input_ids_pをtensorに変換
@@ -338,7 +338,7 @@ class CustomCodeLlamaModel(nn.Module):
             embeddings2 = self.sentence_model.output_embeddings(input_ids_p, attention_mask_p)
         cos_sim = self.sentence_model.sim(embeddings1, embeddings2)
     
-        return cos_sim, original_codes, perturbed_codes
+        return cos_sim, original_codes, rewrite_codes
     
     def rewrite_code2(self, codes, model_config, args):
         def tokenize_and_normalize(sentence):

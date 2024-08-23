@@ -6,7 +6,7 @@ from preprocessing import preprocess_and_save
 from load_model import load_mask_filling_model, load_model
 from filling_mask import replace_masks
 from extract_fill import extract_fills, apply_extracted_fills
-from code_dataset import CodeDataset, CodeDatasetFromCodeSearchNet, CodeDatasetForLLM
+from code_dataset import CodeDataset, CodeDatasetFromCodeSearchNet, CodeDatasetForLLM, CodeDatasetSimilarity
 import argparse
 import torch
 import os
@@ -34,6 +34,7 @@ from transformers import AutoTokenizer, AutoModel,AutoModelForSeq2SeqLM
 from sentence_transformers import SentenceTransformer, util
 
 from utils.generate_cs_data import generate_data
+from utils.download_data import download_data_from_json
 from masking import tokenize_and_mask
 
 parser = argparse.ArgumentParser()
@@ -160,130 +161,15 @@ args = parser.parse_args(input_args)
 
 device = args.DEVICE
 
-
-#def generate_data(max_num=1000, min_len=0, max_len=128, max_comment_num=10, max_def_num=5, cut_def=False, max_todo_num=3, path=None):
-#
-#    logger.info(f'Loading data from {path}')
-#    import json
-#    all_originals = []
-#    all_samples = []  # machine generated
-#
-#    max_def_num_count = 0
-#    min_len_count = 0
-#    max_comment_num_count = 0
-#    function_comment_num_count = 0
-#    max_todo_num_count = 0
-#
-#    with open(path, 'r') as f:
-#        for line in tqdm(f, ncols=70):
-#            line = line.strip()
-#            if line == '':
-#                continue
-#            line = json.loads(line)
-#
-#            # cut out the 'def' part after the first generation
-#            if cut_def:
-#                line['output'] = line['output'].split('def')[0]
-#                line['solution'] = line['solution'].split('def')[0]
-#
-#            # I don't like there to have too many 'def' in the code
-#            # ~100/100000 examples have more than 3 'def'
-#            if line['solution'].count('def') > max_def_num or line['output'].count('def') > max_def_num:
-#                max_def_num_count += 1
-#                continue
-#
-#            # avoid examples that are too short (less than min_len words)
-#            # around 2000/100000 examples have around 55 words
-#            if len(line['solution'].split()) < min_len or len(line['output'].split()) < min_len:
-#                min_len_count += 1
-#                continue
-#
-#            # if the are too many comments, skip
-#            def count_comment(text):
-#                return text.count('#')
-#
-#            if count_comment(line['solution']) > max_comment_num or count_comment(line['output']) > max_comment_num:
-#                max_comment_num_count += 1
-#                continue
-#
-#            # if there are too many TODOs, skip
-#            def count_todo_comment(text):
-#                return text.count('# TODO') + text.count('# todo')
-#
-#            if count_todo_comment(line['solution']) > max_todo_num or count_todo_comment(line['output']) > max_todo_num:
-#                max_todo_num_count += 1
-#                continue
-#
-#            # the number of text.count("'''") and text.count('"""') should be <1
-#            if line['solution'].count("'''") > 0 or line['solution'].count('"""') > 0 or line['output'].count("'''") > 0 or line['output'].count('"""') > 0:
-#                function_comment_num_count += 1
-#                continue
-#
-#            # cut to 128 tokens
-#            all_originals.append(' '.join(line['solution'].split(' ')[:max_len]))
-#            all_samples.append(' '.join(line['output'].split(' ')[:max_len]))
-#
-#    logger.info(f'{max_def_num_count} examples have more than {max_def_num} "def"')
-#    logger.info(f'{min_len_count} examples have less than {min_len} words')
-#    logger.info(f'{max_comment_num_count} examples have more than {max_comment_num} comments')
-#    logger.info(f'{max_todo_num_count} examples have more than {max_todo_num} TODOs')
-#    logger.info(f'{function_comment_num_count} examples have more than 1 function comment')
-#    logger.info(f'Loaded {len(all_originals)} examples after filtering, and will return {min(max_num, len(all_originals))} examples')
-#
-#    # statistical analysis
-#    # import random
-#    # random.seed(42)
-#    # random.shuffle(all_originals)
-#    # random.shuffle(all_samples)
-#    
-#    #all_samples = random.sample(all_samples, 800)
-#    all_samples = random.sample(all_samples, 70)
-#
-#    data = {
-#        "original": all_originals,
-#        "sampled": all_samples
-#    }
-#
-#    return data
-
-
-
-datasets_paths = [
-    "CodeSearchNetDatasets/outputs_incoder_0.2.txt",
-    "CodeSearchNetDatasets/outputs_phi1_0.2.txt",
-    "CodeSearchNetDatasets/outputs_starcoder_0.2.txt",
-    "CodeSearchNetDatasets/outputs_wizardcoder_0.2.txt",
-    "CodeSearchNetDatasets/outputs_codegen2_0.2.txt",
-    "CodeSearchNetDatasets/outputs_Llama_0.2.txt",
-    "CodeSearchNetDatasets/outputs_incoder_1.0.txt",
-    "CodeSearchNetDatasets/outputs_phi1_1.0.txt",
-    "CodeSearchNetDatasets/outputs_starcoder_1.0.txt",
-    "CodeSearchNetDatasets/outputs_wizardcoder_1.0.txt",
-    "CodeSearchNetDatasets/outputs_codegen2_1.0.txt",
-    "CodeSearchNetDatasets/outputs_Llama_1.0.txt",
-]
+human_data = download_data_from_json('rewrite_dataset/rewrite_code_by_gpt_AI_rewrite_Revise the code with your best effort.json')
+ai_data = download_data_from_json('rewrite_dataset/rewrite_code_by_gpt_Human_rewrite_Revise the code with your best effort.json')
 
 data = {
-    "original": [],
-    "sampled": []
+    "human": human_data,
+    "ai": ai_data
 }
-i = 0
-for path in datasets_paths:
-    sep_data = generate_data(path=path)
-    data["original"] = data["original"] + sep_data["original"]
 
-    data["sampled"] = data["sampled"] + sep_data["sampled"]
-    i += 1
-
-data["original"] = list(set(data["original"]))
-data["sampled"] = list(set(data["sampled"]))
-
-# dataを800件に originalはランダムに抽出
-data_num = 32
-data["original"] = random.sample(data["original"], data_num)
-data["sampled"] = data["sampled"][:data_num]
-
-dataset = CodeDatasetForLLM(data, args)
+dataset = CodeDatasetSimilarity(data, args)
 
 dataloader = DataLoader(dataset, args.batch_size, shuffle=True)
 
@@ -317,10 +203,10 @@ label_list, pred_list, all_similarities, all_labels = [], [], [], []
 with torch.no_grad():
     for batch in dataloader:
         codes = batch['code']
-        masked_codes = batch['masked_code']
+        rewrite_codes = batch['rewrite_code']
         labels = batch['labels'].to(device)
         labels = torch.tensor(labels).to(device)
-        similarities, original_codes, per_codes = cclm.calc_similarity_custom(codes, masked_codes, model_config=model_config, args=args)
+        similarities, original_codes, per_codes = cclm.calc_similarity_custom(codes, rewrite_codes, model_config=model_config, args=args)
         
         similarities = similarities.detach().cpu().numpy()
         labels = labels.detach().cpu().numpy()

@@ -146,11 +146,18 @@ class CodeDatasetRewriting(Dataset):
         self.model_config = model_config
         self.args = args
 
-        for code in data["original"]:
-            self.samples.append((code, 0))
+        human_data = data["human"]
+        ai_data = data["ai"]
+
+        for code, rewrite_code in human_data:
+            # repair here
+            input = code + rewrite_code
+            self.samples.append((input, 0))
     
-        for code in data["sampled"]:
-            self.samples.append((code, 1))
+        for code, rewrite_code in ai_data:
+            # repair here
+            input = code + rewrite_code
+            self.samples.append((input, 1))
     
     def __len__(self):
         return len(self.samples)
@@ -160,6 +167,29 @@ class CodeDatasetRewriting(Dataset):
         code, label = self.samples[index]
         
         return {'code': code, 'labels': torch.tensor(label, dtype=torch.long)}
+
+class CodeDatasetSimilarity(Dataset):
+    def __init__(self, data, args):
+        self.samples = []
+        self.args = args
+
+        human_data = data["human"]
+        ai_data = data["ai"]
+
+        for i in range (len(human_data["original"])):
+            self.samples.append((human_data["original"][i], human_data["rewrite"][i], 0))
+        
+        for i in range (len(ai_data["original"])):
+            self.samples.append((ai_data["original"][i], ai_data["rewrite"][i], 1))
+    
+    def __len__(self):
+        return len(self.samples)
+
+    def __getitem__(self, index):
+
+        code, rewrite_code, label = self.samples[index]
+        
+        return {'code': code, 'rewrite_code': rewrite_code, 'labels': torch.tensor(label, dtype=torch.long)}
 
 class CodeDatasetForLLM(Dataset):
     def __init__(self, data, args):

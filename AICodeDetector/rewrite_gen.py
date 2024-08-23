@@ -4,6 +4,8 @@ import os
 from openai import OpenAI
 import random
 from utils.generate_cs_data import generate_data
+from dotenv import load_dotenv
+load_dotenv()
 
 def remove_code_block_indicator(response):
     # コードブロックインジケーターを削除
@@ -12,7 +14,7 @@ def remove_code_block_indicator(response):
     return response
 
 def rewrite_code(codes, model_config, args):
-    api_key = os.environ['OPENAI_API_KEY']
+    api_key = os.getenv('OPENAI_API_KEY')
     model = "gpt-3.5-turbo"
     temperature = 0.2
     prompt_str = "Revise the code with your best effort"
@@ -43,12 +45,15 @@ def rewrite_code(codes, model_config, args):
     return rewrite_codes
 
 def save_to_json_rewritten_code(codes, rewrite_codes, origin):
-    data = {}
     rewrite_string = "rewrite_" + "Revise the code with your best effort"
+    data = []
     for i in range(len(codes)):
-        data["original"] = codes[i]
-        data[rewrite_string] = rewrite_codes[i]
-    with open(f'rewrite_dataset/rewrite_code_by_gpt_{origin}.json', 'w') as file:
+        sec = {
+            "original": codes[i],
+            "rewrite": rewrite_codes[i]
+        }
+        data.append(sec)
+    with open(f'rewrite_dataset/rewrite_code_by_gpt_{origin}_{rewrite_string}.json', 'w') as file:
         json.dump(data, file, indent=4)
 
 def rewrite_code_gpt(codes, model_config, args, origin=None):
@@ -86,7 +91,7 @@ data["original"] = list(set(data["original"]))
 data["sampled"] = list(set(data["sampled"]))
 
 # dataを800件に originalはランダムに抽出
-data_num = 1
+data_num = 800
 data["original"] = random.sample(data["original"], data_num)
 data["sampled"] = data["sampled"][:data_num]
 
