@@ -143,30 +143,30 @@ class CodeDatasetFromCodeSearchNet(Dataset):
 class CodeDatasetRewriting(Dataset):
     def __init__(self, data, model_config, args):
         self.samples = []
-        self.model_config = model_config
         self.args = args
+        self.model_config = model_config
 
         human_data = data["human"]
         ai_data = data["ai"]
 
-        for code, rewrite_code in human_data:
-            # repair here
-            input = code + rewrite_code
-            self.samples.append((input, 0))
-    
-        for code, rewrite_code in ai_data:
-            # repair here
-            input = code + rewrite_code
-            self.samples.append((input, 1))
+        for i in range (len(human_data["original"])):
+            self.samples.append((human_data["original"][i], human_data["rewrite"][i], 0))
+        
+        for i in range (len(ai_data["original"])):
+            self.samples.append((ai_data["original"][i], ai_data["rewrite"][i], 1))
     
     def __len__(self):
         return len(self.samples)
 
     def __getitem__(self, index):
 
-        code, label = self.samples[index]
+        code, rewrite_code, label = self.samples[index]
+        input = f"original: {code} \ rewrite: {rewrite_code}"
+        inputs = self.model_config["tokenizer"].encode_plus(code, padding='max_length', max_length=300, truncation=True)
+        input_ids = inputs['input_ids']
+        attention_mask = inputs['attention_mask']
         
-        return {'code': code, 'labels': torch.tensor(label, dtype=torch.long)}
+        return {'input_ids': torch.tensor(input_ids, dtype=torch.long), 'attention_mask': torch.tensor(attention_mask, dtype=torch.long), 'labels': torch.tensor(label, dtype=torch.long), 'code': code, 'rewrite_code': rewrite_code}
 
 class CodeDatasetSimilarity(Dataset):
     def __init__(self, data, args):

@@ -6,7 +6,7 @@ from preprocessing import preprocess_and_save
 from load_model import load_mask_filling_model, load_model
 from filling_mask import replace_masks
 from extract_fill import extract_fills, apply_extracted_fills
-from code_dataset import CodeDataset, CodeDatasetFromCodeSearchNet, CodeDatasetRewriting
+from code_dataset import CodeDataset, CodeDatasetFromCodeSearchNet, CodeDatasetRewriting, CodeDatasetSimilarity
 import argparse
 import torch
 import os
@@ -25,11 +25,12 @@ from datetime import datetime
 import random
 import logging
 from sklearn.metrics import classification_report, confusion_matrix
-from utils.generate_data import generate_data
+from utils.generate_cs_data import generate_data
 
 import numpy as np
 import scipy.stats
 import matplotlib.pyplot as plt
+from utils.download_data import download_data_from_json
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', type=str, default="writing")
@@ -139,56 +140,55 @@ for key, value in args_dict.items():
 args = parser.parse_args(input_args)
 
 device = args.DEVICE
-model_config = {}
-model_config = load_mask_filling_model(args, args.mask_filling_model_name, model_config)
 #model_config = load_model(args, args.base_model_name, model_config)
 
-datasets_paths = [
-    "CodeSearchNetDatasets/outputs_incoder_0.2.txt",
-    "CodeSearchNetDatasets/outputs_phi1_0.2.txt",
-    "CodeSearchNetDatasets/outputs_starcoder_0.2.txt",
-    "CodeSearchNetDatasets/outputs_wizardcoder_0.2.txt",
-    "CodeSearchNetDatasets/outputs_codegen2_0.2.txt",
-    "CodeSearchNetDatasets/outputs_Llama_0.2.txt",
-    "CodeSearchNetDatasets/outputs_incoder_1.0.txt",
-    "CodeSearchNetDatasets/outputs_phi1_1.0.txt",
-    "CodeSearchNetDatasets/outputs_starcoder_1.0.txt",
-    "CodeSearchNetDatasets/outputs_wizardcoder_1.0.txt",
-    "CodeSearchNetDatasets/outputs_codegen2_1.0.txt",
-    "CodeSearchNetDatasets/outputs_Llama_1.0.txt",
-]
+ai_data = download_data_from_json('rewrite_dataset/rewrite_code_by_gpt_AI_rewrite_Revise the code with your best effort.json')
+human_data = download_data_from_json('rewrite_dataset/rewrite_code_by_gpt_Human_rewrite_Revise the code with your best effort.json')
 
 data = {
-    "original": [],
-    "sampled": []
+    "human": human_data,
+    "ai": ai_data
 }
-i = 0
-for path in datasets_paths:
-    sep_data = generate_data(path=path)
-    data["original"] = data["original"] + sep_data["original"]
 
-    data["sampled"] = data["sampled"] + sep_data["sampled"]
-    i += 1
-
-data["original"] = list(set(data["original"]))
-data["sampled"] = list(set(data["sampled"]))
+human_train_data = {
+    "original": data["human"]["original"][:int(len(data["human"]["original"])*0.7)],
+    "rewrite": data["human"]["rewrite"][:int(len(data["human"]["rewrite"])*0.7)]
+}
+ai_train_data = {
+    "original": data["ai"]["original"][:int(len(data["ai"]["original"])*0.7)],
+    "rewrite": data["ai"]["rewrite"][:int(len(data["ai"]["rewrite"])*0.7)]
+}
 
 train_data = {
-    "original": data["original"][:int(len(data["original"])*0.7)],
-    "sampled": data["sampled"][:int(len(data["sampled"])*0.7)]
+    "human": human_train_data,
+    "ai": ai_train_data
 }
 
+human_val_data = {
+    "original": data["human"]["original"][int(len(data["human"]["original"])*0.7):int(len(data["human"]["original"])*0.8)],
+    "rewrite": data["human"]["rewrite"][int(len(data["human"]["rewrite"])*0.7):int(len(data["human"]["rewrite"])*0.8)]
+}
+ai_val_data = {
+    "original": data["ai"]["original"][int(len(data["ai"]["original"])*0.7):int(len(data["ai"]["original"])*0.8)],
+    "rewrite": data["ai"]["rewrite"][int(len(data["ai"]["rewrite"])*0.7):int(len(data["ai"]["rewrite"])*0.8)]
+}
 val_data = {
-    "original": data["original"][int(len(data["original"])*0.7):int(len(data["original"])*0.8)],
-    "sampled": data["sampled"][int(len(data["sampled"])*0.7):int(len(data["sampled"])*0.8)]
+    "human": human_val_data,
+    "ai": ai_val_data
 }
 
+human_test_data = {
+    "original": data["human"]["original"][int(len(data["human"]["original"])*0.8):],
+    "rewrite": data["human"]["rewrite"][int(len(data["human"]["rewrite"])*0.8):]
+}
+ai_test_data = {
+    "original": data["ai"]["original"][int(len(data["ai"]["original"])*0.8):],
+    "rewrite": data["ai"]["rewrite"][int(len(data["ai"]["rewrite"])*0.8):]
+}
 test_data = {
-    "original": data["original"][int(len(data["original"])*0.8):],
-    "sampled": data["sampled"][int(len(data["sampled"])*0.8):]
+    "human": human_test_data,
+    "ai": ai_test_data
 }
-
-pertube = True
 
 """
 # train_dataを先頭の10件に
@@ -204,30 +204,32 @@ test_data["original"] = test_data["original"][:1]
 test_data["sampled"] = test_data["sampled"][:1]
 """
 
-train_dataset = CodeDatasetRewriting(train_data, model_config, args, perturb=pertube)
-val_dataset = CodeDatasetRewriting(val_data, model_config, args, perturb=pertube)
-test_dataset = CodeDatasetRewriting(test_data, model_config, args, perturb=pertube)
+cbm = CustomBertModel()
+cbm.to(device)
+
+model_config = {}
+model_config["tokenizer"] = cbm.tokenizer
+model_config["model"] = cbm.model
+
+train_dataset = CodeDatasetRewriting(train_data, model_config, args)
+val_dataset = CodeDatasetRewriting(val_data, model_config, args)
+test_dataset = CodeDatasetRewriting(test_data, model_config, args)
 
 train_dataloader = DataLoader(train_dataset, args.batch_size, shuffle=True)
 validation_dataloader = DataLoader(val_dataset, args.batch_size, shuffle=False)
 test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle=False)
-
-loss_ration = 1.0
-sub_loss_ratio = 0.5
-alpha = 0.5
-beta = 0.0
-cbm = CustomBertModel(loss_ratio=loss_ration, sub_loss_ratio=sub_loss_ratio, alpha=alpha, beta=beta)
-cbm.to(device)
 
 total_steps = int(len(train_dataloader) * args.num_train_epochs)
 warmup_steps = int(total_steps * args.warmup_ratio)
 
 base_lr = args.learning_rate
 
-optimizer_parameters = []
-
 for param in cbm.sentence_model.parameters():
     param.requires_grad = False
+
+optimizer_parameters = [
+    {"params": cbm.parameters(), "lr": base_lr},
+]
 
 optimizer = AdamW(optimizer_parameters, lr=args.learning_rate, eps=args.adam_epsilon)
 scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps, num_training_steps=total_steps)
@@ -246,10 +248,8 @@ for epoch in range(int(args.num_train_epochs)):
         input_ids = batch['input_ids'].to(device)
         attention_mask = batch['attention_mask'].to(device)
         labels = batch['labels'].to(device)
-        original_code = batch['original_code']
-        pertube_code = batch['perturb_code']
 
-        outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels, original_code=original_code, perturb_code=pertube_code)
+        outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels)
         loss, cos_loss = outputs[0], outputs[1]
         loss.backward()
         optimizer.step()
@@ -273,9 +273,7 @@ for epoch in range(int(args.num_train_epochs)):
             input_ids = batch['input_ids'].to(device)
             attention_mask = batch['attention_mask'].to(device)
             labels = batch['labels'].to(device)
-            original_code = batch['original_code']
-            pertube_code = batch['perturb_code']
-            outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels, original_code=original_code, perturb_code=pertube_code)
+            outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels)
             loss = outputs[0]
             validation_loss += loss.item()
 
@@ -316,9 +314,7 @@ with torch.no_grad():
     for batch in test_dataloader:
         input_ids = batch['input_ids'].to(device)
         attention_mask = batch['attention_mask'].to(device)
-        original_code = batch['original_code']
-        pertube_code = batch['perturb_code']
-        outputs = cbm(input_ids, attention_mask=attention_mask, original_code=original_code, perturb_code=pertube_code)
+        outputs = cbm(input_ids, attention_mask=attention_mask)
         labels = batch["labels"]
         logits = outputs[0]
         predictions = torch.argmax(logits, dim=1)

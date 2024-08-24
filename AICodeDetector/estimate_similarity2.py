@@ -6,7 +6,7 @@ from preprocessing import preprocess_and_save
 from load_model import load_mask_filling_model, load_model
 from filling_mask import replace_masks
 from extract_fill import extract_fills, apply_extracted_fills
-from code_dataset import CodeDataset, CodeDatasetFromCodeSearchNet, CodeDatasetForLLM
+from code_dataset import CodeDataset, CodeDatasetFromCodeSearchNet, CodeDatasetForLLM, CodeDatasetSimilarity
 import argparse
 import torch
 import os
@@ -34,6 +34,7 @@ from transformers import AutoTokenizer, AutoModel,AutoModelForSeq2SeqLM
 from sentence_transformers import SentenceTransformer, util
 
 from utils.generate_cs_data import generate_data
+from utils.download_data import download_data_from_json
 from masking import tokenize_and_mask
 
 parser = argparse.ArgumentParser()
@@ -100,7 +101,7 @@ args_dict = {
     'n_samples': 500,
     'n_perturbation_list': "50",
     'n_perturbation_rounds': 1,
-    #'base_model_name': "codellama/CodeLlama-7b-hf",
+    'base_model_name': "codellama/CodeLlama-7b-hf",
     #'base_model_name': "codellama/CodeLlama-7b-Python-hf",
     #'base_model_name': "codellama/CodeLlama-13b-Python-hf",
     #'base_model_name': "codellama/CodeLlama-34b-Python-hf",
@@ -111,9 +112,9 @@ args_dict = {
     #'base_model_name': "facebook/bart-base",
     #'base_model_name': "HuggingFaceH4/starchat-alpha",
     #'base_model_name': "meta-llama/Meta-Llama-3-8B-Instruct",
-    'base_model_name': "meta-llama/Llama-2-7b-chat-hf",
     #'base_model_name': "meta-llama/CodeLlama-7b-Instruct-hf",
     #'base_model_name': "meta-llama/CodeLlama-7b-Python-hf",
+    #'base_model_name': "meta-llama/Llama-2-7b-chat-hf",
     #'base_model_name': "microsoft/codebert-base",
     'mask_filling_model_name': "Salesforce/codet5p-770m",
     'batch_size': 32,
@@ -160,43 +161,35 @@ args = parser.parse_args(input_args)
 
 device = args.DEVICE
 
-
-
-
-datasets_paths = [
-    "CodeSearchNetDatasets/outputs_incoder_0.2.txt",
-    "CodeSearchNetDatasets/outputs_phi1_0.2.txt",
-    "CodeSearchNetDatasets/outputs_starcoder_0.2.txt",
-    "CodeSearchNetDatasets/outputs_wizardcoder_0.2.txt",
-    "CodeSearchNetDatasets/outputs_codegen2_0.2.txt",
-    "CodeSearchNetDatasets/outputs_Llama_0.2.txt",
-    "CodeSearchNetDatasets/outputs_incoder_1.0.txt",
-    "CodeSearchNetDatasets/outputs_phi1_1.0.txt",
-    "CodeSearchNetDatasets/outputs_starcoder_1.0.txt",
-    "CodeSearchNetDatasets/outputs_wizardcoder_1.0.txt",
-    "CodeSearchNetDatasets/outputs_codegen2_1.0.txt",
-    "CodeSearchNetDatasets/outputs_Llama_1.0.txt",
-]
-
-data = {
-    "original": [],
-    "sampled": []
-}
-
 import json
-with open(f'json_data/code_human-v2.json', 'r') as file:
+with open(f'json_data/text-davinci-002_rewrite_code_human_inv.json', 'r') as file:
     human = json.load(file)
 
-with open(f'json_data/code_GPT-v2.json', 'r') as file:
+with open(f'json_data/text-davinci-002_rewrite_code_GPT_inv.json', 'r') as file:
     GPT = json.load(file)
 
-for cc, d in enumerate(human):
-    data["original"].append(d[0]+d[1])
 
-for cc, d in enumerate(GPT):
-    data["sampled"].append(d[1])
+# "input" フィールドを抽出
+original_codes = [item['input'] for item in human]
+rewrite_codes = [item['Revise the code with your best effort'] for item in human]
+human_data = {
+    "original": original_codes,
+    "rewrite": rewrite_codes
+}
 
-dataset = CodeDatasetForLLM(data, args)
+original_codes = [item['input'] for item in GPT]
+rewrite_codes = [item['Revise the code with your best effort'] for item in GPT]
+GPT_data = {
+    "original": original_codes,
+    "rewrite": rewrite_codes
+}
+
+data = {
+    "human": human_data,
+    "ai": GPT_data
+}
+
+dataset = CodeDatasetSimilarity(data, args)
 
 dataloader = DataLoader(dataset, args.batch_size, shuffle=True)
 
@@ -230,10 +223,10 @@ label_list, pred_list, all_similarities, all_labels = [], [], [], []
 with torch.no_grad():
     for batch in dataloader:
         codes = batch['code']
-        masked_codes = batch['masked_code']
+        rewrite_codes = batch['rewrite_code']
         labels = batch['labels'].to(device)
         labels = torch.tensor(labels).to(device)
-        similarities, original_codes, per_codes = cclm.calc_similarity_custom(codes, masked_codes, model_config=model_config, args=args)
+        similarities, original_codes, per_codes = cclm.calc_similarity_custom(codes, rewrite_codes, model_config=model_config, args=args)
         
         similarities = similarities.detach().cpu().numpy()
         labels = labels.detach().cpu().numpy()

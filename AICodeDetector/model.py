@@ -21,7 +21,6 @@ class CustomClassificationHead(nn.Module):
         self.num_labels = num_labels
 
         # similarity feature
-        config.hidden_size = 768 + 768
         hidden_size2 = 768
         hidden_size3 = 512
 
@@ -49,9 +48,10 @@ class CustomClassificationHead(nn.Module):
         return logits
 
 class CustomBertModel(nn.Module):
-    def __init__(self, loss_ratio=0.5, sub_loss_ratio=0.5, alpha=0.5, beta=0.8):
+    def __init__(self, loss_ratio=1.0, sub_loss_ratio=0.5, alpha=0.5, beta=0.8):
         super(CustomBertModel, self).__init__()
         self.model = AutoModel.from_pretrained("microsoft/codebert-base")
+        self.tokenizer = AutoTokenizer.from_pretrained("microsoft/codebert-base")
         self.sentence_model = SentenceTransformer('Sakil/sentence_similarity_semantic_search')
         self.dropout = nn.Dropout(self.model.config.hidden_dropout_prob)
         self.classifier = CustomClassificationHead(self.model.config, num_labels=2)
@@ -63,34 +63,16 @@ class CustomBertModel(nn.Module):
         self.alpha = alpha
         self.beta = beta
         self.sub_loss_ratio = sub_loss_ratio
-        
     
-    def return_model(self):
-        return self.model
-    
-    def forward(self, input_ids=None, attention_mask=None, labels=None, original_code=None, perturb_code=None):
-        
-        sentences = []
-        for code in original_code:
-            sentences.append(code)
-        for code in perturb_code:
-            sentences.append(code)
-        embedings = self.sentence_model.encode(sentences)
-        cos_sim = util.cos_sim(embedings, embedings)
-        similarity_scores = [cos_sim[i, len(original_code) + i] for i in range(len(original_code))]
-        similarity_scores = torch.tensor(similarity_scores).view(-1, 1).to(input_ids.device)
-        #similarity_scoresを[size, 1]から[size, 768]に変換
-        similarity_scores = similarity_scores.repeat(1, 768)
-
-        outputs = self.model(input_ids, attention_mask=attention_mask)
+    def forward(self, input_ids=None, attention_mask=None, labels=None):
+        outputs = self.model(input_ids=input_ids, attention_mask=attention_mask)
         pooled_output = pooled = outputs[1]
         pooled_output = self.dropout(pooled_output)
-        new_pooled_output = torch.cat([pooled_output, similarity_scores], dim=-1)
 
         loss = None
         cos_loss = None
         if labels is not None:
-            dist = ((new_pooled_output.unsqueeze(1) - new_pooled_output.unsqueeze(0)) ** 2).mean(-1)
+            dist = ((pooled_output.unsqueeze(1) - pooled_output.unsqueeze(0)) ** 2).mean(-1)
             mask = (labels.unsqueeze(1) == labels.unsqueeze(0)).float()
             mask = mask - torch.diag(torch.diag(mask))
             neg_mask = (labels.unsqueeze(1) != labels.unsqueeze(0)).float()
@@ -100,11 +82,11 @@ class CustomBertModel(nn.Module):
 
             loss_fct = CrossEntropyLoss()
 
-            logits = self.classifier(new_pooled_output)
+            logits = self.classifier(pooled_output)
             loss = loss_fct(logits.view(-1, self.num_labels), labels.view(-1))
             loss = self.loss_ratio * loss + self.alpha * cos_loss
         else:
-            logits = self.classifier(new_pooled_output)
+            logits = self.classifier(pooled_output)
 
         output = (logits,) + outputs[2:]
         output = output + (pooled,)

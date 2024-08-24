@@ -101,12 +101,12 @@ args_dict = {
     'n_samples': 500,
     'n_perturbation_list': "50",
     'n_perturbation_rounds': 1,
-    #'base_model_name': "codellama/CodeLlama-7b-hf",
+    'base_model_name': "codellama/CodeLlama-7b-hf",
     #'base_model_name': "codellama/CodeLlama-7b-Python-hf",
     #'base_model_name': "codellama/CodeLlama-13b-Python-hf",
     #'base_model_name': "codellama/CodeLlama-34b-Python-hf",
     #'base_model_name': "meta-llama/CodeLlama-34b-Instruct-hf",
-    'base_model_name': "codellama/CodeLlama-13b-Instruct-hf",
+    #'base_model_name': "codellama/CodeLlama-13b-Instruct-hf",
     #'base_model_name': "meta-llama/CodeLlama-7b-hf",
     #'base_model_name': "Salesforce/codet5p-770m",
     #'base_model_name': "facebook/bart-base",
@@ -161,8 +161,8 @@ args = parser.parse_args(input_args)
 
 device = args.DEVICE
 
-human_data = download_data_from_json('rewrite_dataset/rewrite_code_by_gpt_AI_rewrite_Revise the code with your best effort.json')
-ai_data = download_data_from_json('rewrite_dataset/rewrite_code_by_gpt_Human_rewrite_Revise the code with your best effort.json')
+ai_data = download_data_from_json('rewrite_dataset/rewrite_code_by_gpt_AI_rewrite_Revise the code with your best effort.json')
+human_data = download_data_from_json('rewrite_dataset/rewrite_code_by_gpt_Human_rewrite_Revise the code with your best effort.json')
 
 data = {
     "human": human_data,
