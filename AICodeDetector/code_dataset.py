@@ -150,12 +150,12 @@ class CodeDatasetRewriting(Dataset):
         ai_data = data["ai"]
 
         for i in range (len(human_data["original"])):
-            #self.samples.append((human_data["original"][i], human_data["rewrite"][i], 0))
-            self.samples.append((human_data["original"][i], 0, 0))
+            self.samples.append((human_data["original"][i], human_data["rewrite"][i], 0))
+            #self.samples.append((human_data["original"][i], 0, 0))
         
         for i in range (len(ai_data["original"])):
-            #self.samples.append((ai_data["original"][i], ai_data["rewrite"][i], 1))
-            self.samples.append((ai_data["original"][i], 0, 1))
+            self.samples.append((ai_data["original"][i], ai_data["rewrite"][i], 1))
+            #self.samples.append((ai_data["original"][i], 0, 1))
     
     def __len__(self):
         return len(self.samples)
@@ -164,7 +164,7 @@ class CodeDatasetRewriting(Dataset):
 
         code, rewrite_code, label = self.samples[index]
         input = f"original: {code} \ rewrite: {rewrite_code}"
-        inputs = self.model_config["tokenizer"].encode_plus(code, padding='max_length', max_length=300, truncation=True)
+        inputs = self.model_config["tokenizer"].encode_plus(input, padding='max_length', max_length=300, truncation=True)
         input_ids = inputs['input_ids']
         attention_mask = inputs['attention_mask']
         
