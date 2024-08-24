@@ -1,7 +1,6 @@
 from masking import tokenize_and_mask
 from filling_mask import replace_masks
 from extract_fill import extract_fills, apply_extracted_fills
-from pertubate import rewrite_code
 
 import numpy as np
 import scipy.stats
@@ -62,19 +61,31 @@ def pertubate_code(codes, model_config, args):
     return masked_codes, perturbed_codes 
 
 def pertube_data(data, model_config, args):
-    perturbation_type = 'mask'
-    new_data = {
+    perturbation_type = 'space-line'
+
+    new_human_data = {
         "original": [],
-        "sampled": []
+        "rewrite": data["human"]["rewrite"]
+    }
+    new_ai_data = {
+        "original": [],
+        "rewrite": data["ai"]["rewrite"]
+    }
+    new_data = {
+        "human": new_human_data,
+        "ai": new_ai_data
     }
     if perturbation_type == 'space-line':
-        human_codes_perturbed = random_insert_newline_space(data["original"])
-        AI_codes_perturbed = random_insert_newline_space(data["sampled"])
-        for i in range(len(data["original"])):
-            new_data["original"].append((data["original"][i], human_codes_perturbed[i]))
+        print("perturbing data")
+        human_codes_perturbed = random_insert_newline_space(data["human"]["original"])
+        AI_codes_perturbed = random_insert_newline_space(data["ai"]["original"])
+        for i in range(len(data["human"]["original"])):
+            new_data["human"]["original"].append(data["human"]["original"][i])
+            new_data["human"]["original"].append(human_codes_perturbed[i])
         
-        for i in range(len(data["sampled"])):
-            new_data["sampled"].append((data["sampled"][i][0], AI_codes_perturbed[i], data["sampled"][i][1]))
+        for i in range(len(data["ai"]["original"])):
+            new_data["ai"]["original"].append(data["ai"]["original"][i])
+            new_data["ai"]["original"].append(AI_codes_perturbed[i])
 
         data = new_data
     elif perturbation_type == 'rewrite':

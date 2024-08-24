@@ -17,7 +17,14 @@ def rewrite_code(codes, model_config, args):
     api_key = os.getenv('OPENAI_API_KEY')
     model = "gpt-3.5-turbo"
     temperature = 0.2
-    prompt_str = "Revise the code with your best effort"
+    #prompt_str = "Revise the code with your best effort"
+    #prefix = ". No need to explain. Just write code:"
+    
+    prompt_str = """
+    Please first explain the functionality of the python code above.(Do not output explanation)
+    Then, revise the code with your explanation in mind.
+
+    """
     prefix = ". No need to explain. Just write code:"
     
     rewrite_codes = []
@@ -27,6 +34,7 @@ def rewrite_code(codes, model_config, args):
         OpenAI.api_key = api_key
 
         prompt = f"{prompt_str}: \"{code}\" {prefix}"
+        #prompt = input_prompt.format(input_code=code)
         response = client.chat.completions.create(
             model=model,
             messages=[
@@ -45,7 +53,7 @@ def rewrite_code(codes, model_config, args):
     return rewrite_codes
 
 def save_to_json_rewritten_code(codes, rewrite_codes, origin):
-    rewrite_string = "rewrite_" + "Revise the code with your best effort"
+    rewrite_string = "RW"
     data = []
     for i in range(len(codes)):
         sec = {
@@ -92,8 +100,8 @@ data["sampled"] = list(set(data["sampled"]))
 
 # dataを800件に originalはランダムに抽出
 data_num = 800
-data["original"] = random.sample(data["original"], data_num)
+#data["original"] = random.sample(data["original"], data_num)
 data["sampled"] = data["sampled"][:data_num]
 
-rewrite_code_gpt(data["original"], None, None, "Human")
+#rewrite_code_gpt(data["original"], None, None, "Human")
 rewrite_code_gpt(data["sampled"], None, None, "AI")

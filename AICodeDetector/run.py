@@ -14,7 +14,6 @@ import datetime
 from torch.utils.data import DataLoader, random_split
 
 from model import CustomBertModel
-from pertubate import rewrite_code
 from transformers.optimization import AdamW, get_linear_schedule_with_warmup
 from utils.model_save import model_save
 from utils.confusion_matrix import plot_confusion_matrix

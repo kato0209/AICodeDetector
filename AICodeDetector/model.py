@@ -7,8 +7,6 @@ from sentence_transformers import SentenceTransformer, util
 from pertube_data import pertubate_code
 import re
 
-from pertubate import rewrite_code
-
 from torchviz import make_dot
 from IPython.display import display
 

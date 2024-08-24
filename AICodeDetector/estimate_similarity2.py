@@ -162,10 +162,10 @@ args = parser.parse_args(input_args)
 device = args.DEVICE
 
 import json
-with open(f'json_data/text-davinci-002_rewrite_code_human_inv.json', 'r') as file:
+with open(f'json_data/rewrite_code_human_inv.json', 'r') as file:
     human = json.load(file)
 
-with open(f'json_data/text-davinci-002_rewrite_code_GPT_inv.json', 'r') as file:
+with open(f'json_data/rewrite_code_GPT_inv.json', 'r') as file:
     GPT = json.load(file)
 
 
