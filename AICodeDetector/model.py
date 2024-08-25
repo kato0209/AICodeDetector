@@ -10,7 +10,6 @@ import re
 from torchviz import make_dot
 from IPython.display import display
 
-from test import query_chatgpt_and_save
 
 class CustomClassificationHead(nn.Module):
     def __init__(self,config, num_labels):
@@ -382,42 +381,6 @@ class CustomCodeLlamaModel(nn.Module):
                     new_rewrite_codes.append("")
             rewrite_codes = new_rewrite_codes
         """
-            
-        
-        return rewrite_codes, y, state
-    
-    def rewrite_code3(self, codes, model_config, args):
-        import os
-        api_key = os.environ['OPENAI_API_KEY']
-        y = []
-        state = []
-
-        prompt = """
-
-        Generate the following Python code rewrite according to your idea.
-        Please do not output anything other than the rewritten Python code.
-        Please organize all the code in a single markdown code block.
-
-        {code}\n
-        
-        OUTPUT:\n
-
-        """
-        
-
-        rewrite_codes = []
-        i = 0
-        for code in codes:
-            input_prompt = prompt.format(code=code)
-            response_text = query_chatgpt_and_save(input_prompt, api_key, "", "", temperature=0.2)
-            pattern = r"```(.*)```"
-            rewritten_code = re.findall(pattern, response_text, re.DOTALL)
-            if rewritten_code:
-                rewrite_code = rewritten_code[0].strip().rstrip()
-                rewrite_codes.append(rewrite_code)
-            else:
-                rewrite_codes.append("")
-            i += 1
             
         
         return rewrite_codes, y, state

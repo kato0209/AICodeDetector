@@ -14,7 +14,6 @@ import datetime
 from torch.utils.data import DataLoader, random_split
 
 from model import CustomBertModel, CustomCodeLlamaModel, SimilarityModel
-from pertubate import rewrite_code
 from transformers.optimization import AdamW, get_linear_schedule_with_warmup
 from utils.model_save import model_save
 from utils.confusion_matrix import plot_confusion_matrix
@@ -162,10 +161,10 @@ args = parser.parse_args(input_args)
 device = args.DEVICE
 
 import json
-with open(f'json_data/rewrite_code_human_inv.json', 'r') as file:
+with open(f'json_data/llama_rewrite_code_GPT_inv.json', 'r') as file:
     human = json.load(file)
 
-with open(f'json_data/rewrite_code_GPT_inv.json', 'r') as file:
+with open(f'json_data/llama_rewrite_code_human_inv.json', 'r') as file:
     GPT = json.load(file)
 
 
