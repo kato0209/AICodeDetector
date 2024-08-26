@@ -166,13 +166,13 @@ human_data = download_data_from_json('rewrite_dataset/rewrite_code_by_gpt_Human_
 #ai_data = download_data_from_json('json_data/rewrite_code_GPT_inv.json')
 #human_data = download_data_from_json('json_data/rewrite_code_human_inv.json')
 
-from util_func import remove_comments
-
-human_data["original"] = [remove_comments(code) for code in human_data["original"]]
-human_data["rewrite"] = [remove_comments(code) for code in human_data["rewrite"]]
-
-ai_data["original"] = [remove_comments(code) for code in ai_data["original"]]
-ai_data["rewrite"] = [remove_comments(code) for code in ai_data["rewrite"]]
+#from util_func import remove_comments
+#
+#human_data["original"] = [remove_comments(code) for code in human_data["original"]]
+#human_data["rewrite"] = [remove_comments(code) for code in human_data["rewrite"]]
+#
+#ai_data["original"] = [remove_comments(code) for code in ai_data["original"]]
+#ai_data["rewrite"] = [remove_comments(code) for code in ai_data["rewrite"]]
 
 data = {
     "human": human_data,
