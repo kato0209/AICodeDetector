@@ -33,7 +33,7 @@ from transformers import AutoTokenizer, AutoModel,AutoModelForSeq2SeqLM
 from sentence_transformers import SentenceTransformer, util
 
 from utils.generate_cs_data import generate_data
-from utils.download_data import download_data_from_json
+from utils.download_data import download_data_from_json, download_data_from_json2
 from masking import tokenize_and_mask
 
 parser = argparse.ArgumentParser()
@@ -160,11 +160,11 @@ args = parser.parse_args(input_args)
 
 device = args.DEVICE
 
-ai_data = download_data_from_json('rewrite_dataset/rewrite_code_by_gpt_AI_REWRITE_CHECK.json')
-human_data = download_data_from_json('rewrite_dataset/rewrite_code_by_gpt_Human_REWRITE_CHECK.json')
+#ai_data = download_data_from_json('rewrite_dataset/rewrite_code_by_gpt_AI_HumanEval_Codellama_First.json')
+human_data = download_data_from_json('rewrite_dataset/rewrite_code_by_gpt_Human_HumanEval_Codellama_First.json')
 
-#ai_data = download_data_from_json('json_data/rewrite_code_GPT_inv.json')
-#human_data = download_data_from_json('json_data/rewrite_code_human_inv.json')
+#ai_data = download_data_from_json2('json_data/rewrite_code_GPT_inv.json')
+#human_data = download_data_from_json2('json_data/rewrite_code_human_inv.json')
 
 #from util_func import remove_comments
 #

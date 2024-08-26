@@ -38,7 +38,12 @@ def truncate(completion):
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 def generate_hf(model_name, prompts, solutions, batch_size=16, max_length_sample=128, max_length=128, do_sample=True, top_p=0.95, temperature=0.2):
-
+    # prompts に文字列を追加して再生成する
+    new_prompts = []
+    for i in range(len(prompts)):
+        prompt = f"Help me write python code start with this {prompts[i]}, no explanation, just code:"
+        new_prompts.append(prompt)
+    prompts = new_prompts
     tokenizer = AutoTokenizer.from_pretrained(model_name)
 
     if 'codegen-' in model_name.lower():
@@ -181,9 +186,11 @@ for model_name in model_names:
 
     for i in range(len(prompts)):
         data.append({
-            "original": solutions[i],
+            "original": prompts[i] + solutions[i],
             "sampled": outputs[i]
         })
-    save_name = "codellama-7b-instruct"
+    
+    #model_nameの/を-に置換する
+    save_name = model_name.replace("/", "-")
     with open(f'HumanEval/outputs_{save_name}.json', 'w') as file:
         json.dump(data, file, indent=4)
