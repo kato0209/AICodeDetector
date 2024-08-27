@@ -107,7 +107,7 @@ def generate_hf(model_name, prompts, solutions, batch_size=16, max_length_sample
             all_outputs.append(decoded_output)
             outputs = all_outputs
     else:
-        input_ids = tokenizer(prompts, return_tensors="pt", padding=True, truncation=True, max_length=max_length).input_ids
+        input_ids = tokenizer(prompts, return_tensors="pt", padding=True, truncation=True, max_length=512).input_ids
         input_ids_len = input_ids.shape[1]
         logger.info(f'input_ids_len: {input_ids_len}')
 
@@ -133,6 +133,8 @@ def generate_hf(model_name, prompts, solutions, batch_size=16, max_length_sample
 
     # truncate the outputs (based on the original code of CodeGen)
     outputs = [truncate(output) for output in outputs]
+    from util_func import remove_blank_lines
+    outputs = [remove_blank_lines(output) for output in outputs]
 
     logger.info(f'Generated {len(outputs)} samples')
 
@@ -165,18 +167,18 @@ for each in codedata:
 
 
 model_names = [
-    #"facebook/incoder-1B",
-    #"microsoft/phi-1",
-    #"AlekseyKorshuk/WizardCoder-3B-V1.0-dpo-beta-0.01",
-    #"Salesforce/codegen2-3_7B_P",
+    "facebook/incoder-1B",
+    "microsoft/phi-1",
+    "AlekseyKorshuk/WizardCoder-3B-V1.0-dpo-beta-0.01",
+    "Salesforce/codegen2-3_7B_P",
     "bigcode/starcoderbase-3b",
     #"codellama/CodeLlama-7b-hf",
-    #"codellama/CodeLlama-7b-Instruct-hf",
+    "codellama/CodeLlama-7b-Instruct-hf",
 ]
 
 data = []
 for model_name in model_names:
-    prompts, outputs, solutions = generate_hf(model_name, prompts, solutions, batch_size=16, max_length_sample=128, max_length=128, do_sample=True, top_p=0.95, temperature=0.2)
+    prompts, outputs, solutions = generate_hf(model_name, prompts, solutions, batch_size=16, max_length_sample=128, max_length=128, do_sample=True, top_p=0.95, temperature=1.0)
     for i in range(len(prompts)):
         print("S---------")
         print(f"Original: {solutions[i]}")
@@ -192,5 +194,5 @@ for model_name in model_names:
     
     #model_nameの/を-に置換する
     save_name = model_name.replace("/", "-")
-    with open(f'HumanEval/outputs_{save_name}.json', 'w') as file:
+    with open(f'HumanEval/outputs_{save_name}_t1-0.json', 'w') as file:
         json.dump(data, file, indent=4)

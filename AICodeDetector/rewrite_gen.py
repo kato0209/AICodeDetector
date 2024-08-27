@@ -44,6 +44,7 @@ def rewrite_code(codes, model_config, args):
         #response_text = remove_code_block_indicator(response_text)
         rewrite_codes.append(response_text)
         i += 1
+        print("S-----")
         print(code)
         print("---------")
         print(response_text)
@@ -52,7 +53,7 @@ def rewrite_code(codes, model_config, args):
     return rewrite_codes
 
 def save_to_json_rewritten_code(codes, rewrite_codes, origin, by="gpt"):
-    rewrite_string = "HumanEval_starcoder"
+    rewrite_string = "HumanEval_codellama"
     data = []
     for i in range(len(codes)):
         sec = {
@@ -103,13 +104,13 @@ def rewrite_gpt():
     #data["original"] = random.sample(data["original"], data_num)
     #data["sampled"] = data["sampled"][:data_num]
 
-    #with open("HumanEval/outputs_codellama-CodeLlama-7b-Instruct-hf.json", 'r') as file:
-    #    json_data = json.load(file)
-    #original_codes = [item['original'] for item in json_data]
-    #sampled_codes = [item['sampled'] for item in json_data]
-    #
-    #rewrite_code_gpt(original_codes, None, None, "Human")
-    #rewrite_code_gpt(sampled_codes, None, None, "AI")
+    with open("HumanEval/outputs_codellama_spaceline_ex.json", 'r') as file:
+        json_data = json.load(file)
+    original_codes = [item['original'] for item in json_data]
+    sampled_codes = [item['sampled'] for item in json_data]
+    
+    rewrite_code_gpt(original_codes, None, None, "Human")
+    rewrite_code_gpt(sampled_codes, None, None, "AI")
 
     #from utils.download_data import download_data_from_json
     #ai_data = download_data_from_json('json_data/rewrite_code_GPT_inv.json')
@@ -165,7 +166,7 @@ def rewrite_codellama():
 
 
 if __name__ == "__main__":
-    #rewrite_gpt()
-    rewrite_codellama()
+    rewrite_gpt()
+    #rewrite_codellama()
  
 
