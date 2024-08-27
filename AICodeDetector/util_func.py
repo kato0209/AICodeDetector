@@ -8,3 +8,7 @@ def remove_comments(code: str) -> str:
     code_no_block_comments = re.sub(r'\'\'\'(.*?)\'\'\'|\"\"\"(.*?)\"\"\"', '', code_no_line_comments, flags=re.DOTALL)
     
     return code_no_block_comments.strip()
+
+def remove_blank_lines(code):
+    lines = [line for line in code.splitlines() if line.strip()]
+    return "\n".join(lines)

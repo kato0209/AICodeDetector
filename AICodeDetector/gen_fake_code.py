@@ -169,9 +169,9 @@ model_names = [
     #"microsoft/phi-1",
     #"AlekseyKorshuk/WizardCoder-3B-V1.0-dpo-beta-0.01",
     #"Salesforce/codegen2-3_7B_P",
-    #"bigcode/starcoderbase-3b",
+    "bigcode/starcoderbase-3b",
     #"codellama/CodeLlama-7b-hf",
-    "codellama/CodeLlama-7b-Instruct-hf",
+    #"codellama/CodeLlama-7b-Instruct-hf",
 ]
 
 data = []

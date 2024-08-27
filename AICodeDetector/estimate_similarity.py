@@ -163,6 +163,9 @@ device = args.DEVICE
 #ai_data = download_data_from_json('rewrite_dataset/rewrite_code_by_gpt_AI_HumanEval_Codellama_First.json')
 human_data = download_data_from_json('rewrite_dataset/rewrite_code_by_gpt_Human_HumanEval_Codellama_First.json')
 
+ai_data = download_data_from_json('rewrite_dataset/rewrite_code_by_codellama_AI_HumanEval_starcoder.json')
+#human_data = download_data_from_json('rewrite_dataset/rewrite_code_by_codellama_Human_HumanEval_starcoder.json')
+
 #ai_data = download_data_from_json2('json_data/rewrite_code_GPT_inv.json')
 #human_data = download_data_from_json2('json_data/rewrite_code_human_inv.json')
 
