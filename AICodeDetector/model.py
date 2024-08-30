@@ -98,8 +98,8 @@ class CustomCodeLlamaModel(nn.Module):
         self.sentence_model_tokenizer = sentence_model_tokenizer
     
     def rewrite_code(self, codes, model_config, args):
-        prompt_str = "Generate the following code rewrites according to your idea."
-        prefix = "OUTPUT:"
+        prompt_str = "Revise the code with your best effort"
+        prefix = ". No need to explain. Just write code:"
 
         tokenizer = model_config['tokenizer']
         model = model_config['model']

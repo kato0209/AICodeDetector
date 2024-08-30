@@ -6,7 +6,7 @@ from preprocessing import preprocess_and_save
 from load_model import load_mask_filling_model, load_model
 from filling_mask import replace_masks
 from extract_fill import extract_fills, apply_extracted_fills
-from code_dataset import CodeDataset, CodeDatasetFromCodeSearchNet, CodeDatasetForLLM
+from code_dataset import CodeDataset, CodeDatasetFromCodeSearchNet, CodeDatasetForLLM, CodeDatasetRewriting
 import argparse
 import torch
 import os
@@ -14,7 +14,6 @@ import datetime
 from torch.utils.data import DataLoader, random_split
 
 from model import CustomBertModel, CustomCodeLlamaModel, SimilarityModel
-from pertubate import rewrite_code
 from transformers.optimization import AdamW, get_linear_schedule_with_warmup
 from utils.model_save import model_save
 from utils.confusion_matrix import plot_confusion_matrix
@@ -150,83 +149,74 @@ args = parser.parse_args(input_args)
 
 device = args.DEVICE
 
-datasets_paths = [
-    "CodeSearchNetDatasets/outputs_incoder_0.2.txt",
-    "CodeSearchNetDatasets/outputs_phi1_0.2.txt",
-    "CodeSearchNetDatasets/outputs_starcoder_0.2.txt",
-    "CodeSearchNetDatasets/outputs_wizardcoder_0.2.txt",
-    "CodeSearchNetDatasets/outputs_codegen2_0.2.txt",
-    "CodeSearchNetDatasets/outputs_Llama_0.2.txt",
-    "CodeSearchNetDatasets/outputs_incoder_1.0.txt",
-    "CodeSearchNetDatasets/outputs_phi1_1.0.txt",
-    "CodeSearchNetDatasets/outputs_starcoder_1.0.txt",
-    "CodeSearchNetDatasets/outputs_wizardcoder_1.0.txt",
-    "CodeSearchNetDatasets/outputs_codegen2_1.0.txt",
-    "CodeSearchNetDatasets/outputs_Llama_1.0.txt",
-]
+from utils.download_data import download_data_from_json
+ai_data = download_data_from_json('rewrite_dataset/rewrite_codellama_AI_origin_codellama.json')
+human_data = download_data_from_json('rewrite_dataset/rewrite_codellama_Human_origin_codellama.json')
+
+#from util_func import remove_comments
+#
+#human_data["original"] = [remove_comments(code) for code in human_data["original"]]
+#human_data["rewrite"] = [remove_comments(code) for code in human_data["rewrite"]]
+#
+#ai_data["original"] = [remove_comments(code) for code in ai_data["original"]]
+#ai_data["rewrite"] = [remove_comments(code) for code in ai_data["rewrite"]]
 
 data = {
-    "original": [],
-    "sampled": []
+    "human": human_data,
+    "ai": ai_data
 }
-i = 0
-for path in datasets_paths:
-    sep_data = generate_data(path=path)
-    data["original"] = data["original"] + sep_data["original"]
 
-    data["sampled"] = data["sampled"] + sep_data["sampled"]
-    i += 1
-
-data["original"] = list(set(data["original"]))
-data["sampled"] = list(set(data["sampled"]))
-
-# dataを800件に originalはランダムに抽出
-data["original"] = random.sample(data["original"], 800)
-data["sampled"] = data["sampled"][:800]
+human_train_data = {
+    "original": data["human"]["original"][:int(len(data["human"]["original"])*0.7)],
+    "rewrite": data["human"]["rewrite"][:int(len(data["human"]["rewrite"])*0.7)]
+}
+ai_train_data = {
+    "original": data["ai"]["original"][:int(len(data["ai"]["original"])*0.7)],
+    "rewrite": data["ai"]["rewrite"][:int(len(data["ai"]["rewrite"])*0.7)]
+}
 
 train_data = {
-    "original": data["original"][:int(len(data["original"])*0.7)],
-    "sampled": data["sampled"][:int(len(data["sampled"])*0.7)]
+    "human": human_train_data,
+    "ai": ai_train_data
 }
 
+human_val_data = {
+    "original": data["human"]["original"][int(len(data["human"]["original"])*0.7):int(len(data["human"]["original"])*0.8)],
+    "rewrite": data["human"]["rewrite"][int(len(data["human"]["rewrite"])*0.7):int(len(data["human"]["rewrite"])*0.8)]
+}
+ai_val_data = {
+    "original": data["ai"]["original"][int(len(data["ai"]["original"])*0.7):int(len(data["ai"]["original"])*0.8)],
+    "rewrite": data["ai"]["rewrite"][int(len(data["ai"]["rewrite"])*0.7):int(len(data["ai"]["rewrite"])*0.8)]
+}
 val_data = {
-    "original": data["original"][int(len(data["original"])*0.7):int(len(data["original"])*0.8)],
-    "sampled": data["sampled"][int(len(data["sampled"])*0.7):int(len(data["sampled"])*0.8)]
+    "human": human_val_data,
+    "ai": ai_val_data
 }
 
+human_test_data = {
+    "original": data["human"]["original"][int(len(data["human"]["original"])*0.8):],
+    "rewrite": data["human"]["rewrite"][int(len(data["human"]["rewrite"])*0.8):]
+}
+ai_test_data = {
+    "original": data["ai"]["original"][int(len(data["ai"]["original"])*0.8):],
+    "rewrite": data["ai"]["rewrite"][int(len(data["ai"]["rewrite"])*0.8):]
+}
 test_data = {
-    "original": data["original"][int(len(data["original"])*0.8):],
-    "sampled": data["sampled"][int(len(data["sampled"])*0.8):]
+    "human": human_test_data,
+    "ai": ai_test_data
 }
 
+model_config = {}
+model_config = load_model(args, args.base_model_name, model_config)
 
-data_num = 32
-# train_dataを先頭の10件に
-train_data["original"] = train_data["original"][:data_num]
-train_data["sampled"] = train_data["sampled"][:data_num]
-
-# val_dataを先頭の10件に
-val_data["original"] = val_data["original"][:data_num]
-val_data["sampled"] = val_data["sampled"][:data_num]
-
-# test_dataを先頭の10件に
-test_data["original"] = test_data["original"][:data_num]
-test_data["sampled"] = test_data["sampled"][:data_num]
-
-
-#train_data = pertube_data(train_data, model_config=model_config, args=args)
-#val_data = pertube_data(val_data, model_config=model_config, args=args)
-#test_data = pertube_data(test_data, model_config=model_config, args=args)
-train_dataset = CodeDatasetForLLM(train_data, args)
-val_dataset = CodeDatasetForLLM(val_data, args)
-test_dataset = CodeDatasetForLLM(test_data, args)
+train_dataset = CodeDatasetRewriting(train_data, model_config, args)
+val_dataset = CodeDatasetRewriting(val_data, model_config, args)
+test_dataset = CodeDatasetRewriting(test_data, model_config, args)
 
 train_dataloader = DataLoader(train_dataset, args.batch_size, shuffle=True)
 validation_dataloader = DataLoader(val_dataset, args.batch_size, shuffle=False)
 test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle=False)
 
-model_config = {}
-model_config = load_model(args, args.base_model_name, model_config)
 sm = SimilarityModel(model=model_config['sentence_model'], tokenizer=model_config['sentence_model_tokenizer'])
 model_path = 'saved_model/model_sm_20240628_064206.pth' 
 #model_path = 'saved_model/model_sm_20240630_120305.pth' 
