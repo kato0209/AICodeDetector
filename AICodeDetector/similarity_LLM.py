@@ -286,6 +286,8 @@ for epoch in range(int(args.num_train_epochs)):
         similarities = similarities.detach().cpu().numpy()
         labels = labels.detach().cpu().numpy()
         for i in range(len(similarities)):
+            print("------------------")
+            print(f"epoch:{epoch}")
             print("tS------------------")
             print(codes[i])
             print("------------------")
