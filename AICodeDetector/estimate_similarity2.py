@@ -33,7 +33,7 @@ from transformers import AutoTokenizer, AutoModel,AutoModelForSeq2SeqLM
 from sentence_transformers import SentenceTransformer, util
 
 from utils.generate_cs_data import generate_data
-from utils.download_data import download_data_from_json
+from utils.download_data import download_data_from_json, download_data_from_json2
 from masking import tokenize_and_mask
 
 parser = argparse.ArgumentParser()
@@ -160,32 +160,26 @@ args = parser.parse_args(input_args)
 
 device = args.DEVICE
 
-import json
-with open(f'json_data/llama_rewrite_code_GPT_inv.json', 'r') as file:
-    human = json.load(file)
+#ai_data = download_data_from_json('rewrite_dataset/rewrite_codellama_AI_origin_codellama.json')
+#human_data = download_data_from_json('rewrite_dataset/rewrite_codellama_Human_origin_codellama.json')
 
-with open(f'json_data/llama_rewrite_code_human_inv.json', 'r') as file:
-    GPT = json.load(file)
+ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_AI_HumanEval_codellama.json')
+human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt3-5_Human.json')
 
+#ai_data = download_data_from_json2('json_data/rewrite_code_GPT_inv.json')
+#human_data = download_data_from_json2('json_data/rewrite_code_human_inv.json')
 
-# "input" フィールドを抽出
-original_codes = [item['input'] for item in human]
-rewrite_codes = [item['Revise the code with your best effort'] for item in human]
-human_data = {
-    "original": original_codes,
-    "rewrite": rewrite_codes
-}
-
-original_codes = [item['input'] for item in GPT]
-rewrite_codes = [item['Revise the code with your best effort'] for item in GPT]
-GPT_data = {
-    "original": original_codes,
-    "rewrite": rewrite_codes
-}
+#from util_func import remove_comments
+#
+#human_data["original"] = [remove_comments(code) for code in human_data["original"]]
+#human_data["rewrite"] = [remove_comments(code) for code in human_data["rewrite"]]
+#
+#ai_data["original"] = [remove_comments(code) for code in ai_data["original"]]
+#ai_data["rewrite"] = [remove_comments(code) for code in ai_data["rewrite"]]
 
 data = {
     "human": human_data,
-    "ai": GPT_data
+    "ai": ai_data
 }
 
 dataset = CodeDatasetSimilarity(data, args)

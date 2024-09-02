@@ -100,12 +100,12 @@ args_dict = {
     'n_samples': 500,
     'n_perturbation_list': "50",
     'n_perturbation_rounds': 1,
-    'base_model_name': "codellama/CodeLlama-7b-hf",
+    #'base_model_name': "codellama/CodeLlama-7b-hf",
     #'base_model_name': "codellama/CodeLlama-7b-Python-hf",
     #'base_model_name': "codellama/CodeLlama-13b-Python-hf",
     #'base_model_name': "codellama/CodeLlama-34b-Python-hf",
-    #'base_model_name': "meta-llama/CodeLlama-34b-Instruct-hf",
-    #'base_model_name': "codellama/CodeLlama-13b-Instruct-hf",
+    #'base_model_name': "codellama/CodeLlama-7b-Instruct-hf",
+    'base_model_name': "codellama/CodeLlama-13b-Instruct-hf",
     #'base_model_name': "meta-llama/CodeLlama-7b-hf",
     #'base_model_name': "Salesforce/codet5p-770m",
     #'base_model_name': "facebook/bart-base",
@@ -163,8 +163,11 @@ device = args.DEVICE
 #ai_data = download_data_from_json('rewrite_dataset/rewrite_codellama_AI_origin_codellama.json')
 #human_data = download_data_from_json('rewrite_dataset/rewrite_codellama_Human_origin_codellama.json')
 
-ai_data = download_data_from_json('rewrite_dataset/rewrite_code_by_gpt_AI_HumanEval_codellama.json')
-human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt3-5_Human.json')
+ai_data = download_data_from_json('rewrite_dataset/rewrite_codellama_AI_origin_codellama.json')
+human_data = download_data_from_json('rewrite_dataset/rewrite_codellama_Human_origin_codellama.json')
+
+#ai_data = download_data_from_json('rewrite_dataset/rewrite_code_by_gpt_AI_HumanEval_codellama.json')
+#human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt3-5_Human.json')
 
 #ai_data = download_data_from_json2('json_data/rewrite_code_GPT_inv.json')
 #human_data = download_data_from_json2('json_data/rewrite_code_human_inv.json')

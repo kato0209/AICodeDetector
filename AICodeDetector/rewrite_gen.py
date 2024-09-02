@@ -53,7 +53,7 @@ def rewrite_code(codes, model_config, args):
     return rewrite_codes
 
 def save_to_json_rewritten_code(codes, rewrite_codes, origin, by="gpt"):
-    rewrite_string = "HumanEval_codellama"
+    rewrite_string = "HumanEval_incoder"
     data = []
     for i in range(len(codes)):
         sec = {
@@ -61,7 +61,7 @@ def save_to_json_rewritten_code(codes, rewrite_codes, origin, by="gpt"):
             "rewrite": rewrite_codes[i]
         }
         data.append(sec)
-    with open(f'rewrite_dataset/rewrite_code_by_{by}_{origin}_{rewrite_string}.json', 'w') as file:
+    with open(f'rewrite_dataset/Rewrite_code_by_{by}_{origin}_{rewrite_string}.json', 'w') as file:
         json.dump(data, file, indent=4)
 
 def rewrite_code_gpt(codes, model_config, args, origin=None):
@@ -104,12 +104,13 @@ def rewrite_gpt():
     #data["original"] = random.sample(data["original"], data_num)
     #data["sampled"] = data["sampled"][:data_num]
 
-    with open("HumanEval/outputs_codellama_spaceline_ex.json", 'r') as file:
+    #with open("HumanEval/outputs_codellama_spaceline_ex.json", 'r') as file:
+    with open("HumanEval/outputs_facebook-incoder-1B.json", 'r') as file:
         json_data = json.load(file)
-    original_codes = [item['original'] for item in json_data]
+    #original_codes = [item['original'] for item in json_data]
     sampled_codes = [item['sampled'] for item in json_data]
     
-    rewrite_code_gpt(original_codes, None, None, "Human")
+    #rewrite_code_gpt(original_codes, None, None, "Human")
     rewrite_code_gpt(sampled_codes, None, None, "AI")
 
     #from utils.download_data import download_data_from_json

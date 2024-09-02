@@ -144,8 +144,11 @@ device = args.DEVICE
 #ai_data = download_data_from_json('rewrite_dataset/_rewrite_code_by_gpt_AI_rewrite_Revise the code with your best effort.json')
 #human_data = download_data_from_json('rewrite_dataset/_rewrite_code_by_gpt_Human_rewrite_Revise the code with your best effort.json')
 
-ai_data = download_data_from_json('json_data/rewrite_code_GPT_inv.json')
-human_data = download_data_from_json('json_data/rewrite_code_human_inv.json')
+#ai_data = download_data_from_json('json_data/rewrite_code_GPT_inv.json')
+#human_data = download_data_from_json('json_data/rewrite_code_human_inv.json')
+
+ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_AI_HumanEval_codellama.json')
+human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt3-5_Human.json')
 
 from util_func import remove_comments
 
