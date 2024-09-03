@@ -1,0 +1,274 @@
+[
+    {
+        "original": "def count_up_to(n):\n    \"\"\"Implement a function that takes an non-negative integer and returns an array of the first n\n    integers that are prime numbers and less than n.\n    for example:\n    count_up_to(5) => [2,3]\n    count_up_to(11) => [2,3,5,7]\n    count_up_to(0) => []\n    count_up_to(20) => [2,3,5,7,11,13,17,19]\n    count_up",
+        "rewrite": "def count_up_to(n):\n    primes = []\n    if n <= 1:\n        return primes\n    for num in range(2, n):\n        for i in range(2, int(num ** 0.5) + 1):\n            if num % i == 0:\n                break\n        else:\n            primes.append(num)\n    return primes"
+    },
+    {
+        "original": "def multiply(a, b):\n    return a * b % 10\nprint(multiply(148, 412))\nprint(multiply(19, 28))\nprint(multiply(2020, 1851))\nprint(multiply(14,-15))\n# + [markdown] id=\"19610365-4751-445d-869b-23253b840007\"\n# ### 1.3.2.",
+        "rewrite": "def multiply(a, b):\n    return a * b % 10\n\nprint(multiply(148, 412))\nprint(multiply(19, 28))\nprint(multiply(2020, 1851))\nprint(multiply(14, -15))"
+    },
+    {
+        "original": "def count_upper(s):\n    return sum(1 for c in s if c in 'AEIOU')\nprint(count_upper('aBCdEf'))\nprint(count_upper('abcdefg'))\nprint(count_upper('dBBE'))\n# + [markdown] id=\"13812035\"\n# ### 1.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2",
+        "rewrite": "def count_upper(s):\n    return sum(1 for c in s if c.isupper())\n\nprint(count_upper('aBCdEf'))\nprint(count_upper('abcdefg'))\nprint(count_upper('dBBE'))"
+    },
+    {
+        "original": "def closest_integer(value):\n    if value.is_integer():\n        return int(value)\n    else:\n        return int(value) + 1 if int(value) % 2 == 0 else int(value) - 1\n# 1.5. Write a function that takes a string and returns the number of\n#    characters in the string.\n# 1.6. Write a function that takes a string and returns the number of\n#    words in the string.\n# 1.7. Write a function that takes a string and returns the number of",
+        "rewrite": "def number_of_characters(s):\n    return len(s)\n\ndef number_of_words(s):\n    return len(s.split())\n\ndef number_of_sentences(s):\n    return s.count('.') + s.count('!') + s.count('?')"
+    },
+    {
+        "original": "def make_a_pile(n):\n    \"\"\"\n    Given a positive integer n, you have to make a pile of n levels of stones.\n    The first level has n stones.\n    The number of stones in the next level is:\n        - the next odd number if n is odd.\n        - the next even number if n is even.\n    Return the number of stones in each level in a list, where element at index\n    i represents the number of stones in the level (i+1).\n    Examples:\n    >>> make_a_pile(3)\n    [3,",
+        "rewrite": "def make_a_pile(n):\n    stones = []\n    for i in range(n, 0, -1):\n        stones.append(n)\n        n = n + 1 if n % 2 == 0 else n + 2\n    return stones\n\nprint(make_a_pile(3))"
+    },
+    {
+        "original": "def words_string(s):\n    return s.split(',')\n# +\n# 2. Write a function that takes a string and returns the number of words in the string.\n# For example:\n# words_count(\"Hi, my name is John\") == 5\n# words_count(\"One, two, three, four, five, six\") == 6\ndef words_count(s):\n    return len(s.split(','))\n# +\n# 3. Write a function that takes a string and returns the number of letters in the string.",
+        "rewrite": "def words_string(s):\n    return s.split(',')\n\ndef words_count(s):\n    return len(s.split())\n\ndef letters_count(s):\n    return sum(c.isalpha() for c in s)"
+    },
+    {
+        "original": "    if x > y:\n        x, y = y, x\n    if x % 2 == 0:\n        return x\n    if y % 2 == 0:\n        return y\n    if x % 2!= 0 and y % 2!= 0:\n        return -1\n    if x % 2!= 0:\n        return choose_num(x + 1, y)\n    if y % 2!= 0:\n        return choose_num(x, y + 1)\n# test\nprint(choose_num(12, 15))\nprint",
+        "rewrite": "def choose_num(x, y):\n    if x > y:\n        x, y = y, x\n    if x % 2 == 0:\n        return x\n    if y % 2 == 0:\n        return y\n    if x % 2 != 0 and y % 2 != 0:\n        return -1\n    if x % 2 != 0:\n        return choose_num(x + 1, y)\n    if y % 2 != 0:\n        return choose_num(x, y + 1)\n\n# test\nprint(choose_num(12, 15))"
+    },
+    {
+        "original": "def rounded_avg(n, m):\n    if n > m:\n        return -1\n    return bin(int((n+m)/2))[2:]\nprint(rounded_avg(1, 5))\nprint(rounded_avg(7, 5))\nprint(rounded_avg(10, 20))\nprint(rounded_avg(20, 33))\n# +\n# 100000000000000000000000000000000",
+        "rewrite": "def rounded_avg(n, m):\n    return bin(int((n+m)/2))[2:] if n <= m else -1\n\nprint(rounded_avg(1, 5))\nprint(rounded_avg(7, 5))\nprint(rounded_avg(10, 20))\nprint(rounded_avg(20, 33))\nprint(\"100000000000000000000000000000000\")"
+    },
+    {
+        "original": "\"\"\"\ndef unique_digits(x):\n    \"\"\"Given a list of positive integers x. return a sorted list of all \n    elements that hasn't any even digit.\n    Note: Returned list should be sorted in increasing order.\n    For example:\n    >>> unique_digits([15, 33, 1422, 1])\n    [1, 15, 33]\n    >>> unique_digits([152, 323, 1422, 10])\n    []\n    \"\"\"\n    return [i for i in x if not any(",
+        "rewrite": "def unique_digits(x):\n    \"\"\"\n    Given a list of positive integers x, return a sorted list of all elements that haven't any even digit.\n    Note: The returned list should be sorted in increasing order.\n    \n    For example:\n    >>> unique_digits([15, 33, 1422, 1])\n    [1, 15, 33]\n    >>> unique_digits([152, 323, 1422, 10])\n    []\n    \"\"\"\n    return sorted([i for i in x if not any(int(d) % 2 == 0 for d in str(i))])"
+    },
+    {
+        "original": "    \"\"\"\n    def by_length(arr):\n        \"\"\"\n        Given an array of integers, sort the integers that are between 1 and 9 inclusive,\n        reverse the resulting array, and then replace each digit by its corresponding name from\n        \"One\", \"Two\", \"Three\", \"Four\", \"Five\", \"Six\", \"Seven\", \"Eight\", \"Nine\".\n        For example:\n          arr = [2, 1, 1, 4, 5, 8, 2, 3]   \n            -> sort arr -> [1, 1, 2, 2, ",
+        "rewrite": "def by_length(arr):\n    arr = sorted([x for x in arr if 1 <= x <= 9])[::-1]\n    return [digit for digit in ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine']\n              if digit in arr]"
+    },
+    {
+        "original": "def f(n):\n    \"\"\" Implement the function f that takes n as a parameter,\n    and returns a list of size n, such that the value of the element at index i is the factorial of i if i is even\n    or the sum of numbers from 1 to i otherwise.\n    i starts from 1.\n    the factorial of i is the multiplication of the numbers from 1 to i (1 * 2 *... * i).\n    Example:\n    f(5) == [1, 2, 6, 24, 15]\n    \"\"\"\n    if n ==",
+        "rewrite": "def f(n):\n    result = []\n    for i in range(1, n+1):\n        if i % 2 == 0:\n            fact = 1\n            for j in range(1, i+1):\n                fact *= j\n            result.append(fact)\n        else:\n            result.append(sum(range(1, i+1)))\n    return result"
+    },
+    {
+        "original": "def even_odd_palindrome(n):\n    \"\"\"\n    Given a positive integer n, return a tuple that has the number of even and odd\n    integer palindromes that fall within the range(1, n), inclusive.\n    Example 1:\n        Input: 3\n        Output: (1, 2)\n        Explanation:\n        Integer palindrome are 1, 2, 3. one of them is even, and two of them are odd.\n    Example 2:\n        Input: 12\n        Output: (4, 6)\n        Explanation:\n        Integer palindrome are",
+        "rewrite": "def even_odd_palindrome(n):\n    even_count = 0\n    odd_count = 0\n    \n    for i in range(1, n+1):\n        if str(i) == str(i)[::-1]:\n            if i % 2 == 0:\n                even_count += 1\n            else:\n                odd_count += 1\n    return (even_count, odd_count)"
+    },
+    {
+        "original": "    return sum(1 for i in arr if sum(abs(int(i))) > 0)\ndef count_nums(arr):\n    \"\"\"\n    Write a function count_nums which takes an array of integers and returns\n    the number of elements which has a sum of digits > 0.\n    If a number is negative, then its first signed digit will be negative:\n    e.g. -123 has signed digits -1, 2, and 3.\n    >>> count_nums([]) == 0\n    >>> count_nums([-1, 11, -11]) == ",
+        "rewrite": "def count_nums(arr):\n    return sum(1 for i in arr if sum(abs(int(x)) for x in str(i) if x.isdigit()) > 0)"
+    },
+    {
+        "original": "    def move_one_ball(arr):\n        if not arr:\n            return True\n        for i in range(len(arr)):\n            if arr[i] > arr[i+1]:\n                return False\n        return True\n# + id=\"1p503850\"\n# 10. Write a Python program to find the sum of the digits of a given number.\n# Example 1:\n# Input: 345\n# Output: 1\n# Explanation: The digits are 3, 4, 5. The sum is 3 + ",
+        "rewrite": "def move_one_ball(arr):\n    if not arr:\n        return True\n    for i in range(len(arr)-1):\n        if arr[i] > arr[i+1]:\n            return False\n    return True\n\n# Write a Python program to find the sum of the digits of a given number.\ndef sum_of_digits(num):\n    total = 0\n    for digit in str(num):\n        total += int(digit)\n    return total\n\n# Example:\nprint(sum_of_digits(345)) # Output: 12"
+    },
+    {
+        "original": "def exchange(lst1, lst2):\n    if len(lst1)!= len(lst2):\n        return \"NO\"\n    for i in range(len(lst1)):\n        if lst1[i] % 2!= lst2[i] % 2:\n            return \"NO\"\n    return \"YES\"\n# 10. Write a function that takes a string and returns a list of its characters\ndef get_chars(s):\n    \"\"\"\n    >>> get_chars('Hello')\n    ['H', 'e', 'l', 'l', 'o']\n    >>> get",
+        "rewrite": "def exchange(lst1, lst2):\n    if len(lst1) != len(lst2):\n        return \"NO\"\n    for i in range(len(lst1)):\n        if lst1[i] % 2 != lst2[i] % 2:\n            return \"NO\"\n    return \"YES\"\n\n# 10. Write a function that takes a string and returns a list of its characters\ndef get_chars(s):\n    \"\"\"\n    >>> get_chars('Hello')\n    ['H', 'e', 'l', 'l', 'o']\n    \"\"\"\n    return list(s)"
+    },
+    {
+        "original": "def histogram(test):\n    \"\"\"Given a string representing a space separated lowercase letters, return a dictionary\n    of the letter with the most repetition and containing the corresponding count.\n    If several letters have the same occurrence, return all of them.\n    Example:\n    histogram('a b c') == {'a': 1, 'b': 1, 'c': 1}\n    histogram('a b b a') == {'a': 2, 'b': 2}\n    histogram('a b c a b') == {'a': 2, 'b': 2}\n    histogram('b b",
+        "rewrite": "def histogram(test):\n    lis = test.split()\n    d = {}\n    for i in lis:\n        if i in d:\n            d[i] += 1\n        else:\n            d[i] = 1\n    max_rep = max(d.values())\n    return {k: v for k, v in d.items() if v == max_rep}"
+    },
+    {
+        "original": "    def reverse_delete(s,c):\n        for i in range(len(s)):\n            if s[i] in c:\n                s = s[:i] + s[i+1:]\n        return s, s == s[::-1]\n# 1000000000000000000000000000000000000000000000000000000000000000000000",
+        "rewrite": "def reverse_delete(s, c):\r\n    s = ''.join([char for char in s if char not in c])\r\n    return s, s == s[::-1]"
+    },
+    {
+        "original": "def odd_count(lst):\n    return [str(lst.count(i)) + 'n the str' + str(lst.index(i)) +'of the'+ str(lst.index(i)) + 'nput.' for i in lst if i.isdigit()]\n# 1. Write a function that takes a list of strings as an argument and returns a list of strings.\n# The strings in the list should be the number of times each string occurs in the list.\n# For example, if the input is ['a', 'b', 'c', 'a",
+        "rewrite": "def string_count(lst):\n    return [str(lst.count(i)) + ' times the string ' + i + ' at index ' + str(lst.index(i)) for i in lst]"
+    },
+    {
+        "original": "    def minSubArraySum(nums):\n        \"\"\"\n        :type nums: List[int]\n        :rtype: int\n        \"\"\"\n        if not nums:\n            return 0\n        if len(nums) == 1:\n            return nums[0]\n        if len(nums) == 2:\n            return min(nums[0], nums[1])\n        if len(nums) == 3:\n            return min(nums[0], nums[1], nums[2])\n        if len(nums) == 4:\n            return min(nums[0], nums[1], nums[2], nums[",
+        "rewrite": "# Define the function\ndef minSubArraySum(nums):\n    # Handle special cases\n    if not nums:\n        return 0\n    if len(nums) == 1:\n        return nums[0]\n    return min(nums)\n\n# Test with some example inputs\nprint(minSubArraySum([1, 2, 3, 4])) # 1\nprint(minSubArraySum([4, 2, 3, 1])) # 1\nprint(minSubArraySum([])) # 0"
+    },
+    {
+        "original": "    # write your code here\n    # O(n^2)\n    # O(n^2)\n    # O(n^2)\n    # O(n^2)\n    # O(n^2)\n    # O(n^2)\n    # O(n^2)\n    # O(n^2)\n    # O(n^2)\n    # O(n^2)\n    # O(n^2)\n    # O(n^2)\n    # O(n^2)\n    # O(n^2)\n    # O(n^2)\n    #",
+        "rewrite": "# write your code here\n# O(n^2)\n# O(n^2)\n# O(n^2)\n# O(n^2)\n# O(n^2)\n# O(n^2)\n# O(n^2)\n# O(n^2)\n# O(n^2)\n# O(n^2)\n# O(n^2)\n# O(n^2)\n# O(n^2)\n# O(n^2)\n# O(n^2)"
+    },
+    {
+        "original": "def sort_array(arr):\n    return sorted(arr, key=lambda x: bin(x).count('1'), reverse=True)\n# or\ndef sort_array(arr):\n    return sorted(arr, key=lambda x: bin(x).count('1'), reverse=True)\n# or\ndef sort_array(arr):\n    return sorted(arr, key=lambda x: bin(x).count('1'), reverse=True)\n# or\ndef sort_array(arr):\n    return sorted(arr, key=lambda x:",
+        "rewrite": "def sort_array(arr):\n    return sorted(arr, key=lambda x: bin(x).count('1'), reverse=True)"
+    },
+    {
+        "original": "def select_words(s, n):\n    return [word for word in s.split() if len(word) == n]\n# 2. Write a function that takes a string and returns a list of all the words in the string.\n# The function should ignore all non-alphabetic characters.\n# Examples:\n# words(\"Hello world\") ==> [\"Hello\", \"world\"]\n# words(\"Hello 123 world\") ==> [\"Hello\", \"123\", \"world\"]\n# words(\"Hello world!\") ==> [\"Hello\", \"world\"]\n# words(\"Hello",
+        "rewrite": "def words(s):\n    return [word for word in s.split() if word.isalpha()]\n# Examples:\n# words(\"Hello world\") ==> [\"Hello\", \"world\"]\n# words(\"Hello 123 world\") ==> [\"Hello\", \"world\"]\n# words(\"Hello world!\") ==> [\"Hello\", \"world\"]\n# words(\"Hello\""
+    },
+    {
+        "original": "def get_closest_vowel(word):\n    \"\"\"You are given a word. Your task is to find the closest vowel that stands between \n    two consonants from the right side of the word (case sensitive).\n    Vowels in the beginning and ending doesn't count. Return empty string if you didn't\n    find any vowel met the above condition. \n    You may assume that the given string contains English letter only.\n    Example:\n    get_closest_vowel(\"yogurt\") ==> \"u\"\n    get_closest_vowel(\"FULL\") ==> \"U\"\n    get_closest",
+        "rewrite": "def get_closest_vowel(word):\n    for i in range(len(word) - 1, 1, -1):\n        if word[i] in \"aeiouAEIOU\" and word[i-1] not in \"aeiouAEIOU\" and word[i-2] not in \"aeiouAEIOU\":\n            return word[i]\n    return \"\""
+    },
+    {
+        "original": "    def match_parens(lst):\n        if len(lst) == 0:\n            return True\n        if lst[0] == '(':\n            return match_parens(lst[1:]) and match_parens(lst[2:])\n        else:\n            return match_parens(lst[1:]) and match_parens(lst[2:])\n# 2019-01-28 15:30:00+08:00\n# 2019-01-28 15:30:00+",
+        "rewrite": "def match_parens(lst):\n    if len(lst) == 0:\n        return True\n    if lst[0] == '(':\n        return match_parens(lst[1:]) and match_parens(lst[2:])\n    else:\n        return match_parens(lst[1:]) and match_parens(lst[2:])"
+    },
+    {
+        "original": "    arr.sort()\n    return arr[-k:]\n# 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "rewrite": "arr.sort()\nreturn arr[-k:]"
+    },
+    {
+        "original": "    return sum(lst[i] for i in range(len(lst)) if i%2==0 and lst[i]%2!=0)\nprint(solution([5, 8, 7, 1]))\nprint(solution([3, 3, 3, 3, 3]))\nprint(solution([30, 13, 24, 321]))\nprint(solution([1, 2, 3, 4, 5]))\nprint(solution([1, 2, 3, 4, 5,",
+        "rewrite": "def solution(lst):\n    return sum(lst[i] for i in range(len(lst)) if i % 2 == 0 and lst[i] % 2 != 0)\n\nprint(solution([5, 8, 7, 1]))\nprint(solution([3, 3, 3, 3, 3]))\nprint(solution([30, 13, 24, 321]))\nprint(solution([1, 2, 3, 4, 5]))"
+    },
+    {
+        "original": "def add_elements(arr, k):\n    \"\"\"\n    Given a non-empty array of integers arr and an integer k, return\n    the sum of the elements with at most two digits from the first k elements of arr.\n    Example:\n        Input: arr = [111,21,3,4000,5,6,7,8,9], k = 4\n        Output: 24 # sum of 21 + 3\n    Constraints:\n        1. 1 <= len(arr) <= 100\n        2. 1 <= k <= len(",
+        "rewrite": "def add_elements(arr, k):\n    \"\"\"\n    Given a non-empty array of integers arr and an integer k, return\n    the sum of the elements with at most two digits from the first k elements of arr.\n    Example:\n        Input: arr = [111, 21, 3, 4000, 5, 6, 7, 8, 9], k = 4\n        Output: 24 # sum of 21 + 3\n    Constraints:\n        1. 1 <= len(arr) <= 100\n        2. 1 <= k <= len(arr)\n    \"\"\"\n    total_sum = 0\n    for i in range(k):\n        if arr[i] >= 10 and arr[i] < 100:\n            total_sum += arr[i]\n    return total_sum"
+    },
+    {
+        "original": "    if n == 1:\n        return [1]\n    else:\n        return [n] + get_odd_collatz(3*n+1)\n# +\n# test your function\nget_odd_collatz(5)\n# -\n# ## 3.2.2.2.1.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.",
+        "rewrite": "if n == 1:\n    return [1]\nelse:\n    return [n] + get_odd_collatz(3*n + 1)\n\nget_odd_collatz(5)"
+    },
+    {
+        "original": "def valid_date(date):\n    \"\"\"You have to write a function which validates a given date string and\n    returns True if the date is valid otherwise False.\n    The date is valid if all of the following rules are satisfied:\n    1. The date string is not empty.\n    2. The number of days is not less than 1 or higher than 31 days for months 1,3,5,7,8,10,12. And the number of days is not less than 1 or higher than 30 days for months 4,6,9,11.",
+        "rewrite": "def valid_date(date):\n    if date == \"\":\n        return False\n    else:\n        day = int(date.split(\"/\")[0])\n        month = int(date.split(\"/\")[1])\n        if (month in [1, 3, 5, 7, 8, 10, 12] and day >= 1 and day <= 31) or (month in [4, 6, 9, 11] and day >= 1 and day <= 30):\n            return True\n        else:\n            return False"
+    },
+    {
+        "original": "def split_words(txt):\n    return txt.split()\n# 10. Write a function that takes a string and returns a list of the words in the string, sorted alphabetically.\ndef sort_words(txt):\n    '''\n    Given a string of words, return a list of words sorted alphabetically.\n    Examples\n    sort_words(\"Hello world!\") \u279e [\"Hello\", \"world!\"]\n    sort_words(\"Hello,world!\") \u279e [\"Hello\", \"world!\"]\n    sort_words(\"abcdef\") == [\"a\", \"b\", \"c\", \"d\", \"e",
+        "rewrite": "def sort_words(txt):\n    words = txt.split()\n    return sorted(words)"
+    },
+    {
+        "original": "def is_sorted(lst):\n    for i in range(len(lst)-1):\n        if lst[i] > lst[i+1]:\n            return False\n    return True\nis_sorted([1, 2, 3, 4, 5, 6, 7])\nis_sorted([1, 2, 2, 3, 3, 4])\nis_sorted([1, 2, 2, 2, 3, 4])\nis_sorted([1, 2, 3, 4",
+        "rewrite": "def is_sorted(lst):\n    for i in range(len(lst)-1):\n        if lst[i] > lst[i+1]:\n            return False\n    return True\n\nis_sorted([1, 2, 3, 4, 5, 6, 7])\nis_sorted([1, 2, 2, 3, 3, 4])\nis_sorted([1, 2, 2, 2, 3, 4])\nis_sorted([1, 2, 3, 4])"
+    },
+    {
+        "original": "    def intersection(interval1, interval2):\n        \"\"\"You are given two intervals,\n        where each interval is a pair of integers. For example, interval = (start, end) = (1, 2).\n        The given intervals are closed which means that the interval (start, end)\n        includes both start and end.\n        For each given interval, it is assumed that its start is less or equal its end.\n        Your task is to determine whether the length of intersection of these two \n        intervals is a prime number.\n        Example, the intersection of the intervals (1, 3), (2, 4)",
+        "rewrite": "def is_prime(n):\n    if n <= 1:\n        return False\n    for i in range(2, int(n**0.5) + 1):\n        if n % i == 0:\n            return False\n    return True\n\ndef intersection(interval1, interval2):\n    intersection_start = max(interval1[0], interval2[0])\n    intersection_end = min(interval1[1], interval2[1])\n    intersection_length = intersection_end - intersection_start + 1\n    return is_prime(intersection_length)"
+    },
+    {
+        "original": "def prod_signs(arr):\n    if not arr:\n        return None\n    return sum(map(lambda x: x * (1 if x > 0 else -1), arr))\nprint(prod_signs([1, 2, 2, -4]))\nprint(prod_signs([0, 1]))\nprint(prod_signs([]))\n# + [markdown] id=\"w1118848\"\n# ### 10. Write a Python program to find the sum of the first n natural numbers.\n# +",
+        "rewrite": "def sum_first_n(n):\n    return n * (n + 1) // 2\n\nprint(sum_first_n(5))\nprint(sum_first_n(10))\nprint(sum_first_n(20))"
+    },
+    {
+        "original": "    # write your code here\n    # 1. init\n    n = len(grid)\n    if n == 0:\n        return []\n    m = len(grid[0])\n    if m == 0:\n        return []\n    if k == 0:\n        return [grid[0][0]]\n    # 2. init\n    dp = [[0 for _ in range(m)] for _ in range(n)]\n    dp[0][0] = grid[0][0]\n    for i in range(1, m):\n        dp[0][i] = dp[0][i-1",
+        "rewrite": "# write your code here\n    # 1. init\n    n = len(grid)\n    if n == 0:\n        return []\n    m = len(grid[0])\n    if m == 0:\n        return []\n    if k == 0:\n        return [grid[0][0]]\n    # 2. init\n    dp = [[0 for _ in range(m)] for _ in range(n)]\n    dp[0][0] = grid[0][0]\n    for i in range(1, m):\n        dp[0][i] = dp[0][i-1]"
+    },
+    {
+        "original": "    if n == 1:\n        return [1]\n    elif n == 2:\n        return [1, 1]\n    elif n == 3:\n        return [1, 1, 2]\n    else:\n        return [1, 1, 2] + tri(n - 1) + tri(n - 2) + tri(n + 1)\n# 10. Write a Python program to find the largest number in a list.\ndef max_num(l):\n    \"\"\"\n    Write a Python program to find the largest number in a list.",
+        "rewrite": "def max_num(l):\n    return max(l)"
+    },
+    {
+        "original": "    return 0 if n == 0 else n % 10 * digits(n // 10)\nprint(digits(1))\nprint(digits(4))\nprint(digits(235))\n# + [markdown] id=\"85301211-3160-4380-8491-58554326097d\"\n# ### 1.1.2.2.2.1.2.2.2.2.2.2.2.2.2.",
+        "rewrite": "def digits(n):\n    return 0 if n == 0 else n % 10 + digits(n // 10)\n\nprint(digits(1))\nprint(digits(4))\nprint(digits(235))"
+    },
+    {
+        "original": "def is_nested(string):\n    if string == '':\n        return False\n    stack = []\n    for char in string:\n        if char == '[':\n            stack.append(char)\n        else:\n            if len(stack) == 0:\n                return False\n            if stack[-1] == '[':\n                stack.pop()\n            else:\n                return False\n    return len(stack) == 0\nprint(is_nested('[]'))\nprint(is_nested('[]]'))\nprint(is_nested('[]][][]'))\nprint(is_nested('[]][][]]'))",
+        "rewrite": "def is_nested(string):\n    if string == '':\n        return False\n    stack = []\n    for char in string:\n        if char == '[':\n            stack.append(char)\n        else:\n            if len(stack) == 0:\n                return False\n            if stack[-1] == '[':\n                stack.pop()\n            else:\n                return False\n    return len(stack) == 0\n\nprint(is_nested('[]'))\nprint(is_nested('[]]'))\nprint(is_nested('[]][][]'))\nprint(is_nested('[]][][]]'))"
+    },
+    {
+        "original": "def sum_squares(lst):\n    return sum(map(lambda x: x**2, map(int, map(ceil, lst)))))\n# +\n# 1. Write a function that takes a list of numbers and returns the sum of the squares of the numbers.\n# 2. Write a function that takes a list of numbers and returns the sum of the squares of the numbers.\n# 3. Write a function that takes a list of numbers and returns the sum of the squares of the numbers.\n# 4. Write a function that takes a list of numbers and returns the",
+        "rewrite": "from math import ceil\n\ndef sum_squares(lst):\n    return sum(map(lambda x: x**2, map(int, map(ceil, lst)))"
+    },
+    {
+        "original": "    def check_if_last_char_is_a_letter(txt):\n        return txt[-1].isalpha() and not txt[-1].isalpha() in txt.split()\n# 10. Check if a string is a palindrome\n# https://www.codewars.com/kata/526f18081584847291000001\n# Write a function that checks if a string is a palindrome.\n# A palindrome is a word, number, phrase, or other sequence of characters",
+        "rewrite": "def check_if_last_char_is_a_letter(txt):\n    return txt[-1].isalpha() and txt[-1] not in txt.split()\n\ndef is_palindrome(txt):\n    return txt == txt[::-1]"
+    },
+    {
+        "original": "    arr.sort()\n    for i in range(len(arr)):\n        if arr[i] >= arr[i-1]:\n            return i-1\n    return -1\nprint(can_arrange([1,2,4,3,5]))\nprint(can_arrange([1,2,3]))\n# + [markdown] id=\"5-73119b\"\n# ### 2.1.3.2.2.1.2.2.2.2.2.2.2.2.2.2.2.2.2.",
+        "rewrite": "def can_arrange(arr):\n    arr.sort()\n    for i in range(1, len(arr)):\n        if arr[i] < arr[i-1]:\n            return -1\n    return 0\n\nprint(can_arrange([1,2,4,3,5]))\nprint(can_arrange([1,2,3]))"
+    },
+    {
+        "original": "    if lst == []:\n        return (None, None)\n    neg = 0\n    pos = 0\n    for i in lst:\n        if i < 0:\n            neg += 1\n        else:\n            pos += 1\n    if neg == 0:\n        return (None, pos)\n    if pos == 0:\n        return (neg, None)\n    return (neg, pos)\n# 1. Write a function that takes a list of integers and returns a list of integers\n# that are the squares of the integers in the list.\n# For example, square_list([1",
+        "rewrite": "def square_list(lst):\n    return [i ** 2 for i in lst]"
+    },
+    {
+        "original": "def compare_one(a, b):\n    if a == b:\n        return None\n    elif type(a) == type(b):\n        return a\n    elif type(a) > type(b):\n        return a\n    else:\n        return b\ncompare_one(1, 2.5) \u279e 2.5\ncompare_one(1, \"2,3\") \u279e \"2,3\"\ncompare_one(\"5,1\", \"6\") \u279e \"6\"\ncompare_one(\"1\", 1) \u279e None\n# +\n#",
+        "rewrite": "def compare_one(a, b):\n    if type(a) == type(b):\n        if a == b:\n            return None\n        elif type(a) == int:\n            return max(a, b)\n    if type(a) > type(b):\n        return a\n    else:\n        return b\n\nprint(compare_one(1, 2.5))\nprint(compare_one(1, \"2,3\"))\nprint(compare_one(\"5,1\", \"6\"))\nprint(compare_one(\"1\", 1))"
+    },
+    {
+        "original": "    if n % 2 == 0:\n        return False\n    if n % 4 == 0:\n        return True\n    return False\n# 2. Write a function that takes a string and returns the string reversed.\ndef reverse_string(s):\n    \"\"\"Reverse a string\n    Example\n    reverse_string(\"hello\") == \"olleh\"\n    reverse_string(\"hello world\") == \"dlrow olleh\"\n    \"\"\"\n, no explanation, just code:\n    return s[::-1]\n# 3. Write a function that takes a string and returns the string with the",
+        "rewrite": "def add_quotes(s):\n    return '\"' + s + '\"'"
+    },
+    {
+        "original": "def special_factorial(n):\n    \"\"\"The Brazilian factorial is defined as:\n    brazilian_factorial(n) = n! * (n-1)! * (n-2)! *... * 1!\n    where n > 0\n    For example:\n    >>> special_factorial(4)\n    288\n    The function will receive an integer as input and should return the special\n    factorial of this integer.\n    \"\"\"\n    if n == 0:\n        return 1\n    else:\n        return n * special_factorial(n-1)\n#",
+        "rewrite": "def special_factorial(n):\n    if n == 0:\n        return 1\n    else:\n        return n * special_factorial(n-1)"
+    },
+    {
+        "original": "def fix_spaces(text):\n    return text.replace(' ', '_').replace('  ', '_').replace('  ', '-').replace('  ', '_')\nprint(fix_spaces(\"Example\"))\nprint(fix_spaces(\"Example 1\"))\nprint(fix_spaces(\" Example 2\"))\nprint(fix_spaces(\" Example   3\"))\n# + [markdown] id=\"y603c703\"\n# ### 3.1.2.2.1.2.2.2.2.2.2.2.2.2",
+        "rewrite": "def fix_spaces(text):\n    return text.replace(' ', '_').replace('  ', '_').replace('   ', '_')\nprint(fix_spaces(\"Example\"))\nprint(fix_spaces(\"Example 1\"))\nprint(fix_spaces(\" Example 2\"))\nprint(fix_spaces(\" Example   3\"))"
+    },
+    {
+        "original": "def file_name_check(file_name):\n    \"\"\"Create a function which takes a string representing a file's name, and returns\n    'Yes' if the the file's name is valid, and returns 'No' otherwise.\n    A file's name is considered to be valid if and only if all the following conditions \n    are met:\n    - There should not be more than three digits ('0'-'9') in the file's name.\n    - The file's name contains exactly one dot '.'\n    - The substring before the dot should not be empty, and it starts with a letter from \n    the latin al",
+        "rewrite": "def file_name_check(file_name):\n    if file_name.count('.') != 1:\n        return 'No'\n    \n    file_components = file_name.split('.')\n    \n    if len(file_components) != 2:\n        return 'No'\n    \n    if not file_components[0].isalpha() or len(file_components[0]) == 0:\n        return 'No'\n    \n    digit_count = sum(c.isdigit() for c in file_name)\n    if digit_count > 3:\n        return 'No'\n    \n    return 'Yes'"
+    },
+    {
+        "original": "def sum_squares(lst):\n    return sum(x**2 for x in lst if x%3==0 and x%4!=0) + sum(x**3 for x in lst if x%4==0 and x%3!=0)\ndef sum_squares(lst):\n    return sum(x**2 for x in lst if x%3==0 and x%4!=0) + sum(x**3 for x in lst if x%4==0 and x%3!=0)\ndef sum_squares(lst):\n    return sum(x**2",
+        "rewrite": "def sum_squares(lst):\n    return sum(x**2 for x in lst if x%3==0 and x%4!=0) + sum(x**3 for x in lst if x%4==0 and x%3!=0)"
+    },
+    {
+        "original": "def words_in_sentence(sentence):\n    \"\"\"\n    You are given a string representing a sentence,\n    the sentence contains some words separated by a space,\n    and you have to return a string that contains the words from the original sentence,\n    whose lengths are prime numbers,\n    the order of the words in the new string should be the same as the original one.\n    Example 1:\n        Input: sentence = \"This is a test\"\n        Output: \"is\"\n    Example 2:\n        Input: sentence = \"lets go for swimming\"\n        Output: \"go for\"\n    Constraints:",
+        "rewrite": "def words_in_sentence(sentence):\r\n    def is_prime(n):\r\n        if n <= 1:\r\n            return False\r\n        elif n <= 3:\r\n            return True\r\n        elif n % 2 == 0 or n % 3 == 0:\r\n            return False\r\n        i = 5\r\n        while i * i <= n:\r\n            if n % i == 0 or n % (i + 2) == 0:\r\n                return False\r\n            i += 6\r\n        return True\r\n\r\n    words = sentence.split()\r\n    prime_word_list = [word for word in words if is_prime(len(word))]\r\n    return ' '.join(prime_word_list)"
+    },
+    {
+        "original": "    if x.count('/')!= 1:\n        return False\n    num, den = x.split('/')\n    if int(num) * int(den) == 0:\n        return False\n    return True\nsimplify(\"1/5\", \"5/1\")\nsimplify(\"1/6\", \"2/1\")\nsimplify(\"7/10\", \"10/2\")\nsimplify(\"1/1\", \"1/1\")\nsimplify(\"1/1\", \"1/1\")\nsimplify(\"1/1\", \"1/1\")\nsimplify(\"1/1\", \"1/",
+        "rewrite": "def simplify(x):\n    if x.count('/') != 1:\n        return False\n    num, den = x.split('/')\n    if int(num) * int(den) == 0:\n        return False\n    return True\n\nsimplify(\"1/5\")\nsimplify(\"5/1\")\nsimplify(\"1/6\")\nsimplify(\"2/1\")\nsimplify(\"7/10\")\nsimplify(\"10/2\")\nsimplify(\"1/1\")\nsimplify(\"1/1\")\nsimplify(\"1/1\")\nsimplify(\"1/1\")\nsimplify(\"1/\")"
+    },
+    {
+        "original": "    def order_by_points(nums):\n        return sorted(nums, key=lambda x: sum(map(int, str(x))))\n# 2. Write a function which returns the sum of the digits of a given number.\n# 3. Write a function which returns the sum of the digits of a given number.\n# 4. Write a function which returns the sum of the digits of a given number.\n# 5. Write a function which returns the sum of the digits of a given number.\n# 6. Write a function which returns the sum of the digits of",
+        "rewrite": "def order_by_points(nums):\n    return sorted(nums, key=lambda x: sum(int(digit) for digit in str(x)))"
+    },
+    {
+        "original": "    return sum(1 for num in nums if num > 10 and num % 10 in (1, 3, 5, 7, 9) and num % 100 in (1, 3, 5, 7, 9))\n# +\n# 2. Write a function that takes a list of numbers as input and returns the \n# number of even numbers in the list.\n# For example:\n# evenCount([1, 2, 3, 4, 5]) => 3\n# evenCount([1,",
+        "rewrite": "def evenCount(nums):\n    return sum(1 for num in nums if isinstance(num, int) and num % 2 == 0)"
+    },
+    {
+        "original": "    a = [i * i - i + 1 for i in range(1, n + 1)]\n    count = 0\n    for i in range(n):\n        for j in range(i + 1, n):\n            for k in range(j + 1, n):\n                if a[i] + a[j] + a[k] % 3 == 0:\n                    count += 1\n    return count\nprint(get_max_triples(5))\nprint(get_max_triples(6))\nprint(get_max_triples(7))",
+        "rewrite": "def get_max_triples(n):\n    a = [i * i - i + 1 for i in range(1, n + 1)]\n    count = 0\n    for i in range(n):\n        for j in range(i + 1, n):\n            for k in range(j + 1, n):\n                if (a[i] + a[j] + a[k]) % 3 == 0:\n                    count += 1\n    return count\n\nprint(get_max_triples(5))\nprint(get_max_triples(6))\nprint(get_max_triples(7))"
+    },
+    {
+        "original": "def bf(planet1, planet2):\n    if planet1 in planets and planet2 in planets:\n        return sorted(planets[planet1] & planets[planet2])\n    else:\n        return ()\n# test\nprint(bf(\"Jupiter\", \"Neptune\"))\nprint(bf(\"Earth\", \"Mercury\"))\nprint(bf(\"Mercury\", \"Uranus\"))\n# + [markdown] id=\"2630066d-905c-4153-992f-721578",
+        "rewrite": "def common_planets(planet1, planet2):\n    planets = {\n        \"Mercury\": set([\"Venus\", \"Earth\", \"Mars\"]),\n        \"Venus\": set([\"Mercury\", \"Earth\", \"Mars\"]),\n        \"Earth\": set([\"Mars\", \"Venus\"]),\n        \"Mars\": set([\"Earth\", \"Venus\"]),\n        \"Jupiter\": set([\"Saturn\", \"Uranus\"]),\n        \"Saturn\": set([\"Jupiter\", \"Uranus\"]),\n        \"Uranus\": set([\"Neptune\", \"Saturn\"]),\n        \"Neptune\": set([\"Uranus\"])\n    }\n    \n    if planet1 in planets and planet2 in planets:\n        return sorted(planets[planet1] & planets[planet2])\n    else:\n        return ()\n\n# test\nprint(common_planets(\"Jupiter\", \"Neptune\"))\nprint(common_planets(\"Earth\", \"Mercury\"))\nprint(common_planets(\"Mercury\", \"Uranus\"))"
+    },
+    {
+        "original": "def sorted_list_sum(lst):\n    return sorted(lst, key=lambda x: len(x), reverse=True)\n# 1. Sort the list by length of each word\n# 2. Sort the list by length of each word, and then alphabetically\n# 3. Sort the list by length of each word, and then alphabetically, and then by length of each word\n# 4. Sort the list by length of each word, and then alphabetically, and then by length of each word, and then by length of each word\n# 5. Sort",
+        "rewrite": "def sorted_list_sum(lst):\n    return sorted(lst, key=lambda x: (len(x), x))"
+    },
+    {
+        "original": "def x_or_y(n, x, y):\n    if n in prime_numbers:\n        return x\n    else:\n        return y\n# 1. Write a function that takes a string and returns the length of the string.\n# 2. Write a function that takes a string and returns the length of the string.\n# 3. Write a function that takes a string and returns the length of the string.\n# 4. Write a function that takes a string and returns the length of the string.\n# 5. Write a function that takes a string and returns the",
+        "rewrite": "def string_length(s):\n    return len(s)"
+    },
+    {
+        "original": "def double_the_difference(lst):\n    return sum(x**2 for x in lst if x%2!= 0)\ndouble_the_difference([1, 3, 2, 0])\ndouble_the_difference([-1, -2, 0])\ndouble_the_difference([9, -2])\ndouble_the_difference([0])<jupyter_output><empty_output><jupyter_text>**Question 2**Write a function that takes a string and returns a list of the words in the string. For example, if the input string is \"Hello world\", the function should return [\"",
+        "rewrite": "def get_words_from_string(s):\n    return s.split()"
+    },
+    {
+        "original": "def compare(game,guess):\n    return [abs(g-g2) for g,g2 in zip(game,guess)]\n# +\n# compare([1,2,3,4,5,1],[1,2,3,4,2,-2]) -> [0,0,0,0,3,3]\n# compare([0,5,0,0,0,4],[4,1,1,0,0,-2]) -> [4,4,1,0,0,6]\n# +\n# compare([1",
+        "rewrite": "def compare(game, guess):\n    return [abs(g - g2) for g, g2 in zip(game, guess)]"
+    },
+    {
+        "original": "    def Strongest_Extension(class_name, extensions):\n        \"\"\"You will be given the name of a class (a string) and a list of extensions.\n        The extensions are to be used to load additional classes to the class. The\n        strength of the extension is as follows: Let CAP be the number of the uppercase\n        letters in the extension's name, and let SM be the number of lowercase letters \n        in the extension's name, the strength is given by the fraction CAP - SM. \n        You should find the strongest extension and return a string in this \n        format: ClassName.StrongestExtension",
+        "rewrite": "def Strongest_Extension(class_name, extensions):\n    def strength_of_extension(extension):\n        cap_letters = sum(1 for c in extension if c.isupper())\n        sm_letters = sum(1 for c in extension if c.islower())\n        return cap_letters - sm_letters\n\n    strongest_extension = max(extensions, key=strength_of_extension)\n        \n    return f\"{class_name}.{strongest_extension}\""
+    },
+    {
+        "original": "def cycpattern_check(a, b):\n    if len(a) < len(b):\n        return False\n    for i in range(len(b)):\n        if b[i] in a:\n            a = a[a.index(b[i])+1:]\n        else:\n            return False\n    return True\nprint(cycpattern_check(\"abcd\",\"abd\"))\nprint(cycpattern_check(\"hello\",\"ell\"))\nprint(cycpattern_check(\"whassup\",\"psus\"))\nprint(cycpattern_check(\"abab\",\"baa\"))\nprint",
+        "rewrite": "def cycpattern_check(a, b):\n    if len(a) < len(b):\n        return False\n    for i in range(len(b)):\n        if b[i] in a:\n            a = a[a.index(b[i])+1:]\n        else:\n            return False\n    return True\n\nprint(cycpattern_check(\"abcd\", \"abd\"))\nprint(cycpattern_check(\"hello\", \"ell\"))\nprint(cycpattern_check(\"whassup\", \"psus\"))\nprint(cycpattern_check(\"abab\", \"baa\"))"
+    },
+    {
+        "original": "def even_odd_count(num):\n    \"\"\"Given an integer. return a tuple that has the number of even and odd digits respectively.\n     Example:\n        even_odd_count(-12) ==> (1, 1)\n        even_odd_count(123) ==> (1, 2)\n    \"\"\"\n    count_even = 0\n    count_odd = 0\n    while num > 0:\n        if num % 2 == 0:\n            count_even += 1\n        else:\n            count_odd += 1\n        num //= 10\n    return (",
+        "rewrite": "def even_odd_count(num):\n    count_even = 0\n    count_odd = 0\n    while num != 0:\n        digit = num % 10\n        if digit % 2 == 0:\n            count_even += 1\n        else:\n            count_odd += 1\n        num //= 10\n    return (count_even, count_odd)"
+    },
+    {
+        "original": "def int_to_mini_roman(number):\n    \"\"\"\n    Given a positive integer, obtain its roman numeral equivalent as a string,\n    and return it in lowercase.\n    Restrictions: 1 <= num <= 1000\n    Examples:\n    >>> int_to_mini_roman(19) == 'xix'\n    >>> int_to_mini_roman(152) == 'clii'\n    >>> int_to_mini_roman(426) == 'cdxxvi'\n    \"\"\"\n    roman_numerals = {1000",
+        "rewrite": "def int_to_mini_roman(number):\n    \"\"\"\n    Given a positive integer, obtain its roman numeral equivalent as a string,\n    and return it in lowercase.\n    Restrictions: 1 <= num <= 1000\n    Examples:\n    >>> int_to_mini_roman(19) == 'xix'\n    >>> int_to_mini_roman(152) == 'clii'\n    >>> int_to_mini_roman(426) == 'cdxxvi'\n    \"\"\"\n    roman_numerals = {1000: 'm', 900: 'cm', 500: 'd', 400: 'cd', 100: 'c', 90: 'xc', 50: 'l', 40: 'xl', 10: 'x',\n                      9: 'ix', 5: 'v', 4: 'iv', 1: 'i'}\n    result = ''\n    \n    for value, numeral in roman_numerals.items():\n        while number >= value:\n            result += numeral\n            number -= value\n            \n    return result.lower()"
+    },
+    {
+        "original": "def right_angle_triangle(a, b, c):\n    if a == b == c:\n        return True\n    elif a == b or a == c or b == c:\n        return False\n    else:\n        return True\nprint(right_angle_triangle(3, 4, 5))\nprint(right_angle_triangle(1, 2, 3))\nprint(right_angle_triangle(3, 4, 6))\n# + [markdown] id=\"09091011-438e-4959",
+        "rewrite": "def right_angle_triangle(a, b, c):\n    if a**2 + b**2 == c**2 or a**2 + c**2 == b**2 or b**2 + c**2 == a**2:\n        return True\n    else:\n        return False\n\nprint(right_angle_triangle(3, 4, 5))\nprint(right_angle_triangle(1, 2, 3))\nprint(right_angle_triangle(3, 4, 6))"
+    },
+    {
+        "original": "def find_max(words):\n    \"\"\"Write a function that accepts a list of strings.\n    The list contains different words. Return the word with maximum number\n    of unique characters. If multiple strings have maximum number of unique\n    characters, return the one which comes first in lexicographical order.\n    find_max([\"name\", \"of\", \"string\"]) == \"string\"\n    find_max([\"name\", \"enam\", \"game\"]) == \"enam\"\n    find_max([\"aaaaaaa\", \"bb\",\"cc\"]) == \"\"aaaaaaa\"\n    \"\"\"\n    max_len = 0\n    max",
+        "rewrite": "def find_max(words):\n    max_len = 0\n    max_word = \"\"\n    for word in words:\n        unique_chars = len(set(word))\n        if unique_chars > max_len or (unique_chars == max_len and word < max_word):\n            max_len = unique_chars\n            max_word = word\n    return max_word"
+    },
+    {
+        "original": "def eat(number, need, remaining):\n    \"\"\"\n    You're a hungry rabbit, and you already have eaten a certain number of carrots,\n    but now you need to eat more carrots to complete the day's meals.\n    you should return an array of [ total number of eaten carrots after your meals,\n                                    the number of carrots left after your meals ]\n    if there are not enough remaining carrots, you will eat all remaining carrots, but will still be hungry.\n    Example:\n    * eat(5, 6",
+        "rewrite": "def eat(number, need, remaining):\n    total_eaten = number + remaining\n    if remaining >= need:\n        remaining -= need\n    else:\n        remaining = 0\n    return [total_eaten, remaining]"
+    },
+    {
+        "original": "def do_algebra(operator, operand):\n    \"\"\"\n    Given two lists operator, and operand. The first list has basic algebra operations, and \n    the second list is a list of integers. Use the two given lists to build the algebric \n    expression and return the evaluation of this expression.\n    The basic algebra operations:\n    Addition ( + ) \n    Subtraction ( - ) \n    Multiplication ( * ) \n    Floor division ( // ) \n    Exponentiation ( ** ) \n    Example:\n    operator['+', '*', '-']\n    array = [2, 3, 4, 5]\n    result =",
+        "rewrite": "def do_algebra(operator, operand):\n    result = operand[0]\n    for i in range(0, len(operator)):\n        if operator[i] == '+':\n            result += operand[i+1]\n        elif operator[i] == '-':\n            result -= operand[i+1]\n        elif operator[i] == '*':\n            result *= operand[i+1]\n        elif operator[i] == '//':\n            result //= operand[i+1]\n        elif operator[i] == '**':\n            result **= operand[i+1]\n    return result"
+    },
+    {
+        "original": "def solve(s):\n    return ''.join(reversed(s) if c.isalpha() else c for c in s)\n# I don't know how to write this in python, so I will try to explain it.\n# The idea is to reverse the string, and then iterate over the string, \n# and if the character is an alphabet, then reverse the case of the character.\n# If the character is not an alphabet, then just keep it as it is.\n# The result is a string where the characters are in the reverse order.\n# The function should return the",
+        "rewrite": "def solve(s):\n    return ''.join(c.swapcase() if c.isalpha() else c for c in reversed(s))"
+    },
+    {
+        "original": "def string_to_md5(text):\n    if not text:\n        return None\n    return hashlib.md5(text.encode('utf-8')).hexdigest()\n# +\n# 2. Write a function that takes a string and returns a list of words in the string.\n# The function should ignore any punctuation and capitalize the first letter of each word.\n# The function should return an empty list if the input string is empty.\n# The function should return a list of words in the string in the order they appear in the string.\n# Example:\n# >>>",
+        "rewrite": "import re\ndef string_to_md5(text):\n    if not text:\n        return None\n    return hashlib.md5(text.encode('utf-8')).hexdigest()\n\ndef string_to_words_list(text):\n    if not text:\n        return []\n    words = re.findall(r'\\b\\w+\\b', text)\n    processed_words = [word.capitalize() for word in words]\n    return processed_words\n# +\n# 2. Write a function that takes a string and returns a list of words in the string."
+    },
+    {
+        "original": "def generate_integers(a, b):\n    return [x for x in range(a, b+1) if x%2==0]\nprint(generate_integers(2, 8))\nprint(generate_integers(8, 2))\nprint(generate_integers(10, 14))\n# + [markdown] id=\"w_h06_054185\"\n# ### 1.2.2.2.2.2.2.2.2.2.2.2.2.",
+        "rewrite": "def generate_integers(a, b):\n    return [x for x in range(a, b+1) if x % 2 == 0]\n\nprint(generate_integers(2, 8))\nprint(generate_integers(10, 14))"
+    }
+]

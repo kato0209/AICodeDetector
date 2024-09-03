@@ -149,7 +149,7 @@ device = args.DEVICE
 
 dataset_paths =[
     'rewrite_dataset/Train_Rewrite_code_by_gpt_AI_HumanEval_codellama.json',
-    'rewrite_dataset/Train_Rewrite_code_by_gpt_AI_HumanEval_incoder.json'
+    #'rewrite_dataset/Train_Rewrite_code_by_gpt_AI_HumanEval_incoder.json'
 ]
 
 ai_data = {
@@ -164,6 +164,12 @@ for path in dataset_paths:
 
 #ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_AI_HumanEval_codellama.json')
 human_data = download_data_from_json('rewrite_dataset/Train_Rewrite_code_by_gpt3-5_Human.json')
+
+print(len(ai_data["original"]))
+print(len(human_data["original"]))
+print(len(ai_data["rewrite"]))
+print(len(human_data["rewrite"]))
+exit()
 
 #from util_func import remove_comments
 #

@@ -53,7 +53,7 @@ def rewrite_code(codes, model_config, args):
     return rewrite_codes
 
 def save_to_json_rewritten_code(codes, rewrite_codes, origin, by="gpt"):
-    rewrite_string = "HumanEval_starcoder"
+    rewrite_string = "HumanEval_codegen2"
     data = []
     for i in range(len(codes)):
         sec = {
@@ -105,7 +105,7 @@ def rewrite_gpt():
     #data["sampled"] = data["sampled"][:data_num]
 
     #with open("HumanEval/outputs_codellama_spaceline_ex.json", 'r') as file:
-    with open("HumanEval/outputs_bigcode-starcoderbase-3b.json", 'r') as file:
+    with open("HumanEval/outputs_Salesforce-codegen2-3_7B_P.json", 'r') as file:
         json_data = json.load(file)
     #original_codes = [item['original'] for item in json_data]
     sampled_codes = [item['sampled'] for item in json_data]

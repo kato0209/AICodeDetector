@@ -1,0 +1,398 @@
+[
+    {
+        "original": "    return any(abs(numbers[i] - numbers[i + 1]) < threshold for i in range(len(numbers) - 1))\nif __name__ == \"__main__\":\n    import doctest\n    doctest.testmod()",
+        "rewrite": "def check_threshold(numbers, threshold):\n    return any(abs(numbers[i] - numbers[i + 1]) < threshold for i in range(len(numbers) - 1))\n\nif __name__ == \"__main__\":\n    import doctest\n    doctest.testmod()"
+    },
+    {
+        "original": "    return [paren_string[i:j] for i, j in zip(re.findall('\\(|\\)|\\[|\\]', paren_string),\n                                             re.findall('\\)|\\]|\\(', paren_string))]\nif __name__ == '__main__':\n    print(separate_paren_groups('( ) (( )) (( )( ))'))",
+        "rewrite": "import re\n\ndef separate_paren_groups(paren_string):\n    return [paren_string[i:j] for i, j in zip(re.findall('\\(|\\)|\\[|\\]', paren_string),\n                                             re.findall('\\)|\\]|\\(', paren_string))]\n\nif __name__ == '__main__':\n    print(separate_paren_groups('( ) (( )) (( )( ))'))"
+    },
+    {
+        "original": "    integer, decimal = math.modf(number)\n    return integer\ndef truncate_number_2(number: float) -> float:\n    \"\"\" Given a positive floating point number, it can be decomposed into\n    and integer part (largest integer smaller than given number) and decimals\n    (leftover part always smaller than 1).\n    Return the decimal part of the number.\n    >>> truncate_number_2(3.5)\n    0.5\n    \"\"\"\n, no explanation, just code:\n    integer, decimal = math.modf",
+        "rewrite": "import math\n\ndef truncate_number_2(number: float) -> float:\n    integer, decimal = math.modf(number)\n    return decimal"
+    },
+    {
+        "original": "    return operations[0] < 0\nif __name__ == '__main__':\n    import doctest\n    doctest.testmod()",
+        "rewrite": "return operations[0] < 0\n\nif __name__ == '__main__':\n    import doctest\n    doctest.testmod()"
+    },
+    {
+        "original": "    return sum(abs(x - mean) for x in numbers) / len(numbers)\nif __name__ == \"__main__\":\n    import doctest\n    doctest.testmod()",
+        "rewrite": "return sum(abs(x - mean) for x in numbers) / len(numbers)\nif __name__ == \"__main__\":\n    import doctest\n    doctest.testmod()"
+    },
+    {
+        "original": "    return [delimeter] + [numbers[i] for i in range(1, len(numbers))] + [delimeter]\ndef intersperse_with_delimiter(numbers: List[int], delimeter: int) -> List[int]:\n    \"\"\" Insert a number 'delimeter' between every two consecutive elements of input list `numbers'\n    >>> intersperse_with_delimiter([], 4)\n    []\n    >>> intersperse_with_delimiter([1, 2, 3], 4)\n    [1",
+        "rewrite": "def intersperse_with_delimiter(numbers: List[int], delimiter: int) -> List[int]:\n    return [numbers[i//2] if i%2 == 0 else delimiter for i in range(len(numbers)*2-1)]"
+    },
+    {
+        "original": "    #",
+        "rewrite": "#"
+    },
+    {
+        "original": "    return [s for s in strings if substring in s]\nif __name__ == '__main__':\n    import doctest\n    doctest.testmod()",
+        "rewrite": "def filter_strings(strings, substring):\n    return [s for s in strings if substring in s]\n\nif __name__ == '__main__':\n    import doctest\n    doctest.testmod()"
+    },
+    {
+        "original": "    return sum(numbers), reduce(lambda x, y: x * y, numbers)\ndef sum_product_2(numbers: List[int]) -> Tuple[int, int]:\n    \"\"\" For a given list of integers, return a tuple consisting of a sum and a product of all the integers in a list.\n    Empty sum should be equal to 0 and empty product should be equal to 1.\n    >>> sum_product_2([])\n    (0, 1)\n    >>> sum_product_2([1, 2, 3, 4])\n    (",
+        "rewrite": "from functools import reduce\nfrom typing import List, Tuple\n\ndef sum_product_2(numbers: List[int]) -> Tuple[int, int]:\n    if not numbers:\n        return 0, 1\n\n    return sum(numbers), reduce(lambda x, y: x * y, numbers)\n\n# Testing the function\nprint(sum_product_2([]))\nprint(sum_product_2([1, 2, 3, 4]))"
+    },
+    {
+        "original": "    return [max(numbers[i:i + n]) for i in range(len(numbers) - n + 1)]\ndef rolling_max_2(numbers: List[int]) -> List[int]:\n    \"\"\" From a given list of integers, generate a list of rolling maximum element found until given moment\n    in the sequence.\n    >>> rolling_max_2([1, 2, 3, 2, 3, 4, 2])\n    [1, 2, 3, 3, 3, 4, 4]\n    \"\"\"\n, no explanation, just code",
+        "rewrite": "from typing import List\n\ndef rolling_max_2(numbers: List[int]) -> List[int]:\n    return [max(numbers[i:i + n]) for i in range(len(numbers) - n + 1)]"
+    },
+    {
+        "original": "    if not string:\n        return ''\n    if is_palindrome(string):\n        return string\n    longest_palindrome = ''\n    for i in range(len(string)):\n        if is_palindrome(string[:i] + string[i + 1:]):\n            longest_palindrome = string[:i] + string[i + 1:]\n            break\n    return longest_palindrome + make_palindrome(string[len(longest_palindrome):])\ndef main():\n    print",
+        "rewrite": "def find_longest_palindrome(string):\n    if not string:\n        return ''\n    \n    if is_palindrome(string):\n        return string\n    \n    longest_palindrome = ''\n    \n    for i in range(len(string)):\n        if is_palindrome(string[:i] + string[i + 1:]):\n            longest_palindrome = string[:i] + string[i + 1:]\n            break\n    \n    return longest_palindrome + make_palindrome(string[len(longest_palindrome):])\n\ndef main():\n    input_string = \"Hello World\"\n    result = find_longest_palindrome(input_string)\n    print(result)\n\nif __name__ == \"__main__\":\n    main()"
+    },
+    {
+        "original": "    return ''.join(chr(ord(a[i]) ^ ord(b[i])) for i in range(len(a)))\ndef string_xor_list(a: str, b: str) -> List[str]:\n    \"\"\" Input are two strings a and b consisting only of 1s and 0s.\n    Perform binary XOR on these inputs and return result also as a list of strings.\n    >>> string_xor_list('010', '110')\n    ['100', '100']\n    \"\"\"\n, no explanation, just code",
+        "rewrite": "from typing import List\n\ndef string_xor_list(a: str, b: str) -> List[str]:\n    return [''.join(chr(ord(a[i]) ^ ord(b[i])) for i in range(len(a))) for a, b in zip(a,b)]"
+    },
+    {
+        "original": "    return max(strings, key=len)\ndef longest_with_index(strings: List[str]) -> Optional[str]:\n    \"\"\" Out of list of strings, return the longest one. Return the first one in case of multiple\n    strings of the same length. Return None in case the input list is empty.\n    >>> longest_with_index([])\n    >>> longest_with_index(['a', 'b', 'c'])\n    'a'\n    >>> longest_with_index(['a', 'bb', 'ccc'])\n    '",
+        "rewrite": "from typing import List, Optional\n\ndef longest_with_index(strings: List[str]) -> Optional[str]:\n    if not strings:\n        return None\n    return max(strings, key=len)\n\n# Testing the function\nprint(longest_with_index([]))\nprint(longest_with_index(['a', 'b', 'c']))\nprint(longest_with_index(['a', 'bb', 'ccc']))"
+    },
+    {
+        "original": "    if a == 0:\n        return b\n    if b == 0:\n        return a\n    return greatest_common_divisor(a % b, b)\ndef is_prime(n: int) -> bool:\n    \"\"\" Return True if n is prime, False otherwise\n    >>> is_prime(2)\n    True\n    >>> is_prime(3)\n    True\n    >>> is_prime(5)\n    False\n    >>> is_prime(11)\n    True\n    >>> is_prime(13)\n    False\n    >>>",
+        "rewrite": "if a == 0:\n        return b\n    if b == 0:\n        return a\n    return greatest_common_divisor(a % b, b)\n\ndef is_prime(n: int) -> bool:\n    \"\"\" Return True if n is prime, False otherwise\n    >>> is_prime(2)\n    True\n    >>> is_prime(3)\n    True\n    >>> is_prime(5)\n    False\n    >>> is_prime(11)\n    True\n    >>> is_prime(13)\n    False\n    >>>\n    \"\"\"\n    return n > 1 and all(n % i != 0 for i in range(2, int(n ** 0.5) + 1))"
+    },
+    {
+        "original": "    return [string[:i] for i in range(len(string)+1)]\ndef all_suffixes(string: str) -> List[str]:\n    \"\"\" Return list of all suffixes from shortest to longest of the input string\n    >>> all_suffixes('abc')\n    ['bc', 'c', 'cd', 'd', 'def', 'ef', 'f', 'g', 'h', 'i', 'j', 'k', 'l','m', 'n', 'o', 'p', 'q', 'r','s',",
+        "rewrite": "from typing import List\n\ndef all_suffixes(string: str) -> List[str]:\n    return [string[i:] for i in range(len(string))] + [string[-1]]"
+    },
+    {
+        "original": "    s = ''\n    for i in range(n):\n        s += str(i) +''\n    return s\ndef string_sequence_2(n: int) -> str:\n    \"\"\" Return a string containing space-delimited numbers starting from 0 upto n inclusive.\n    >>> string_sequence_2(0)\n    '0'\n    >>> string_sequence_2(5)\n    '0 1 2 3 4 5'\n    \"\"\"\n, no explanation, just code:\n    s = ''\n    for i in range(n):",
+        "rewrite": "s = ''\nfor i in range(n):\n    s += str(i) + ' '\nreturn s"
+    },
+    {
+        "original": "    return len(set(string))\ndef count_distinct_words(string: str) -> int:\n    \"\"\" Given a string, find out how many distinct words does it consist of\n    >>> count_distinct_words('xyzXYZ')\n    3\n    >>> count_distinct_words('Jerry')\n    4\n    \"\"\"\n, no explanation, just code:\n    return len(set(string.split()))\ndef count_distinct_words_with_regex(string: str) -> int:\n    \"\"\" Given a string,",
+        "rewrite": "return len(re.findall(r'\\b\\w+\\b', string))"
+    },
+    {
+        "original": "    return [int(note) for note in music_string.split(' ') if note!= 'o']\ndef parse_music_2(music_string: str) -> List[int]:\n    \"\"\" Input to this function is a string representing musical notes in a special ASCII format.\n    Your task is to parse this string and return list of integers corresponding to how many beats does each\n    not last.\n    Here is a legend:\n    'o' - whole note, lasts four beats\n    'o|' - half note, lasts two beats\n    '.|' -",
+        "rewrite": "def parse_music_2(music_string: str) -> List[int]:\n    return [int(note) for note in music_string.split(' ') if note != 'o']"
+    },
+    {
+        "original": "    return len(string.replace(substring, ''))\ndef how_many_times_2(string: str, substring: str) -> int:\n    \"\"\" Find how many times a given substring can be found in the original string. Count overlaping cases.\n    >>> how_many_times_2('', 'a')\n    0\n    >>> how_many_times_2('aaa', 'a')\n    3\n    >>> how_many_times_2('aaaa', 'aa')\n    3\n    \"\"\"\n, no explanation, just code:",
+        "rewrite": "def how_many_times_2(string: str, substring: str) -> int:\n    return len(string.replace(substring, ''))"
+    },
+    {
+        "original": "    numbers = numbers.split()\n    numbers.sort()\n    return''.join(numbers)\nif __name__ == '__main__':\n    import doctest\n    doctest.testmod()",
+        "rewrite": "numbers = input().split()\nnumbers.sort()\nprint(''.join(numbers))"
+    },
+    {
+        "original": "    #",
+        "rewrite": "#"
+    },
+    {
+        "original": "    return [n / max(numbers) for n in numbers]\ndef rescale_to_unit_2(numbers: List[float]) -> List[float]:\n    \"\"\" Given list of numbers (of at least two elements), apply a linear transform to that list,\n    such that the smallest number will become 0 and the largest will become 1\n    >>> rescale_to_unit_2([1.0, 2.0, 3.0, 4.0, 5.0])\n    [0.0, 0.25, 0.5, 0.75",
+        "rewrite": "from typing import List\n\ndef rescale_to_unit(numbers: List[float]):\n    return [(n - min(numbers)) / (max(numbers) - min(numbers)) for n in numbers]"
+    },
+    {
+        "original": "    return [int(value) for value in values if isinstance(value, int)]\nif __name__ == '__main__':\n    import doctest\n    doctest.testmod()",
+        "rewrite": "return [int(value) for value in values if isinstance(value, int)]\nif __name__ == '__main__':\n    import doctest\n    doctest.testmod()"
+    },
+    {
+        "original": "    return len(string)\ndef str_reverse(string: str) -> str:\n    \"\"\" Return reversed string\n    >>> str_reverse('abc')\n    'cba'\n    \"\"\"\n, no explanation, just code:\n    return string[::-1]\ndef str_split(string: str, sep: str) -> list:\n    \"\"\" Return list of strings from given string\n    >>> str_split('abc', 'b')\n    ['a', 'c']\n    \"\"\"\n, no explanation, just code:\n    return string.split(",
+        "rewrite": "return string.split(sep)"
+    },
+    {
+        "original": "    if n == 1:\n        return 1\n    if n % 2 == 0:\n        return 2\n    if n % 3 == 0:\n        return 3\n    if n % 5 == 0:\n        return 5\n    if n % 7 == 0:\n        return 7\n    if n % 11 == 0:\n        return 11\n    if n % 13 == 0:\n        return 13\n    if n % 17 == 0:\n        return 17\n    if n % 19 == 0:\n        return 19\n    if n % 23 == 0:\n        return 23",
+        "rewrite": "if n in [1, 2, 3, 5, 7, 11, 13, 17, 19, 23]:\n    return n"
+    },
+    {
+        "original": "    if n < 2:\n        return []\n    factors = []\n    for i in range(2, int(n ** 0.5) + 1):\n        if n % i == 0:\n            factors.append(i)\n            n //= i\n    if n > 1:\n        factors.append(n)\n    return factors\ndef prime_factors(n: int) -> List[int]:\n    \"\"\" Return list of prime factors of given integer in the order from smallest to largest.\n    Each of the factors should be listed number of",
+        "rewrite": "from typing import List\n\ndef prime_factors(n: int) -> List[int]:\n    if n < 2:\n        return []\n    factors = []\n    for i in range(2, int(n ** 0.5) + 1):\n        if n % i == 0:\n            factors.append(i)\n            n //= i\n    if n > 1:\n        factors.append(n)\n    return factors"
+    },
+    {
+        "original": "    seen = set()\n    return [x for x in numbers if x not in seen and not seen.add(x)]\nif __name__ == \"__main__\":\n    import doctest\n    doctest.testmod()",
+        "rewrite": "seen = set()\nreturn [x for x in numbers if x not in seen and not seen.add(x)]\nif __name__ == \"__main__\":\n    import doctest\n    doctest.testmod()"
+    },
+    {
+        "original": "    return string.swapcase()\ndef reverse_string(string: str) -> str:\n    \"\"\" Reverse the given string.\n    >>> reverse_string('Hello')\n    'olleH'\n    \"\"\"\n, no explanation, just code:\n    return string[::-1]\ndef is_palindrome(string: str) -> bool:\n    \"\"\" Check if the given string is palindrome.\n    >>> is_palindrome('Hello')\n    True\n    >>> is_palindrome('A man, a plan, a canal:",
+        "rewrite": "import re\r\ndef is_palindrome(string: str) -> bool:\r\n    clean_string = re.sub(r'[^A-Za-z]', '', string).lower()\r\n    return clean_string == clean_string[::-1]"
+    },
+    {
+        "original": "    return ''.join(strings)\nif __name__ == '__main__':\n    import doctest\n    doctest.testmod()",
+        "rewrite": "return ''.join(strings)\n\nif __name__ == '__main__':\n    import doctest\n    doctest.testmod()"
+    },
+    {
+        "original": "    return [s for s in strings if s.startswith(prefix)]\ndef filter_by_suffix(strings: List[str], suffix: str) -> List[str]:\n    \"\"\" Filter an input list of strings only for ones that end with a given suffix.\n    >>> filter_by_suffix([], 'a')\n    []\n    >>> filter_by_suffix(['abc', 'bcd', 'cde', 'array'], 'a')\n    ['abc', 'cde', 'array']\n    \"\"\"\n, no explanation, just",
+        "rewrite": "return [s for s in strings if s.endswith(suffix)]"
+    },
+    {
+        "original": "    return [x for x in l if x > 0]\ndef get_negative(l: list):\n    \"\"\"Return only negative numbers in the list.\n    >>> get_negative([-1, 2, -4, 5, 6])\n    [-1, -4, -5, -6]\n    >>> get_negative([5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10])\n    [-3, -5, -2, -3, -9, -123, -1]",
+        "rewrite": "def get_positive(l: list):\n    return [x for x in l if x > 0]\n\ndef get_negative(l: list):\n    return [x for x in l if x < 0]"
+    },
+    {
+        "original": "    if n == 2:\n        return True\n    if n < 2 or n % 2 == 0:\n        return False\n    for i in range(3, int(n**0.5)+1, 2):\n        if n % i == 0:\n            return False\n    return True\ndef is_prime_iter(n):\n    \"\"\"Return true if a given number is prime, and false otherwise.\n    >>> is_prime_iter(6)\n    False\n    >>> is_prime_iter(101)\n    True\n    >>> is_prime_",
+        "rewrite": "def is_prime_iter(n):\n    if n == 2:\n        return True\n    if n < 2 or n % 2 == 0:\n        return False\n    for i in range(3, int(n**0.5)+1, 2):\n        if n % i == 0:\n            return False\n    return True\n\ndef is_prime_iter(n):\n    \"\"\"Return true if a given number is prime, and false otherwise.\n    >>> is_prime_iter(6)\n    False\n    >>> is_prime_iter(101)\n    True\n    \"\"\""
+    },
+    {
+        "original": "    if len(xs) % 2 == 0:\n        return xs[-1]\n    else:\n        return 0\ndef find_roots(xs: list):\n    \"\"\"\n    xs are coefficients of a polynomial.\n    find_roots find x such that poly(x) = 0.\n    find_roots returns only roots, even if there are many.\n    Moreover, find_roots only takes list xs having even number of coefficients\n    and largest non zero coefficient as it guarantees\n    a solution.\n    >>> round(find_roots([1,",
+        "rewrite": "def find_roots(xs: list):\n    \"\"\"\n    xs are coefficients of a polynomial.\n    find_roots find x such that poly(x) = 0.\n    find_roots returns only roots, even if there are many.\n    Moreover, find_roots only takes list xs having even number of coefficients\n    and largest non zero coefficient as it guarantees\n    a solution.\n    >>> round(find_roots([1, - 1, - 2])) # - 1.0"
+    },
+    {
+        "original": "    l = list(l)\n    l.sort(key=lambda x: x % 3)\n    return l\ndef sort_third_2(l: list):\n    \"\"\"This function takes a list l and returns a list l' such that\n    l' is identical to l in the indicies that are not divisible by three, while its values at the indicies that are divisible by three are equal\n    to the values of the corresponding indicies of l, but sorted.\n    >>> sort_third_2([1, 2, 3])\n    [1,",
+        "rewrite": "l = list(l)\r\n    l.sort(key=lambda x: x % 3)\r\n    return l\r\n\r\ndef sort_third_2(l: list):\r\n    l = list(l)\r\n    l.sort(key=lambda x: x % 3)\r\n    return l"
+    },
+    {
+        "original": "    return list(set(l))\ndef unique_sorted(l: list):\n    \"\"\"Return sorted unique elements in a list\n    >>> unique_sorted([5, 3, 5, 2, 3, 3, 9, 0, 123])\n    [0, 2, 3, 5, 9, 123]\n    \"\"\"\n, no explanation, just code:\n    return sorted(list(set(l)))\ndef unique_sorted_by(l: list, key):\n    \"\"\"Return sorted unique elements in a list\n    >>> unique_sorted_",
+        "rewrite": "return sorted(list(set(l)), key=key)"
+    },
+    {
+        "original": "    return max(l)\ndef min_element(l: list):\n    \"\"\"Return minimum element in the list.\n    >>> min_element([1, 2, 3])\n    1\n    >>> min_element([5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10])\n    -10\n    \"\"\"\n, no explanation, just code:\n    return min(l)\ndef mean(l: list):\n    \"\"\"Return mean of the list.\n    >>> mean([1, 2, 3])",
+        "rewrite": "def mean(l: list):\r\n    return sum(l) / len(l)"
+    },
+    {
+        "original": "    return sum(1 for i in range(1, n + 1) if i % 11 == 0 or i % 13 == 0)\ndef fizz_buzz_2(n: int):\n    \"\"\"Return the number of times the digit 7 appears in integers less than n which are divisible by 11 or 13.\n    >>> fizz_buzz_2(50)\n    0\n    >>> fizz_buzz_2(78)\n    2\n    >>> fizz_buzz_2(79)\n    3\n    \"\"\"\n, no explanation, just",
+        "rewrite": "def fizz_buzz_2(n: int):\n    return sum(1 for i in range(1, n + 1) if i % 11 == 0 or i % 13 == 0 and '7' in str(i) )"
+    },
+    {
+        "original": "    return [l[i] for i in range(len(l)) if i % 2 == 0]\ndef sort_odd(l: list):\n    \"\"\"This function takes a list l and returns a list l' such that\n    l' is identical to l in the even indicies, while its values at the odd indicies are equal\n    to the values of the odd indicies of l, but sorted.\n    >>> sort_odd([1, 2, 3])\n    [1, 2, 3]\n    >>> sort_odd([5, 6, 3, 4",
+        "rewrite": "return [val if idx % 2 == 0 else sorted(l[1::2])[idx//2] for idx, val in enumerate(l)]"
+    },
+    {
+        "original": "    return \"\".join([s[i:i + 3] for i in range(0, len(s), 3)])\ndef encode_cyclic_with_map(s: str):\n    \"\"\"\n    returns encoded string by cycling groups of three characters.\n    \"\"\"\n    #",
+        "rewrite": "def encode_cyclic_with_map(s: str):\n    return \"\".join([s[i:i + 3] for i in range(0, len(s), 3])"
+    },
+    {
+        "original": "    if n == 1:\n        return 2\n    elif n == 2:\n        return 3\n    elif n == 3:\n        return 5\n    elif n == 4:\n        return 13\n    elif n == 5:\n        return 89\n    else:\n        for i in range(6, n):\n            if n % i == 0:\n                return False\n        return True\ndef prime_fib_rec(n: int):\n    \"\"\"\n    prime_fib_rec returns n-th number that is a Fibonacci number",
+        "rewrite": "def prime_fib_rec(n: int):\n    if n == 1:\n        return 2\n    elif n == 2:\n        return 3\n    elif n == 3:\n        return 5\n    elif n == 4:\n        return 13\n    elif n == 5:\n        return 89\n    else:\n        for i in range(6, n):\n            if n % i == 0:\n                return False\n        return True"
+    },
+    {
+        "original": "    return len(set(l)) == 3 and len(set(l))!= len(l)\ndef is_palindrome(s: str):\n    \"\"\"\n    is_palindrome takes a string as an input.\n    it returns True if the string is a palindrome, and False otherwise.\n    >>> is_palindrome('racecar')\n    True\n    >>> is_palindrome('racecaracar')\n    True\n    >>> is_palindrome('racecaracar')\n    False\n    >>> is_palindrome",
+        "rewrite": "def is_palindrome(s: str):\n    return s == s[::-1]"
+    },
+    {
+        "original": "    #",
+        "rewrite": "#"
+    },
+    {
+        "original": "    return [i + 1 for i in l]\ndef incr_list_with_key(l: list, key: int):\n    \"\"\"Return list with elements incremented by 1.\n    >>> incr_list_with_key([1, 2, 3], 2)\n    [3, 4, 5]\n    >>> incr_list_with_key([5, 3, 5, 2, 3, 3, 9, 0, 123], 0)\n    [6, 4, 6, 3, 4, 4, 10, 1, 124]",
+        "rewrite": "return [i + key for i in l]"
+    },
+    {
+        "original": "    #",
+        "rewrite": "#"
+    },
+    {
+        "original": "    if base < 10:\n        return str(x)\n    else:\n        return str(x).zfill(base)\ndef change_base_2(x: int, base: int):\n    \"\"\"Change numerical base of input number x to base.\n    return string representation after the conversion.\n    base numbers are less than 10.\n    >>> change_base_2(8, 3)\n    '22'\n    >>> change_base_2(8, 2)\n    '1000'\n    >>> change_base_2(7, 2)",
+        "rewrite": "if base < 10:\n        return str(x)\n    else:\n        return str(x).zfill(base)\ndef change_base_2(x: int, base: int):\n    return (bin(8)[2:]).zfill(4)\n    return (bin(8)[2:]).zfill(4)"
+    },
+    {
+        "original": "    return (a * h) / 2\ndef triangle_perimeter(a, b, c):\n    \"\"\"Given length of a side and high return area for a triangle.\n    >>> triangle_perimeter(5, 3, 4)\n    12\n    \"\"\"\n, no explanation, just code:\n    return a + b + c\ndef triangle_diagonal(a, b, c):\n    \"\"\"Given length of a side and high return area for a triangle.\n    >>> triangle_diagonal(5, 3, 4)\n    10\n    \"\"\"\n,",
+        "rewrite": "def triangle_area(a, h):\n    return (a * h) / 2\n\ndef triangle_perimeter(a, b, c):\n    return a + b + c\n\ndef triangle_diagonal(a, b, c):\n    return a + b + c"
+    },
+    {
+        "original": "    if n == 0:\n        return 0\n    elif n == 1:\n        return 0\n    elif n == 2:\n        return 1\n    else:\n        return fib4(n-1) + fib4(n-2) + fib4(n-3) + fib4(n-4)\ndef fib5(n: int):\n    \"\"\"The Fib5 number sequence is a sequence similar to the Fibbonacci sequnece that's defined as follows:\n    fib5(0) -> 0\n    fib5(1) ->",
+        "rewrite": "if n == 0:\n        return 0\n    elif n == 1:\n        return 1\n    else:\n        return fib5(n-1) + fib5(n-2)"
+    },
+    {
+        "original": "    n = len(l)\n    if n == 0:\n        return None\n    if n % 2 == 0:\n        return (l[n // 2 - 1] + l[n // 2]) / 2\n    else:\n        return l[n // 2]\ndef mean(l: list):\n    \"\"\"Return mean of elements in the list l.\n    >>> mean([3, 1, 2, 4, 5])\n    3.5\n    >>> mean([-10, 4, 6, 1000, 10, 20])\n    15.0",
+        "rewrite": "def median(l: list):\n    n = len(l)\n    if n == 0:\n        return None\n    if n % 2 == 0:\n        return (l[n // 2 - 1] + l[n // 2]) / 2\n    else:\n        return l[n // 2]\n\ndef mean(l: list):\n    return sum(l) / len(l)"
+    },
+    {
+        "original": "    return text == text[::-1]\ndef is_palindrome_v2(text: str):\n    \"\"\"\n    Checks if given string is a palindrome\n    >>> is_palindrome_v2('')\n    True\n    >>> is_palindrome_v2('aba')\n    True\n    >>> is_palindrome_v2('aaaaa')\n    True\n    >>> is_palindrome_v2('zbcd')\n    False\n    \"\"\"\n    return text == text[::-1]",
+        "rewrite": "def is_palindrome_v2(text: str):\n    return text == text[::-1]"
+    },
+    {
+        "original": "    return pow(2, n, p) % p\ndef modp_inv(n: int, p: int):\n    \"\"\"Return n^(p-2) modulo p (be aware of numerics).\n    >>> modp_inv(3, 5)\n    3\n    >>> modp_inv(1101, 101)\n    2\n    >>> modp_inv(0, 101)\n    1\n    >>> modp_inv(3, 11)\n    8\n    >>> modp_inv(100, 101)\n    1",
+        "rewrite": "def modp_inv(n: int, p: int):\n    return pow(n, p-2, p)"
+    },
+    {
+        "original": "    return \"\".join([chr(((ord(ch) - ord(\"a\")) % 26) + ord(\"a\")) for ch in s])\ndef encode_rotate(s: str):\n    \"\"\"\n    returns encoded string by rotating every character by 5 in the alphabet.\n    \"\"\"\n    return \"\".join([chr(((ord(ch) - 5 + ord(\"a\")) % 26) + ord(\"a\")) for ch in s])\ndef decode_rotate(s: str):\n    \"\"\"\n    takes as input string encoded with encode_",
+        "rewrite": "def decode_rotate(s: str):\n    \"\"\"\n    Decodes a string encoded by rotating every character by 5 in the alphabet.\n    \"\"\"\n    return \"\".join([chr(((ord(ch) - 5 - ord(\"a\")) % 26) + ord(\"a\")) for ch in s])"
+    },
+    {
+        "original": "    vowels = 'aeiou'\n    return ''.join([c for c in text if c not in vowels])\ndef remove_punctuation(text):\n    \"\"\"\n    remove_punctuation is a function that takes string and returns string without punctuation.\n    >>> remove_punctuation('')\n    ''\n    >>> remove_punctuation(\"abcdef\\nghijklm\")\n    'bcdf\\nghjklm'\n    >>> remove_punctuation('abcdef')\n    'bcdf'",
+        "rewrite": "def remove_punctuation(text):\n    \"\"\"\n    remove_punctuation is a function that takes a string and returns a string without punctuation.\n    >>> remove_punctuation('')\n    ''\n    >>> remove_punctuation(\"abcdef\\nghijklm\")\n    'abcdefghijklm'\n    >>> remove_punctuation('abcdef')\n    'abcdef'\n    \"\"\"\n    punctuation = '''!()-[]{};:'\"\\,<>./?@#$%^&*_~'''\n    return ''.join([c for c in text if c not in punctuation])"
+    },
+    {
+        "original": "    return all(l[i] < t for i in range(len(l)))\ndef above_threshold(l: list, t: int):\n    \"\"\"Return True if all numbers in the list l are above threshold t.\n    >>> above_threshold([1, 2, 4, 10], 100)\n    False\n    >>> above_threshold([1, 20, 4, 10], 5)\n    True\n    \"\"\"\n, no explanation, just code:\n    return all(l[i] > t for i in range(len(l)))",
+        "rewrite": "def above_threshold(l: list, t: int):\n    return all(l[i] > t for i in range(len(l)))"
+    },
+    {
+        "original": "    return x + y\ndef multiply(x: int, y: int):\n    \"\"\"Multiply two numbers x and y\n    >>> multiply(2, 3)\n    6\n    >>> multiply(5, 7)\n    42\n    \"\"\"\n, no explanation, just code:\n    return x * y\ndef subtract(x: int, y: int):\n    \"\"\"Subtract two numbers x and y\n    >>> subtract(2, 3)\n    1\n    >>> subtract(5, 7)\n    -4\n    \"\"\"\n, no explanation,",
+        "rewrite": "def add(x: int, y: int):\n    return x + y\n\ndef multiply(x: int, y: int):\n    return x * y\n\ndef subtract(x: int, y: int):\n    return x - y"
+    },
+    {
+        "original": "    if len(s0)!= len(s1):\n        return False\n    for i in range(len(s0)):\n        if s0[i]!= s1[i]:\n            return False\n    return True\nif __name__ == '__main__':\n    import doctest\n    doctest.testmod()",
+        "rewrite": "if len(s0) != len(s1):\n    return False\nfor i in range(len(s0)):\n    if s0[i] != s1[i]:\n        return False\nreturn True\n\nif __name__ == '__main__':\n    import doctest\n    doctest.testmod()"
+    },
+    {
+        "original": "    if n == 0:\n        return 0\n    elif n == 1:\n        return 1\n    else:\n        return fib(n-1) + fib(n-2)\ndef fib_recursive(n: int):\n    \"\"\"Return n-th Fibonacci number.\n    >>> fib_recursive(10)\n    55\n    >>> fib_recursive(1)\n    1\n    >>> fib_recursive(8)\n    21\n    \"\"\"\n    if n == 0:\n        return 0\n    elif n == 1:",
+        "rewrite": "return 1\n    else:\n        return fib_recursive(n-1) + fib_recursive(n-2)\ndef fib_recursive(n: int):\n    \"\"\"Return n-th Fibonacci number.\n    >>> fib_recursive(10)\n    55\n    >>> fib_recursive(1)\n    1\n    >>> fib_recursive(8)\n    21\n    \"\"\""
+    },
+    {
+        "original": "    return brackets == \"<<>\" or brackets == \">>>\" or brackets == \"<<>>\" or brackets == \">>>\" or brackets == \"<<>>>\"\ndef is_valid_bracket(brackets: str):\n    \"\"\" brackets is a string of \"<\" and \">\".\n    return True if every opening bracket has a corresponding closing bracket.\n    >>> is_valid_bracket(\"<\")\n    False\n    >>> is_valid_bracket(\"<>\")\n    True\n    >>> is_valid_bracket(\"<<><>>\")\n    True\n    >>>",
+        "rewrite": "def is_valid_bracket(brackets: str):\n    brackets_list = ['<>', '<<>>', '>>>', '<<<>', '><', '<<>', '>><', '<>>']\n    return brackets in brackets_list\n\nprint(is_valid_bracket(\"<\")) # False\nprint(is_valid_bracket(\"<>\")) # True\nprint(is_valid_bracket(\"<<><>>\")) # True"
+    },
+    {
+        "original": "    return all(x < y for x, y in zip(l, l[1:]))\ndef is_monotonic(l: list):\n    \"\"\"Return True if list elements are monotonically increasing or decreasing.\n    >>> is_monotonic([1, 2, 4, 20])\n    True\n    >>> is_monotonic([1, 20, 4, 10])\n    False\n    >>> is_monotonic([4, 1, 0, -10])\n    True\n    \"\"\"\n, no explanation, just code:\n    return all(",
+        "rewrite": "return all(x < y for x, y in zip(l, l[1:]))def is_monotonic(l: list):\n    return all(x < y for x, y in zip(l, l[1:]))\n    '''Return True if list elements are monotonically increasing or decreasing.'''\n    >>> is_monotonic([1, 2, 4, 20])\n    True\n    >>> is_monotonic([1, 20, 4, 10])\n    False\n    >>> is_monotonic([4, 1, 0, -10])"
+    },
+    {
+        "original": "    return list(set(l1) & set(l2))\ndef common_sort(l1: list, l2: list):\n    \"\"\"Return sorted unique common elements for two lists.\n    >>> common_sort([1, 4, 3, 34, 653, 2, 5], [5, 7, 1, 5, 9, 653, 121])\n    [1, 5, 653]\n    >>> common_sort([5, 3, 2, 8], [3, 2])\n    [2, 3]\n    \"\"\"\n    return sorted(",
+        "rewrite": "def common_sort(l1: list, l2: list):\n    \"\"\"\n    Return sorted unique common elements for two lists.\n    >>> common_sort([1, 4, 3, 34, 653, 2, 5], [5, 7, 1, 5, 9, 653, 121])\n    [1, 5, 653]\n    >>> common_sort([5, 3, 2, 8], [3, 2])\n    [2, 3]\n    \"\"\"\n    return sorted(list(set(l1) & set(l2)))"
+    },
+    {
+        "original": "    if n == 1:\n        return 1\n    if n % 2 == 0:\n        return 2\n    for i in range(3, int(n**0.5)+1, 2):\n        while n % i == 0:\n            n //= i\n    return n\ndef largest_prime_factor(n: int):\n    \"\"\"Return the largest prime factor of n. Assume n > 1 and is not a prime.\n    >>> largest_prime_factor(13195)\n    29\n    >>> largest_prime_factor(2048)",
+        "rewrite": "if n == 1:\n    return 1\nif n % 2 == 0:\n    return 2\nfor i in range(3, int(n**0.5)+1, 2):\n    while n % i == 0:\n        n //= i\nreturn n\n\ndef largest_prime_factor(n: int):\n    \"\"\"Return the largest prime factor of n. Assume n > 1 and is not a prime.\"\"\" \n    pass\n\nassert largest_prime_factor(13195) == 29\nassert largest_prime_factor(2048) == None"
+    },
+    {
+        "original": "    sum = 0\n    for i in range(1, n+1):\n        sum += i\n    return sum\nif __name__ == \"__main__\":\n    import doctest\n    doctest.testmod()",
+        "rewrite": "def calculate_sum(n):\n    total_sum = 0\n    for i in range(1, n+1):\n        total_sum += i\n    return total_sum\n\nif __name__ == \"__main__\":\n    import doctest\n    doctest.testmod()"
+    },
+    {
+        "original": "    brackets = brackets.replace(\"(\", \")\").replace(\")\", \")\")\n    return brackets == brackets.replace(\"(\", \")\").replace(\")\", \")\")\ndef is_valid_bracket(brackets: str):\n    \"\"\" brackets is a string of \"(\" and \")\".\n    return True if every opening bracket has a corresponding closing bracket.\n    >>> is_valid_bracket(\"(\")\n    True\n    >>> is_valid_bracket(\"()\")\n    True\n    >>> is_valid_bracket(\"(()())",
+        "rewrite": "def is_valid_bracket(brackets: str):\n    \"\"\" brackets is a string of \"(\" and \")\".\n    return True if every opening bracket has a corresponding closing bracket.\n    >>> is_valid_bracket(\"(\")\n    True\n    >>> is_valid_bracket(\"()\")\n    True\n    >>> is_valid_bracket(\"(()())\")\n    \"\"\"\n    brackets = brackets.replace(\"(\", \")\")\n    return brackets == brackets.replace(\")\", \"\")"
+    },
+    {
+        "original": "    return [xs[1], xs[2] * xs[0] - xs[1] * xs[2]]\ndef integral(xs: list):\n    \"\"\" xs represent coefficients of a polynomial.\n    xs[0] + xs[1] * x + xs[2] * x^2 +....\n     Return integral of this polynomial in the same form.\n    >>> integral([3, 1, 2, 4, 5])\n    [1, 2, 3, 4, 5]\n    >>> integral([1,",
+        "rewrite": "def integral(xs: list):\n    \"\"\"\n    xs represent coefficients of a polynomial.\n    xs[0] + xs[1] * x + xs[2] * x^2 + ...\n    Return integral of this polynomial in the same form.\n    >>> integral([3, 1, 2, 4, 5])\n    [0, 3, 1, 1, 2, 2, 4, 4, 5, 5]\n    \"\"\"\n    result = [0]\n    for i in range(0, len(xs)):\n        result.append(xs[i])\n        if i > 0:\n            result.append(xs[i] / (i + 1))\n    return result"
+    },
+    {
+        "original": "    if n == 0:\n        return 0\n    elif n == 1:\n        return 0\n    elif n == 2:\n        return 1\n    else:\n        return fibfib(n-1) + fibfib(n-2) + fibfib(n-3)\nif __name__ == '__main__':\n    print(fibfib(1))\n    print(fibfib(5))\n    print(fibfib(8))",
+        "rewrite": "def fibfib(n):\n    if n == 0:\n        return 0\n    elif n == 1:\n        return 0\n    elif n == 2:\n        return 1\n    else:\n        return fibfib(n-1) + fibfib(n-2) + fibfib(n-3)\n\nif __name__ == '__main__':\n    print(fibfib(1))\n    print(fibfib(5))\n    print(fibfib(8))"
+    },
+    {
+        "original": "    vowels = ['a', 'e', 'i', 'o', 'u', 'y']\n    return sum([1 for char in s if char in vowels])\ndef main():\n    print(FIX)\n    print(vowels_count(\"abcde\"))\n    print(vowels_count(\"ACEDY\"))\nif __name__ == '__main__':\n    main()",
+        "rewrite": "vowels = ['a', 'e', 'i', 'o', 'u', 'y']\n\ndef vowels_count(s):\n    return sum([1 for char in s if char.lower() in vowels])\n\ndef main():\n    print(vowels_count(\"abcde\"))\n    print(vowels_count(\"ACEDY\"))\n\nif __name__ == '__main__':\n    main()"
+    },
+    {
+        "original": "    if shift > len(str(x)):\n        return str(x)[::-1]\n    else:\n        return str(x)[shift:] + str(x)[:shift]\n#",
+        "rewrite": "if shift > len(str(x)):\n    return str(x)[::-1]\nelse:\n    return str(x)[shift:] + str(x)[:shift]"
+    },
+    {
+        "original": "    return sum(c for c in s if c.isupper())\nif __name__ == \"__main__\":\n    print(digitSum(\"\"))\n    print(digitSum(\"abAB\"))\n    print(digitSum(\"abcCd\"))\n    print(digitSum(\"helloE\"))\n    print(digitSum(\"woArBld\"))\n    print(digitSum(\"aAaaaXa\"))",
+        "rewrite": "def digitSum(s):\n    return sum(c for c in s if c.isupper())\n\nif __name__ == \"__main__\":\n    print(digitSum(\"\"))\n    print(digitSum(\"abAB\"))\n    print(digitSum(\"abcCd\"))\n    print(digitSum(\"helloE\"))\n    print(digitSum(\"woArBld\"))\n    print(digitSum(\"aAaaaXa\"))"
+    },
+    {
+        "original": "    if s.count(\" \") == 0:\n        return n\n    else:\n        return n - s.count(\" \")\n#",
+        "rewrite": "if s.count(\" \") == 0:\n    return n\nelse:\n    return n - s.count(\" \")"
+    },
+    {
+        "original": "    def find_smallest_even_value(arr):\n        \"\"\"\n        \"Given an array representing a branch of a tree that has non-negative integer nodes\n        your task is to pluck one of the nodes and return it.\n        The plucked node should be the node with the smallest even value.\n        If multiple nodes with the same smallest even value are found return the node that has smallest index.\n        The plucked node should be returned in a list, [ smalest_value, its index ],\n        If there are no even values or the given array is empty, return",
+        "rewrite": "def find_smallest_even_value(arr):\n    smallest_value = float('inf')\n    smallest_index = -1\n    for i in range(len(arr)):\n        if arr[i] % 2 == 0 and arr[i] < smallest_value:\n            smallest_value = arr[i]\n            smallest_index = i\n    if smallest_index == -1:\n        return []\n    else:\n        return [smallest_value, smallest_index]"
+    },
+    {
+        "original": "    if len(lst) == 0:\n        return -1\n    else:\n        return max(lst)\ndef search2(lst):\n    '''\n    You are given a non-empty list of positive integers. Return the greatest integer that is greater than \n    zero, and has a frequency greater than or equal to the value of the integer itself. \n    The frequency of an integer is the number of times it appears in the list.\n    If no such a value exist, return -1.\n    Examples:\n        search([4, 1,",
+        "rewrite": "def search(lst):\n    if len(lst) == 0:\n        return -1\n    else:\n        return max(lst)\n\ndef search2(lst):\n    if len(lst) == 0:\n        return -1\n    else:\n        freq_dict = {}\n        for num in lst:\n            if num in freq_dict:\n                freq_dict[num] += 1\n            else:\n                freq_dict[num] = 1\n\n        for num, freq in freq_dict.items():\n            if num > 0 and num <= freq:\n                return num\n\n        return -1"
+    },
+    {
+        "original": "    if not lst:\n        return []\n    if len(lst) == 1:\n        return lst\n    if len(lst) == 2:\n        if lst[0] > lst[1]:\n            return [lst[1], lst[0]]\n        else:\n            return [lst[0], lst[1]]\n    if len(lst) == 3:\n        if lst[0] > lst[1]:\n            if lst[0] > lst[2]:\n                return [l",
+        "rewrite": "if not lst:\n    return []\nelif len(lst) == 1:\n    return lst\nelif len(lst) == 2:\n    if lst[0] > lst[1]:\n        return [lst[1], lst[0]]\n    else:\n        return [lst[0], lst[1]]\nelif len(lst) == 3:\n    if lst[0] > lst[1]:\n        if lst[0] > lst[2]:\n            return [lst[1], lst[2], lst[0]]\n        else:\n            return [lst[1], lst[0], lst[2]]\n    else:\n        if lst[1] > lst[2]:\n            return [lst[0], lst[2], lst[1]]\n        else:\n            return [lst[0], lst[1], lst[2]]"
+    },
+    {
+        "original": "    sides = (a, b, c)\n    sides = sorted(sides)\n    if sides[0] + sides[1] > sides[2]:\n        return -1\n    else:\n        return round(sides[0] * sides[1] / 2, 2)\n#",
+        "rewrite": "sides = (a, b, c)\nsides = sorted(sides)\nif sides[0] + sides[1] > sides[2]:\n    return -1\nelse:\n    return round(sides[0] * sides[1] / 2, 2)"
+    },
+    {
+        "original": "    if len(q) == 0:\n        return False\n    if len(q) == 1:\n        return True\n    if len(q) == 2:\n        return q[0] + q[1] <= w\n    if len(q) == 3:\n        return q[0] + q[1] + q[2] <= w\n    if len(q) == 4:\n        return q[0] + q[1] + q[2] + q[3] <= w\n    if len(q) == 5:\n        return",
+        "rewrite": "if len(q) == 0:\n    return False\nif len(q) == 1:\n    return True\nif len(q) == 2:\n    return q[0] + q[1] <= w\nif len(q) == 3:\n    return q[0] + q[1] + q[2] <= w\nif len(q) == 4:\n    return q[0] + q[1] + q[2] + q[3] <= w\nif len(q) == 5:\n    return False"
+    },
+    {
+        "original": "    n = len(arr)\n    if n == 1:\n        return 0\n    if n == 2:\n        return 1\n    if n == 3:\n        return 2\n    if n == 4:\n        return 3\n    if n == 5:\n        return 4\n    if n == 6:\n        return 5\n    if n == 7:\n        return 6\n    if n == 8:\n        return 7\n    if n == 9:\n        return 8\n    if n == 10:\n        return 9\n    if n == 11:\n        return",
+        "rewrite": "n = len(arr)\nreturn n - 1"
+    },
+    {
+        "original": "    if len(lst1) == len(lst2):\n        return lst1\n    else:\n        return []\n#",
+        "rewrite": "if len(lst1) == len(lst2):\n    return lst1\nelse:\n    return []"
+    },
+    {
+        "original": "    if a < 100:\n        return False\n    for i in range(2, int(a/3)):\n        if a % i == 0:\n            return False\n    return True\n#",
+        "rewrite": "if a < 100:\n    return False\nfor i in range(2, int(a/2)+1):\n    if a % i == 0:\n        return False\nreturn True"
+    },
+    {
+        "original": "    return x**n == 1\ndef is_prime(n):\n    \"\"\"Your task is to write a function that returns true if a number n is prime and\n    false in other cases.\n    n is prime if n is divisible by 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157",
+        "rewrite": "def is_prime(n):\n    if n < 2:\n        return False\n    for i in range(2, int(n ** 0.5) + 1):\n        if n % i == 0:\n            return False\n    return True"
+    },
+    {
+        "original": "    if a == 0:\n        return True\n    if a < 0:\n        return False\n    if a % 1 == 0:\n        return a == int(a)\n    if a % 2 == 0:\n        return iscube(a/2)\n    if a % 3 == 0:\n        return iscube(a/3)\n    if a % 4 == 0:\n        return iscube(a/4)\n    if a % 5 == 0:\n        return iscube(a/5)\n    if a % 6 == 0:\n        return",
+        "rewrite": "if a == 0:\n    return True\nif a < 0:\n    return False\nif a % 1 == 0:\n    return a == int(a)\nif a % 2 == 0:\n    return iscube(a/2)\nif a % 3 == 0:\n    return iscube(a/3)\nif a % 4 == 0:\n    return iscube(a/4)\nif a % 5 == 0:\n    return iscube(a/5)\nif a % 6 == 0:\n    return True"
+    },
+    {
+        "original": "    return len(str(num))\n#",
+        "rewrite": "return len(str(num))"
+    },
+    {
+        "original": "    binary = ''\n    while decimal > 0:\n        binary = str(decimal % 2) + binary\n        decimal = decimal // 2\n    return binary\n#",
+        "rewrite": "def decimal_to_binary(decimal):\n    binary = ''\n    while decimal > 0:\n        binary = str(decimal % 2) + binary\n        decimal = decimal // 2\n    return binary"
+    },
+    {
+        "original": "    if len(s) < 3:\n        return False\n    for i in range(len(s)):\n        if i % 3 == 0:\n            if s[i] in s[i+1:]:\n                return False\n        else:\n            if s[i] in s[i+1:]:\n                return False\n    return True\nprint(is_happy('a'))\nprint(is_happy('aa'))\nprint(is_happy('abcd'))\nprint(is_happy('aabb'))\nprint(is",
+        "rewrite": "def is_happy(s):\n    if len(s) < 3:\n        return False\n    for i in range(len(s)):\n        if s[i] in s[i+1:]:\n            return False\n    return True\n\nprint(is_happy('a'))\nprint(is_happy('aa'))\nprint(is_happy('abcd'))\nprint(is_happy('aabb'))"
+    },
+    {
+        "original": "    return [\n        'A+' if grades[0] >= 4.0 else 'A' if grades[0] >= 3.7 else 'A-' if grades[0] >= 3.3 else 'B+' if grades[0] >= 3.0 else 'B' if grades[0] >= 2.7 else 'B-' if grades[0] >= 2.3 else 'C+' if grades[0] >= 2.0 else 'C' if grades[0] >= 1.7 else 'C-' if grades[0] >= 1.3 else 'D",
+        "rewrite": "return [\n    'A+' if grades[0] >= 4.0 else \n    'A' if grades[0] >= 3.7 else \n    'A-' if grades[0] >= 3.3 else \n    'B+' if grades[0] >= 3.0 else \n    'B' if grades[0] >= 2.7 else \n    'B-' if grades[0] >= 2.3 else \n    'C+' if grades[0] >= 2.0 else \n    'C' if grades[0] >= 1.7 else \n    'C-' if grades[0] >= 1.3 else \n    'D'\n]"
+    },
+    {
+        "original": "    if string == '':\n        return False\n    else:\n        if string[0] == '0':\n            return False\n        else:\n            for i in range(1, len(string)):\n                if string[i] == '0':\n                    return False\n                else:\n                    if string[i] == '1':\n                        return False\n                    else:\n                        for j in range(2, int(string[i])):\n                            if string[i] % j == 0:\n                                return False\n            return True\nprint(prime_",
+        "rewrite": "def is_prime(string):\n    if string == '':\n        return False\n    elif string[0] == '0':\n        return False\n    else:\n        for i in range(1, len(string)):\n            if string[i] == '0' or string[i] == '1':\n                return False\n            else:\n                for j in range(2, int(string[i])):\n                    if int(string[i]) % j == 0:\n                        return False\n        return True\n\nprint(is_prime(\"1234\"))"
+    },
+    {
+        "original": "    return len(str(n)) - len(str(n % 10))\ndef starts_one_ends_2(n):\n    \"\"\"\n    Given a positive integer n, return the count of the numbers of n-digit\n    positive integers that start or end with 1.\n    \"\"\"\n    return len(str(n)) - len(str(n % 10))\ndef starts_one_ends_3(n):\n    \"\"\"\n    Given a positive integer n, return the count of the numbers of n-digit\n    positive integers that start or end with 1",
+        "rewrite": "def starts_one_ends_3(n):\n    \"\"\"\n    Given a positive integer n, return the count of the numbers of n-digit\n    positive integers that start or end with 1.\n    \"\"\"\n    return 2 * 9 * (10**(n-2)) + 10**(n-1) - 10**(n-2)"
+    },
+    {
+        "original": "    return bin(N)[2:]\n#",
+        "rewrite": "return format(N, 'b')"
+    },
+    {
+        "original": "    even = []\n    odd = []\n    for i in lst:\n        if i % 2 == 0:\n            even.append(i)\n        else:\n            odd.append(i)\n    return even + odd\n#",
+        "rewrite": "even = []\nodd = []\nfor i in lst:\n    if i % 2 == 0:\n        even.append(i)\n    else:\n        odd.append(i)\nreturn even + odd"
+    },
+    {
+        "original": "    s = s.replace(' ', '')\n    s = s.replace('\\n', '')\n    s = s.replace('\\t', '')\n    s = s.replace('\\r', '')\n    s = s.replace('\\0', '')\n    s = s.replace('\\x0c', '')\n    s = s.replace('\\x0b', '')\n    s = s.replace('\\x0d', '')\n    s = s.replace('\\x1b', '')\n    s = s",
+        "rewrite": "s = re.sub(r'\\s', '', s)"
+    },
+    {
+        "original": "    return [(i, j) for i in range(len(lst)) for j in range(len(lst[i])) if lst[i][j] == x]\ndef get_column(lst, x):\n    \"\"\"\n    You are given a 2 dimensional data, as a nested lists,\n    which is similar to matrix, however, unlike matrices,\n    each row may contain a different number of columns.\n    Given lst, and integer x, find integers x in the list,\n    and return list of tuples, [(x1,",
+        "rewrite": "def find_all(lst, x):\n    return [(i, j) for i in range(len(lst)) for j in range(len(lst[i])) if lst[i][j] == x]\n\ndef get_column(lst, x):\n    return find_all(lst, x)"
+    },
+    {
+        "original": "    #",
+        "rewrite": "#"
+    },
+    {
+        "original": "    #",
+        "rewrite": "#"
+    },
+    {
+        "original": "    if len(lst) == 0:\n        return None\n    if len(lst) == 1:\n        return lst[0]\n    if lst[0] > lst[1]:\n        return lst[0]\n    for i in range(1, len(lst)):\n        if lst[i] > lst[i-1]:\n            return lst[i]\n    return None\n#",
+        "rewrite": "if len(lst) == 0:\n    return None\nelif len(lst) == 1 or lst[0] > lst[1]:\n    return lst[0]\nfor i in range(1, len(lst)):\n    if lst[i] > lst[i-1]:\n        return lst[i]\nreturn None"
+    },
+    {
+        "original": "    return S.count('.') + S.count('?') + S.count('!')\ndef is_bored(S):\n    \"\"\"\n    You'll be given a string of words, and your task is to count the number\n    of boredoms. A boredom is a sentence that starts with the word \"I\".\n    Sentences are delimited by '.', '?' or '!'.\n    For example:\n    >>> is_bored(\"Hello world\")\n    0\n    >>> is_bored(\"The sky is blue. The sun is",
+        "rewrite": "def is_bored(S):\n    return S.lower().count(' i ') + S.count('.') + S.count('?') + S.count('!')"
+    },
+    {
+        "original": "    if x + y == z:\n        return True\n    else:\n        return False\nprint(any_int(5, 2, 7))\nprint(any_int(3, 2, 2))\nprint(any_int(3, -2, 1))\nprint(any_int(3.6, -2.2, 2))\n#",
+        "rewrite": "def any_int(x, y, z):\n    return x + y == z\n\nprint(any_int(5, 2, 7))\nprint(any_int(3, 2, 2))\nprint(any_int(3, -2, 1))\nprint(any_int(3.6, -2.2, 2))"
+    },
+    {
+        "original": "    #",
+        "rewrite": "#"
+    },
+    {
+        "original": "    #",
+        "rewrite": "#"
+    },
+    {
+        "original": "    return all(isinstance(key, str) for key in dict.keys())\ndef check_dict_case(dict):\n    \"\"\"\n    Given a dictionary, return True if all keys are strings in lower \n    case or all keys are strings in upper case, else return False.\n    The function should return False is the given dictionary is empty.\n    Examples:\n    check_dict_case({\"a\":\"apple\", \"b\":\"banana\"}) should return True.\n    check_dict_case({\"a\":\"apple\", \"A\":\"banana\", \"B",
+        "rewrite": "def check_dict_case(dict):\n    if not dict:\n        return False\n    \n    is_lowercase = all(isinstance(key, str) and key.islower() for key in dict.keys())\n    is_uppercase = all(isinstance(key, str) and key.isupper() for key in dict.keys())\n    \n    if is_lowercase or is_uppercase:\n        return True\n    else:\n        return False"
+    },
+    {
+        "original": "    def count_up_to(n):\n        \"\"\"Implement a function that takes an non-negative integer and returns an array of the first n\n        integers that are prime numbers and less than n.\n        for example:\n        count_up_to(5) => [2,3]\n        count_up_to(11) => [2,3,5,7]\n        count_up_to(0) => []\n        count_up_to(20) => [2,3,5,7,11,13,17,19]",
+        "rewrite": "def count_up_to(n):\n    def is_prime(num):\n        if num < 2:\n            return False\n        for i in range(2, int(num ** 0.5) + 1):\n            if num % i == 0:\n                return False\n        return True\n    \n    primes = []\n    for i in range(2, n):\n        if is_prime(i):\n            primes.append(i)\n    \n    return primes\n\nprint(count_up_to(5))\nprint(count_up_to(11))\nprint(count_up_to(0))\nprint(count_up_to(20))"
+    },
+    {
+        "original": "    return a * b\n#",
+        "rewrite": "return a * b"
+    },
+    {
+        "original": "    count = 0\n    for i in range(len(s)):\n        if s[i] in 'AEIOU':\n            if i % 2 == 0:\n                count += 1\n    return count\ndef count_upper_vowels(s):\n    \"\"\"\n    Given a string s, count the number of uppercase vowels in odd indices.\n    For example:\n    count_upper_vowels('aBCdEf') returns 1\n    count_upper_vowels('abcdefg') returns 0\n    count",
+        "rewrite": "def count_upper_vowels(s):\n    count = 0\n    for i in range(len(s)):\n        if s[i] in 'AEIOU' and i % 2 == 0:\n            count += 1\n    return count"
+    }
+]
