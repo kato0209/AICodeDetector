@@ -185,7 +185,7 @@ test_data["sampled"] = test_data["sampled"][:1]
 """
 
 cbm = CustomBertModel()
-model_path = 'saved_model/model_20240903_045040.pth' 
+model_path = 'saved_model/Rewrite_model_20240903_045040.pth' 
 cbm.load_state_dict(torch.load(model_path, map_location=device))
 cbm.to(device)
 

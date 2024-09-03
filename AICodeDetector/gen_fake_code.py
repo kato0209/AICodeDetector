@@ -167,18 +167,19 @@ for each in codedata:
 
 
 model_names = [
+    "codellama/CodeLlama-7b-Instruct-hf",
     "facebook/incoder-1B",
     "microsoft/phi-1",
     "AlekseyKorshuk/WizardCoder-3B-V1.0-dpo-beta-0.01",
     "Salesforce/codegen2-3_7B_P",
     "bigcode/starcoderbase-3b",
     #"codellama/CodeLlama-7b-hf",
-    "codellama/CodeLlama-7b-Instruct-hf",
 ]
 
-data = []
+
 for model_name in model_names:
-    prompts, outputs, solutions = generate_hf(model_name, prompts, solutions, batch_size=16, max_length_sample=128, max_length=128, do_sample=True, top_p=0.95, temperature=1.0)
+    data = []
+    new_prompts, outputs, solutions = generate_hf(model_name, prompts, solutions, batch_size=16, max_length_sample=128, max_length=128, do_sample=True, top_p=0.95, temperature=1.0)
     for i in range(len(prompts)):
         print("S---------")
         print(f"Original: {solutions[i]}")
@@ -194,5 +195,6 @@ for model_name in model_names:
     
     #model_nameの/を-に置換する
     save_name = model_name.replace("/", "-")
-    with open(f'HumanEval/outputs_{save_name}_t1-0.json', 'w') as file:
+    #with open(f'HumanEval/outputs_{save_name}_t1-0.json', 'w') as file:
+    with open(f'HumanEval/outputs_{save_name}.json', 'w') as file:
         json.dump(data, file, indent=4)

@@ -53,7 +53,7 @@ def rewrite_code(codes, model_config, args):
     return rewrite_codes
 
 def save_to_json_rewritten_code(codes, rewrite_codes, origin, by="gpt"):
-    rewrite_string = "HumanEval_incoder"
+    rewrite_string = "HumanEval_wizard"
     data = []
     for i in range(len(codes)):
         sec = {
@@ -105,7 +105,7 @@ def rewrite_gpt():
     #data["sampled"] = data["sampled"][:data_num]
 
     #with open("HumanEval/outputs_codellama_spaceline_ex.json", 'r') as file:
-    with open("HumanEval/outputs_facebook-incoder-1B.json", 'r') as file:
+    with open("HumanEval/outputs_AlekseyKorshuk-WizardCoder-3B-V1.0-dpo-beta-0.01.json", 'r') as file:
         json_data = json.load(file)
     #original_codes = [item['original'] for item in json_data]
     sampled_codes = [item['sampled'] for item in json_data]
