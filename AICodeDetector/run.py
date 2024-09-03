@@ -148,7 +148,7 @@ device = args.DEVICE
 #human_data = download_data_from_json('json_data/rewrite_code_human_inv.json')
 
 ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_AI_HumanEval_codellama.json')
-human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt3-5_Human.json')
+human_data = download_data_from_json('rewrite_dataset/Train_Rewrite_code_by_gpt3-5_Human.json')
 
 from util_func import remove_comments
 

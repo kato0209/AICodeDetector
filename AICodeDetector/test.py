@@ -147,8 +147,8 @@ device = args.DEVICE
 #ai_data = download_data_from_json('json_data/gpt4o_cs_code_AI.json')
 #human_data = download_data_from_json('json_data/gpt4o_cs_code_Human.json')
 
-ai_data = download_data_from_json('rewrite_dataset/_rewrite_code_by_gpt_AI_rewrite_Revise the code with your best effort.json')
-human_data = download_data_from_json('rewrite_dataset/_rewrite_code_by_gpt_Human_rewrite_Revise the code with your best effort.json')
+ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_AI_HumanEval_incoder.json')
+human_data = download_data_from_json('rewrite_dataset/Test_Rewrite_code_by_gpt3-5_Human.json')
 
 #from util_func import remove_comments
 #
@@ -185,7 +185,7 @@ test_data["sampled"] = test_data["sampled"][:1]
 """
 
 cbm = CustomBertModel()
-model_path = 'saved_model/RAIDER_model_20240825_160053.pth' 
+model_path = 'saved_model/model_20240903_045040.pth' 
 cbm.load_state_dict(torch.load(model_path, map_location=device))
 cbm.to(device)
 
