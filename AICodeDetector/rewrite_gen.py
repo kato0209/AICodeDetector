@@ -53,7 +53,7 @@ def rewrite_code(codes, model_config, args):
     return rewrite_codes
 
 def save_to_json_rewritten_code(codes, rewrite_codes, origin, by="gpt"):
-    rewrite_string = "HumanEval_wizard"
+    rewrite_string = "HumanEval_phi1"
     data = []
     for i in range(len(codes)):
         sec = {
@@ -105,7 +105,7 @@ def rewrite_gpt():
     #data["sampled"] = data["sampled"][:data_num]
 
     #with open("HumanEval/outputs_codellama_spaceline_ex.json", 'r') as file:
-    with open("HumanEval/outputs_AlekseyKorshuk-WizardCoder-3B-V1.0-dpo-beta-0.01.json", 'r') as file:
+    with open("HumanEval/outputs_microsoft-phi-1.json", 'r') as file:
         json_data = json.load(file)
     #original_codes = [item['original'] for item in json_data]
     sampled_codes = [item['sampled'] for item in json_data]
@@ -120,6 +120,7 @@ def rewrite_gpt():
     #rewrite_code_gpt(ai_data["original"], None, None, "AI")
     return None
 
+"""
 import transformers
 import torch
 def codellama_gen(codes, model_config, args):
@@ -158,13 +159,13 @@ def rewrite_code_codellama(codes, model_config, args, origin=None):
     save_to_json_rewritten_code(codes, rewrite_codes, origin, by="codellama")
 
 def rewrite_codellama():
-    with open("HumanEval/outputs_bigcode-starcoderbase-3b.json", 'r') as file:
+    with open("HumanEval/outputs_codellama-CodeLlama-7b-Instruct-hf.json", 'r') as file:
         json_data = json.load(file)
-    original_codes = [item['original'] for item in json_data]
+    #original_codes = [item['original'] for item in json_data]
     sampled_codes = [item['sampled'] for item in json_data]
     #rewrite_code_codellama(original_codes, None, None, "Human")
     rewrite_code_codellama(sampled_codes, None, None, "AI")
-
+"""
 
 if __name__ == "__main__":
     rewrite_gpt()

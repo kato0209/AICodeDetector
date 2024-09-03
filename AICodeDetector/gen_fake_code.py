@@ -179,7 +179,7 @@ model_names = [
 
 for model_name in model_names:
     data = []
-    new_prompts, outputs, solutions = generate_hf(model_name, prompts, solutions, batch_size=16, max_length_sample=128, max_length=128, do_sample=True, top_p=0.95, temperature=1.0)
+    new_prompts, outputs, solutions = generate_hf(model_name, prompts, solutions, batch_size=16, max_length_sample=128, max_length=128, do_sample=True, top_p=0.95, temperature=0.2)
     for i in range(len(prompts)):
         print("S---------")
         print(f"Original: {solutions[i]}")

@@ -150,13 +150,13 @@ device = args.DEVICE
 ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_AI_HumanEval_codellama.json')
 human_data = download_data_from_json('rewrite_dataset/Train_Rewrite_code_by_gpt3-5_Human.json')
 
-from util_func import remove_comments
-
-human_data["original"] = [remove_comments(code) for code in human_data["original"]]
-human_data["rewrite"] = [remove_comments(code) for code in human_data["rewrite"]]
-
-ai_data["original"] = [remove_comments(code) for code in ai_data["original"]]
-ai_data["rewrite"] = [remove_comments(code) for code in ai_data["rewrite"]]
+#from util_func import remove_comments
+#
+#human_data["original"] = [remove_comments(code) for code in human_data["original"]]
+#human_data["rewrite"] = [remove_comments(code) for code in human_data["rewrite"]]
+#
+#ai_data["original"] = [remove_comments(code) for code in ai_data["original"]]
+#ai_data["rewrite"] = [remove_comments(code) for code in ai_data["rewrite"]]
 
 data = {
     "human": human_data,
