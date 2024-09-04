@@ -163,7 +163,7 @@ class CodeDatasetRewriting(Dataset):
     def __getitem__(self, index):
 
         code, rewrite_code, label = self.samples[index]
-        input = f"original: {code} \ rewrite: {rewrite_code}"
+        input = f"original:\n {code} \n\n rewrite:\n {rewrite_code}"
         inputs = self.model_config["tokenizer"].encode_plus(input, padding='max_length', max_length=300, truncation=True)
         input_ids = inputs['input_ids']
         attention_mask = inputs['attention_mask']

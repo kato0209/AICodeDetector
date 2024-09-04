@@ -163,8 +163,8 @@ device = args.DEVICE
 #ai_data = download_data_from_json('rewrite_dataset/rewrite_codellama_AI_origin_codellama.json')
 #human_data = download_data_from_json('rewrite_dataset/rewrite_codellama_Human_origin_codellama.json')
 
-ai_data = download_data_from_json('rewrite_dataset/rewrite_codellama_AI_origin_codellama.json')
-human_data = download_data_from_json('rewrite_dataset/rewrite_codellama_Human_origin_codellama.json')
+ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_AI_HumanEval_codellama.json')
+human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt3-5_Human.json')
 
 #ai_data = download_data_from_json('rewrite_dataset/rewrite_code_by_gpt_AI_HumanEval_codellama.json')
 #human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt3-5_Human.json')
