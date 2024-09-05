@@ -232,138 +232,50 @@ test_data["original"] = test_data["original"][:1]
 test_data["sampled"] = test_data["sampled"][:1]
 """
 
-cbm = CustomBertModel()
-cbm.to(device)
 
-model_config = {}
-model_config["tokenizer"] = cbm.tokenizer
-model_config["model"] = cbm.model
+from sentence_transformers import InputExample
+train_dataset = []
+for i in range(len(train_data["human"]["original"])):
+    train_dataset.append(InputExample(texts=[train_data["human"]["original"][i], train_data["human"]["rewrite"][i]], label=0))
 
-train_dataset = CodeDatasetRewriting(train_data, model_config, args)
-val_dataset = CodeDatasetRewriting(val_data, model_config, args)
-test_dataset = CodeDatasetRewriting(test_data, model_config, args)
+for i in range(len(train_data["ai"]["original"])):
+    train_dataset.append(InputExample(texts=[train_data["ai"]["original"][i], train_data["ai"]["rewrite"][i]], label=1))
 
-train_dataloader = DataLoader(train_dataset, args.batch_size, shuffle=True)
-validation_dataloader = DataLoader(val_dataset, args.batch_size, shuffle=False)
-test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle=False)
+val_dataset = []
+for i in range(len(val_data["human"]["original"])):
+    val_dataset.append(InputExample(texts=[val_data["human"]["original"][i], val_data["human"]["rewrite"][i]], label=0))
+
+for i in range(len(val_data["ai"]["original"])):
+    val_dataset.append(InputExample(texts=[val_data["ai"]["original"][i], val_data["ai"]["rewrite"][i]], label=1))
+
+test_dataset = []
+for i in range(len(test_data["human"]["original"])):
+    test_dataset.append(InputExample(texts=[test_data["human"]["original"][i], test_data["human"]["rewrite"][i]], label=0))
+
+for i in range(len(test_data["ai"]["original"])):
+    test_dataset.append(InputExample(texts=[test_data["ai"]["original"][i], test_data["ai"]["rewrite"][i]], label=1))
+
+
+train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=32)
 
 total_steps = int(len(train_dataloader) * args.num_train_epochs)
 warmup_steps = int(total_steps * args.warmup_ratio)
 
-base_lr = args.learning_rate
+from sentence_transformers.cross_encoder import CrossEncoder
+from sentence_transformers.cross_encoder.evaluation import CEF1Evaluator, CESoftmaxAccuracyEvaluator
+from sentence_transformers.evaluation import SequentialEvaluator
+from sentence_transformers.cross_encoder.evaluation import CECorrelationEvaluator
+model = CrossEncoder("microsoft/codebert-base", num_labels=1)
 
-optimizer_parameters = [
-    {"params": cbm.parameters(), "lr": base_lr},
-]
-
-optimizer = AdamW(optimizer_parameters, lr=args.learning_rate, eps=args.adam_epsilon)
-scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps, num_training_steps=total_steps)
-
-# Initialize lists to store loss values
-train_loss_values = []
-cosine_loss_values = []
-validation_loss_values = []
-
-cbm.train()
-num_steps = 0
-for epoch in range(int(args.num_train_epochs)):
-    train_loss = 0.0
-    cosine_loss = 0.0
-    for batch in train_dataloader:
-        input_ids = batch['input_ids'].to(device)
-        attention_mask = batch['attention_mask'].to(device)
-        labels = batch['labels'].to(device)
-        rewrite_input_ids = batch['rewrite_input_ids'].to(device)
-        rewrite_attention_mask = batch['rewrite_attention_mask'].to(device)
-
-        outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels, rewrite_input_ids=rewrite_input_ids, rewrite_attention_mask=rewrite_attention_mask)
-        loss, cos_loss = outputs[0], outputs[1]
-        loss.backward()
-        optimizer.step()
-        scheduler.step()
-        cbm.zero_grad()
-
-        train_loss += loss.item()
-        cosine_loss += cos_loss.item()
-        num_steps += 1
-
-    train_loss /= len(train_dataloader)
-    cosine_loss /= len(train_dataloader)
-    train_loss_values.append(train_loss)
-    cosine_loss_values.append(cosine_loss)
-    print(f"Epoch: {epoch}, Training Loss: {train_loss}, Cosine Loss: {cosine_loss}")
-
-    cbm.eval()
-    validation_loss = 0.0
-    with torch.no_grad():
-        for batch in validation_dataloader:
-            input_ids = batch['input_ids'].to(device)
-            attention_mask = batch['attention_mask'].to(device)
-            rewrite_input_ids = batch['rewrite_input_ids'].to(device)
-            rewrite_attention_mask = batch['rewrite_attention_mask'].to(device)
-            labels = batch['labels'].to(device)
-            outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels, rewrite_input_ids=rewrite_input_ids, rewrite_attention_mask=rewrite_attention_mask)
-            loss = outputs[0]
-            validation_loss += loss.item()
-
-    validation_loss /= len(validation_dataloader)
-    validation_loss_values.append(validation_loss)
-    print(f"Validation Loss after epoch {epoch}: {validation_loss}")
-    cbm.train()
-
-model_save(cbm)
-print("done training")
-# Plot the learning curve
-plt.figure(figsize=(12, 6))
-
-plt.plot(train_loss_values, label="Training Loss")
-plt.plot(cosine_loss_values, label="Cosine Loss")
-plt.plot(validation_loss_values, label="Validation Loss")
-
-plt.xlabel("Training Steps")
-plt.ylabel("Loss")
-plt.title("Learning Curve")
-plt.legend()
-timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-plt.savefig(f"./learning_result/learning_curve_{timestamp}.png")
-
-# Test the model and print out the confusion matrix
-log_path = './logs'
-os.makedirs(log_path, exist_ok=True)
-timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-logging.basicConfig(filename=os.path.join(log_path, f'test_{timestamp}.log'),
-                    force=True,
-                    format='%(asctime)s - %(levelname)s - %(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S',
-                    level=logging.INFO)
-
-cbm.eval()
-label_list, pred_list = [], []
-with torch.no_grad():
-    for batch in test_dataloader:
-        input_ids = batch['input_ids'].to(device)
-        attention_mask = batch['attention_mask'].to(device)
-        rewrite_input_ids = batch['rewrite_input_ids'].to(device)
-        rewrite_attention_mask = batch['rewrite_attention_mask'].to(device)
-        outputs = cbm(input_ids, attention_mask=attention_mask, rewrite_input_ids=rewrite_input_ids, rewrite_attention_mask=rewrite_attention_mask)
-        labels = batch["labels"]
-        logits = outputs[0]
-        predictions = torch.argmax(logits, dim=1)
-        label_list += labels.tolist()
-        pred_list += predictions.tolist()
-
-accuracy = accuracy_score(label_list, pred_list)
-print(label_list)
-print(pred_list)
-print(accuracy)
-
-auc = roc_auc_score(label_list, pred_list)
-print(f"ROC AUC : {auc}")
+evaluator = CECorrelationEvaluator.from_input_examples(test_dataset, name="sts-dev")
 
 
-target_names = ['Human','ChatGPT']
-logging.info('Confusion Matrix')
-cm = confusion_matrix(label_list, pred_list)
-plot_confusion_matrix(cm, target_names, title='Confusion Matrix')
-logging.info('Classification Report')
-logging.info(classification_report(label_list, pred_list, target_names=target_names))
+model_save_path = "saved_model/crossModel_" + datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+model.fit(
+    train_dataloader=train_dataloader,
+    evaluator=evaluator,
+    epochs=args.num_train_epochs,
+    evaluation_steps=100,
+    warmup_steps=warmup_steps,
+    output_path=model_save_path,
+)

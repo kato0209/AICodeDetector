@@ -147,7 +147,7 @@ device = args.DEVICE
 #ai_data = download_data_from_json('json_data/gpt4o_cs_code_AI.json')
 #human_data = download_data_from_json('json_data/gpt4o_cs_code_Human.json')
 
-ai_data = download_data_from_json('rewrite_dataset/Test_Rewrite_code_by_gpt_AI_HumanEval_starcoder.json')
+ai_data = download_data_from_json('rewrite_dataset/Test_Rewrite_code_by_gpt_AI_HumanEval_codegen2.json')
 human_data = download_data_from_json('rewrite_dataset/Test_Rewrite_code_by_gpt3-5_Human.json')
 
 #from util_func import remove_comments
@@ -185,7 +185,7 @@ test_data["sampled"] = test_data["sampled"][:1]
 """
 
 cbm = CustomBertModel()
-model_path = 'saved_model/model_20240904_050242.pth' 
+model_path = 'saved_model/model_20240905_142113.pth' 
 cbm.load_state_dict(torch.load(model_path, map_location=device))
 cbm.to(device)
 
@@ -218,7 +218,9 @@ with torch.no_grad():
     for batch in dataloader:
         input_ids = batch['input_ids'].to(device)
         attention_mask = batch['attention_mask'].to(device)
-        outputs = cbm(input_ids, attention_mask=attention_mask)
+        rewrite_input_ids = batch['rewrite_input_ids'].to(device)
+        rewrite_attention_mask = batch['rewrite_attention_mask'].to(device)
+        outputs = cbm(input_ids, attention_mask=attention_mask, rewrite_input_ids=rewrite_input_ids, rewrite_attention_mask=rewrite_attention_mask)
         labels = batch["labels"]
         logits = outputs[0]
         predictions = torch.argmax(logits, dim=1)

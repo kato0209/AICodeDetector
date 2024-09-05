@@ -21,7 +21,7 @@ class CustomClassificationHead(nn.Module):
         hidden_size2 = 768
         hidden_size3 = 512
 
-        self.dense = nn.Linear(config.hidden_size, hidden_size2)
+        self.dense = nn.Linear(config.hidden_size*2, hidden_size2)
         self.dense2 = nn.Linear(hidden_size2, hidden_size3)
         self.batch_norm = nn.BatchNorm1d(hidden_size2)
         self.activation = nn.ReLU()
@@ -49,7 +49,9 @@ class CustomBertModel(nn.Module):
         super(CustomBertModel, self).__init__()
         self.model = AutoModel.from_pretrained("microsoft/codebert-base")
         self.tokenizer = AutoTokenizer.from_pretrained("microsoft/codebert-base")
-        self.sentence_model = SentenceTransformer('Sakil/sentence_similarity_semantic_search')
+        self.model2 = AutoModel.from_pretrained("microsoft/codebert-base")
+
+        #self.sentence_model = SentenceTransformer('Sakil/sentence_similarity_semantic_search')
         self.dropout = nn.Dropout(self.model.config.hidden_dropout_prob)
         self.classifier = CustomClassificationHead(self.model.config, num_labels=2)
         #self.id_classifier = CustomClassificationHead(self.model.config, num_labels=7)
@@ -66,10 +68,16 @@ class CustomBertModel(nn.Module):
         pooled_output = pooled = outputs[1]
         pooled_output = self.dropout(pooled_output)
 
+        rewrite_outputs = self.model2(input_ids=rewrite_input_ids, attention_mask=rewrite_attention_mask)
+        rewrite_pooled_output = rewrite_pooled = rewrite_outputs[1]
+        rewrite_pooled_output = self.dropout(rewrite_pooled_output)
+
+        new_pooled_output = torch.cat([pooled_output, rewrite_pooled_output], dim=-1)
+
         loss = None
         cos_loss = None
         if labels is not None:
-            dist = ((pooled_output.unsqueeze(1) - pooled_output.unsqueeze(0)) ** 2).mean(-1)
+            dist = ((new_pooled_output.unsqueeze(1) - new_pooled_output.unsqueeze(0)) ** 2).mean(-1)
             mask = (labels.unsqueeze(1) == labels.unsqueeze(0)).float()
             mask = mask - torch.diag(torch.diag(mask))
             neg_mask = (labels.unsqueeze(1) != labels.unsqueeze(0)).float()
@@ -79,41 +87,11 @@ class CustomBertModel(nn.Module):
 
             loss_fct = CrossEntropyLoss()
 
-            logits = self.classifier(pooled_output)
+            logits = self.classifier(new_pooled_output)
             loss = loss_fct(logits.view(-1, self.num_labels), labels.view(-1))
             loss = self.loss_ratio * loss + self.alpha * cos_loss
         else:
-            logits = self.classifier(pooled_output)
-
-        rewrite_outputs = self.model(input_ids=rewrite_input_ids, attention_mask=rewrite_attention_mask)
-        rewrite_pooled_output = rewrite_pooled = rewrite_outputs[1]
-        rewrite_pooled_output = self.dropout(rewrite_pooled_output)
-
-        rewrite_loss = None
-        rewrite_cos_loss = None
-        if labels is not None:
-            dist = ((rewrite_pooled_output.unsqueeze(1) - rewrite_pooled_output.unsqueeze(0)) ** 2).mean(-1)
-            mask = (labels.unsqueeze(1) == labels.unsqueeze(0)).float()
-            mask = mask - torch.diag(torch.diag(mask))
-            neg_mask = (labels.unsqueeze(1) != labels.unsqueeze(0)).float()
-            max_dist = (dist * mask).max()
-            rewrite_cos_loss = (dist * mask).sum(-1) / (mask.sum(-1) + 1e-3) + (F.relu(max_dist - dist) * neg_mask).sum(-1) / (neg_mask.sum(-1) + 1e-3)
-            rewrite_cos_loss = rewrite_cos_loss.mean()
-
-            loss_fct = CrossEntropyLoss()
-
-            rewrite_logits = self.classifier(rewrite_pooled_output)
-            rewrite_loss = loss_fct(rewrite_logits.view(-1, self.num_labels), labels.view(-1))
-            rewrite_loss = self.loss_ratio * rewrite_loss + self.alpha * rewrite_cos_loss
-        else:
-            rewrite_logits = self.classifier(rewrite_pooled_output)
-        
-        if labels is not None:
-            loss = loss + rewrite_loss
-            cos_loss = cos_loss + rewrite_cos_loss
-            logits = logits + rewrite_logits
-        else:
-            logits = logits + rewrite_logits
+            logits = self.classifier(new_pooled_output)
 
         output = (logits,)
         return ((loss, cos_loss) + output) if loss is not None else output
