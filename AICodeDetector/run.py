@@ -276,8 +276,10 @@ for epoch in range(int(args.num_train_epochs)):
         input_ids = batch['input_ids'].to(device)
         attention_mask = batch['attention_mask'].to(device)
         labels = batch['labels'].to(device)
+        rewrite_input_ids = batch['rewrite_input_ids'].to(device)
+        rewrite_attention_mask = batch['rewrite_attention_mask'].to(device)
 
-        outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels)
+        outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels, rewrite_input_ids=rewrite_input_ids, rewrite_attention_mask=rewrite_attention_mask)
         loss, cos_loss = outputs[0], outputs[1]
         loss.backward()
         optimizer.step()
@@ -300,8 +302,10 @@ for epoch in range(int(args.num_train_epochs)):
         for batch in validation_dataloader:
             input_ids = batch['input_ids'].to(device)
             attention_mask = batch['attention_mask'].to(device)
+            rewrite_input_ids = batch['rewrite_input_ids'].to(device)
+            rewrite_attention_mask = batch['rewrite_attention_mask'].to(device)
             labels = batch['labels'].to(device)
-            outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels)
+            outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels, rewrite_input_ids=rewrite_input_ids, rewrite_attention_mask=rewrite_attention_mask)
             loss = outputs[0]
             validation_loss += loss.item()
 
@@ -342,7 +346,9 @@ with torch.no_grad():
     for batch in test_dataloader:
         input_ids = batch['input_ids'].to(device)
         attention_mask = batch['attention_mask'].to(device)
-        outputs = cbm(input_ids, attention_mask=attention_mask)
+        rewrite_input_ids = batch['rewrite_input_ids'].to(device)
+        rewrite_attention_mask = batch['rewrite_attention_mask'].to(device)
+        outputs = cbm(input_ids, attention_mask=attention_mask, rewrite_input_ids=rewrite_input_ids, rewrite_attention_mask=rewrite_attention_mask)
         labels = batch["labels"]
         logits = outputs[0]
         predictions = torch.argmax(logits, dim=1)

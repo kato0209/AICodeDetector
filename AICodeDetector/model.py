@@ -61,7 +61,7 @@ class CustomBertModel(nn.Module):
         self.beta = beta
         self.sub_loss_ratio = sub_loss_ratio
     
-    def forward(self, input_ids=None, attention_mask=None, labels=None):
+    def forward(self, input_ids=None, attention_mask=None, labels=None, rewrite_input_ids=None, rewrite_attention_mask=None):
         outputs = self.model(input_ids=input_ids, attention_mask=attention_mask)
         pooled_output = pooled = outputs[1]
         pooled_output = self.dropout(pooled_output)
@@ -85,8 +85,37 @@ class CustomBertModel(nn.Module):
         else:
             logits = self.classifier(pooled_output)
 
-        output = (logits,) + outputs[2:]
-        output = output + (pooled,)
+        rewrite_outputs = self.model(input_ids=rewrite_input_ids, attention_mask=rewrite_attention_mask)
+        rewrite_pooled_output = rewrite_pooled = rewrite_outputs[1]
+        rewrite_pooled_output = self.dropout(rewrite_pooled_output)
+
+        rewrite_loss = None
+        rewrite_cos_loss = None
+        if labels is not None:
+            dist = ((rewrite_pooled_output.unsqueeze(1) - rewrite_pooled_output.unsqueeze(0)) ** 2).mean(-1)
+            mask = (labels.unsqueeze(1) == labels.unsqueeze(0)).float()
+            mask = mask - torch.diag(torch.diag(mask))
+            neg_mask = (labels.unsqueeze(1) != labels.unsqueeze(0)).float()
+            max_dist = (dist * mask).max()
+            rewrite_cos_loss = (dist * mask).sum(-1) / (mask.sum(-1) + 1e-3) + (F.relu(max_dist - dist) * neg_mask).sum(-1) / (neg_mask.sum(-1) + 1e-3)
+            rewrite_cos_loss = rewrite_cos_loss.mean()
+
+            loss_fct = CrossEntropyLoss()
+
+            rewrite_logits = self.classifier(rewrite_pooled_output)
+            rewrite_loss = loss_fct(rewrite_logits.view(-1, self.num_labels), labels.view(-1))
+            rewrite_loss = self.loss_ratio * rewrite_loss + self.alpha * rewrite_cos_loss
+        else:
+            rewrite_logits = self.classifier(rewrite_pooled_output)
+        
+        if labels is not None:
+            loss = loss + rewrite_loss
+            cos_loss = cos_loss + rewrite_cos_loss
+            logits = logits + rewrite_logits
+        else:
+            logits = logits + rewrite_logits
+
+        output = (logits,)
         return ((loss, cos_loss) + output) if loss is not None else output
 
 class CustomCodeLlamaModel(nn.Module):

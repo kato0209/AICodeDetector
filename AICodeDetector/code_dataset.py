@@ -164,11 +164,15 @@ class CodeDatasetRewriting(Dataset):
 
         code, rewrite_code, label = self.samples[index]
         input = f"original:\n {code} \n\n rewrite:\n {rewrite_code}"
-        inputs = self.model_config["tokenizer"].encode_plus(input, padding='max_length', max_length=300, truncation=True)
+        inputs = self.model_config["tokenizer"].encode_plus(code, padding='max_length', max_length=128, truncation=True)
         input_ids = inputs['input_ids']
         attention_mask = inputs['attention_mask']
+
+        rewrite_inputs = self.model_config["tokenizer"].encode_plus(rewrite_code, padding='max_length', max_length=128, truncation=True)
+        rewrite_input_ids = rewrite_inputs['input_ids']
+        rewrite_attention_mask = rewrite_inputs['attention_mask']
         
-        return {'input_ids': torch.tensor(input_ids, dtype=torch.long), 'attention_mask': torch.tensor(attention_mask, dtype=torch.long), 'labels': torch.tensor(label, dtype=torch.long), 'code': code, 'rewrite_code': rewrite_code}
+        return {'input_ids': torch.tensor(input_ids, dtype=torch.long), 'attention_mask': torch.tensor(attention_mask, dtype=torch.long), 'rewrite_input_ids': torch.tensor(rewrite_input_ids, dtype=torch.long), 'rewrite_attention_mask': torch.tensor(rewrite_attention_mask, dtype=torch.long), 'labels': torch.tensor(label, dtype=torch.long), 'code': code, 'rewrite_code': rewrite_code}
 
 class CodeDatasetSimilarity(Dataset):
     def __init__(self, data, args):
