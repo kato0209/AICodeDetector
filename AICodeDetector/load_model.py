@@ -43,6 +43,25 @@ def load_model(args, model_name, model_config):
     )
     tokenizer = transformers.AutoTokenizer.from_pretrained(model_name)
     tokenizer.pad_token = tokenizer.eos_token
+    model = transformers.AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True, quantization_config=quant_config, device_map="auto", torch_dtype=torch.float16)
+    #sentence_model = SentenceTransformer('Sakil/sentence_similarity_semantic_search')
+    sentence_model_tokenizer = transformers.AutoTokenizer.from_pretrained('microsoft/graphcodebert-base')
+    sentence_model = transformers.AutoModel.from_pretrained('microsoft/graphcodebert-base').to(args.DEVICE)
+    model_config['tokenizer'] = tokenizer
+    model_config['model'] = model
+    model_config['sentence_model'] = sentence_model
+    model_config['sentence_model_tokenizer'] = sentence_model_tokenizer
+    return model_config
+
+def load_model2(args, model_name, model_config):
+    quant_config = transformers.BitsAndBytesConfig(
+        load_in_4bit=True,
+        bnb_4bit_quant_type='nf4',
+        bnb_4bit_use_double_quant=True,
+        bnb_4bit_compute_dtype=bfloat16
+    )
+    tokenizer = transformers.AutoTokenizer.from_pretrained(model_name)
+    tokenizer.pad_token = tokenizer.eos_token
     model = transformers.AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True, quantization_config=quant_config, device_map="auto", torch_dtype=torch.float32)
     #sentence_model = SentenceTransformer('Sakil/sentence_similarity_semantic_search')
     sentence_model_tokenizer = transformers.AutoTokenizer.from_pretrained('microsoft/graphcodebert-base')

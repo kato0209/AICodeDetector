@@ -144,11 +144,11 @@ device = args.DEVICE
 #ai_data = download_data_from_json('json_data/rewrite_code_GPT_inv.json')
 #human_data = download_data_from_json('json_data/rewrite_code_human_inv.json')
 
-#ai_data = download_data_from_json('json_data/gpt4o_cs_code_AI.json')
-#human_data = download_data_from_json('json_data/gpt4o_cs_code_Human.json')
+#ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_AI_HumanEval_codellama.json')
+#human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt3-5_Human.json')
 
-ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_AI_HumanEval_incoder.json')
-human_data = download_data_from_json('rewrite_dataset/Test_Rewrite_code_by_gpt3-5_Human.json')
+ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_AI_HumanEval_gpt.json')
+human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_Human_HumanEval_gpt.json')
 
 #from util_func import remove_comments
 #
@@ -185,8 +185,10 @@ test_data["sampled"] = test_data["sampled"][:1]
 """
 
 cbm = CustomBertModel()
-model_path = 'saved_model/model_20240905_152913.pth'
+#model_path = 'saved_model/model_20240905_152913.pth'
+model_path = 'saved_model/model_20240909_075253.pth'
 #model_path = 'saved_model/DoubleEncoder_model_20240905_142113.pth'
+#model_path = 'saved_model/Double_model_20240907_125346.pth'
 cbm.load_state_dict(torch.load(model_path, map_location=device))
 cbm.to(device)
 

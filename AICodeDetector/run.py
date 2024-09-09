@@ -148,22 +148,40 @@ device = args.DEVICE
 #human_data = download_data_from_json('json_data/rewrite_code_human_inv.json')
 
 dataset_paths =[
-    'rewrite_dataset/Train_Rewrite_code_by_gpt_AI_HumanEval_codellama.json',
-    #'rewrite_dataset/Train_Rewrite_code_by_gpt_AI_HumanEval_incoder.json'
+    'rewrite_dataset/Rewrite_code_by_gpt_AI_MBPP_gpt.json',
+    #'rewrite_dataset/Rewrite_code_by_gpt_AI_HumanEval_gpt.json'
 ]
-
 ai_data = {
     "original": [],
     "rewrite": []
 }
-
 for path in dataset_paths:
     sep_data = download_data_from_json(path)
     ai_data["original"] = ai_data["original"] + sep_data["original"]
     ai_data["rewrite"] = ai_data["rewrite"] + sep_data["rewrite"]
 
+dataset_paths =[
+    'rewrite_dataset/Rewrite_code_by_gpt_Human_MBPP_gpt.json',
+    #'rewrite_dataset/Rewrite_code_by_gpt_Human_HumanEval_gpt.json'
+]
+human_data = {
+    "original": [],
+    "rewrite": []
+}
+for path in dataset_paths:
+    sep_data = download_data_from_json(path)
+    human_data["original"] = human_data["original"] + sep_data["original"]
+    human_data["rewrite"] = human_data["rewrite"] + sep_data["rewrite"]
+
+#配列をシャッフル
+random.seed(0)
+random.shuffle(ai_data["original"])
+random.shuffle(ai_data["rewrite"])
+random.shuffle(human_data["original"])
+random.shuffle(human_data["rewrite"])
+
 #ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_AI_HumanEval_codellama.json')
-human_data = download_data_from_json('rewrite_dataset/Train_Rewrite_code_by_gpt3-5_Human.json')
+#human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_Human_MBPP_gpt.json')
 
 
 #from util_func import remove_comments

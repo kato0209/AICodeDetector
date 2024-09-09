@@ -2,28 +2,42 @@ import json
 import os
 import pathlib
 
-def create_split(split="train", name="train"):
-    paths = []
-    roots = sorted(os.listdir(split))
-    for folder in roots:
-        root_path = os.path.join(split, folder)
-        paths.append(root_path)
+
+with open("json_data/rewrite_code_GPT_inv.json", 'r') as file:
+    json_data = json.load(file)
+
+original_codes = []
+rewrite_codes = []
+for item in json_data:
+    original_codes.append(item['input'])
+    rewrite_codes.append(item['Revise the code with your best effort'])
+
+data = []
+for i in range(len(original_codes)):
+    sec = {
+        "original": original_codes[i],
+        "rewrite": rewrite_codes[i]
+    }
+    data.append(sec)
+with open(f'rewrite_dataset/Rewrite_code_by_gpt_AI_HumanEval_gpt.json', 'w') as file:
+    json.dump(data, file, indent=4)
 
 
-    with open(name+".json", "w") as f:
-        json.dump(paths, f)
-    
-    return paths
+with open("json_data/rewrite_code_human_inv.json", 'r') as file:
+    json_data = json.load(file)
 
-# insert path to train and test
-# path should be relative to root directory or absolute paths
-paths_to_probs = ["APPS/train", "APPS/test"]
-names = ["train", "test"]
+original_codes = []
+rewrite_codes = []
+for item in json_data:
+    original_codes.append(item['input'])
+    rewrite_codes.append(item['Revise the code with your best effort'])
 
-all_paths = []
-for index in range(len(paths_to_probs)):
-    all_paths.extend(create_split(split=paths_to_probs[index], name=names[index]))
-
-with open("train_and_test.json", "w") as f:
-    print(f"Writing all paths. Length = {len(all_paths)}")
-    json.dump(all_paths, f)
+data = []
+for i in range(len(original_codes)):
+    sec = {
+        "original": original_codes[i],
+        "rewrite": rewrite_codes[i]
+    }
+    data.append(sec)
+with open(f'rewrite_dataset/Rewrite_code_by_gpt_Human_HumanEval_gpt.json', 'w') as file:
+    json.dump(data, file, indent=4)
