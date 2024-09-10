@@ -77,10 +77,10 @@ parser.add_argument('--max_comment_num', type=int, default=10)
 parser.add_argument('--max_def_num', type=int, default=5)
 parser.add_argument('--cut_def', action='store_true')
 parser.add_argument('--max_todo_num', type=int, default=3)
-parser.add_argument("--learning_rate", default=1e-5, type=float)
+parser.add_argument("--learning_rate", default=2e-6, type=float)
 parser.add_argument("--adam_epsilon", default=1e-6, type=float)
 parser.add_argument("--num_train_epochs", default=30, type=float)
-parser.add_argument("--warmup_ratio", default=0.01, type=float)
+parser.add_argument("--warmup_ratio", default=0.06, type=float)
 parser.add_argument("--weight_decay", default=0.05, type=float)
 
 args_dict = {
@@ -266,14 +266,88 @@ train_dataloader = DataLoader(train_dataset, args.batch_size, shuffle=True)
 validation_dataloader = DataLoader(val_dataset, args.batch_size, shuffle=False)
 test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle=False)
 
+# HumanEvalでの評価
+ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_AI_HumanEval_gpt.json')
+human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_Human_HumanEval_gpt.json')
+
+data = {
+    "human": human_data,
+    "ai": ai_data
+}
+
+human_eval_dataset = CodeDatasetRewriting(data, model_config, args)
+
+human_eval_dataloader = DataLoader(human_eval_dataset, args.batch_size, shuffle=True)
+
 total_steps = int(len(train_dataloader) * args.num_train_epochs)
 warmup_steps = int(total_steps * args.warmup_ratio)
 
 base_lr = args.learning_rate
 
-optimizer_parameters = [
-    {"params": cbm.parameters(), "lr": base_lr},
-]
+optimizer_parameters = []
+no_decay = ["LayerNorm.weight", "bias"]
+
+group1 = ['encoder.layer.0.', 'encoder.layer.1.', 'encoder.layer.2.', 'encoder.layer.3.']
+group2 = ['encoder.layer.4.', 'encoder.layer.5.', 'encoder.layer.6.', 'encoder.layer.7.']
+group3 = ['encoder.layer.8.', 'encoder.layer.9.', 'encoder.layer.10.', 'encoder.layer.11.']
+group_all = group1 + group2 + group3
+
+
+# 正則化を適用しないパラメータ
+optimizer_parameters.append({
+    'params': [
+        p for n, p in cbm.named_parameters()
+        if any(nd in n for nd in no_decay)
+    ],
+    'weight_decay': 0.0,
+    'lr': base_lr
+})
+
+# グループごとのパラメータと学習率
+optimizer_parameters.append({
+    'params': [
+        p for n, p in cbm.named_parameters()
+        if any(nd in n for nd in group1) and not any(nd in n for nd in no_decay)
+    ],
+    'weight_decay': args.weight_decay,
+    'lr': base_lr
+})
+optimizer_parameters.append({
+    'params': [
+        p for n, p in cbm.named_parameters()
+        if any(nd in n for nd in group2) and not any(nd in n for nd in no_decay)
+    ],
+    'weight_decay': args.weight_decay,
+    'lr': base_lr * 1.1
+})
+optimizer_parameters.append({
+    'params': [
+        p for n, p in cbm.named_parameters()
+        if any(nd in n for nd in group3) and not any(nd in n for nd in no_decay)
+    ],
+    'weight_decay': args.weight_decay,
+    'lr': base_lr * 1.25
+})
+
+#optimizer_parameters.append({
+#    'params': [
+#        p for n, p in cbm.named_parameters()
+#        if 'multihead_attn' in n and not any(nd in n for nd in no_decay)
+#    ],
+#    'weight_decay': args.weight_decay,
+#    'lr': base_lr  # 分類ヘッドの学習率を指定
+#})
+
+# 分類ヘッドのパラメータ
+optimizer_parameters.append({
+    'params': [
+        p for n, p in cbm.named_parameters()
+        if 'classifier' in n and not any(nd in n for nd in no_decay)
+    ],
+    'weight_decay': args.weight_decay,
+    'lr': base_lr  # 分類ヘッドの学習率を指定
+})
+
 
 optimizer = AdamW(optimizer_parameters, lr=args.learning_rate, eps=args.adam_epsilon)
 scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps, num_training_steps=total_steps)
@@ -282,6 +356,7 @@ scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=warmup_s
 train_loss_values = []
 cosine_loss_values = []
 validation_loss_values = []
+he_validation_loss_values = []
 
 cbm.train()
 num_steps = 0
@@ -324,10 +399,26 @@ for epoch in range(int(args.num_train_epochs)):
             outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels, rewrite_input_ids=rewrite_input_ids, rewrite_attention_mask=rewrite_attention_mask)
             loss = outputs[0]
             validation_loss += loss.item()
+    
+    he_validation_loss = 0.0
+    with torch.no_grad():
+        for batch in human_eval_dataloader:
+            input_ids = batch['input_ids'].to(device)
+            attention_mask = batch['attention_mask'].to(device)
+            rewrite_input_ids = batch['rewrite_input_ids'].to(device)
+            rewrite_attention_mask = batch['rewrite_attention_mask'].to(device)
+            labels = batch['labels'].to(device)
+            outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels, rewrite_input_ids=rewrite_input_ids, rewrite_attention_mask=rewrite_attention_mask)
+            loss = outputs[0]
+            he_validation_loss += loss.item()
 
     validation_loss /= len(validation_dataloader)
     validation_loss_values.append(validation_loss)
     print(f"Validation Loss after epoch {epoch}: {validation_loss}")
+
+    he_validation_loss /= len(human_eval_dataloader)
+    he_validation_loss_values.append(he_validation_loss)
+    print(f"HumanEval Validation Loss after epoch {epoch}: {he_validation_loss}")
     cbm.train()
 
 model_save(cbm)
@@ -336,8 +427,9 @@ print("done training")
 plt.figure(figsize=(12, 6))
 
 plt.plot(train_loss_values, label="Training Loss")
-plt.plot(cosine_loss_values, label="Cosine Loss")
+#plt.plot(cosine_loss_values, label="Cosine Loss")
 plt.plot(validation_loss_values, label="Validation Loss")
+plt.plot(he_validation_loss_values, label="HumanEval Validation Loss")
 
 plt.xlabel("Training Steps")
 plt.ylabel("Loss")

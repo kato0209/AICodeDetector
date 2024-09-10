@@ -21,7 +21,7 @@ class CustomClassificationHead(nn.Module):
         hidden_size2 = 768
         hidden_size3 = 512
 
-        self.dense = nn.Linear(config.hidden_size, hidden_size2)
+        self.dense = nn.Linear(config.hidden_size*2, hidden_size2)
         self.dense2 = nn.Linear(hidden_size2, hidden_size3)
         self.batch_norm = nn.BatchNorm1d(hidden_size2)
         self.activation = nn.ReLU()
@@ -50,7 +50,7 @@ class CustomBertModel(nn.Module):
         self.model = AutoModel.from_pretrained("microsoft/codebert-base")
         self.tokenizer = AutoTokenizer.from_pretrained("microsoft/codebert-base")
         self.model2 = AutoModel.from_pretrained("microsoft/codebert-base")
-        self.multihead_attn = nn.MultiheadAttention(embed_dim=768, num_heads=8)
+        #self.multihead_attn = nn.MultiheadAttention(embed_dim=768, num_heads=8)
 
         #self.sentence_model = SentenceTransformer('Sakil/sentence_similarity_semantic_search')
         self.dropout = nn.Dropout(self.model.config.hidden_dropout_prob)
@@ -73,13 +73,12 @@ class CustomBertModel(nn.Module):
         rewrite_pooled_output = rewrite_pooled = rewrite_outputs[1]
         rewrite_pooled_output = self.dropout(rewrite_pooled_output)
 
-        transformer_layer = nn.TransformerEncoderLayer(d_model=768, nhead=3).to(input_ids.device)
-        combined_output = torch.stack([pooled_output, rewrite_pooled_output], dim=0)
-        new_pooled_output = transformer_layer(combined_output)
-        new_pooled_output = new_pooled_output.mean(dim=0)
+        #transformer_layer = nn.TransformerEncoderLayer(d_model=768, nhead=3).to(input_ids.device)
+        #combined_output = torch.stack([pooled_output, rewrite_pooled_output], dim=0)
+        #new_pooled_output = transformer_layer(combined_output)
+        #new_pooled_output = new_pooled_output.mean(dim=0)
 
-
-        #new_pooled_output = torch.cat([pooled_output, rewrite_pooled_output], dim=-1)
+        new_pooled_output = torch.cat([pooled_output, rewrite_pooled_output], dim=-1)
 
         loss = None
         cos_loss = None

@@ -37,9 +37,6 @@ def load_mask_filling_model(args, mask_filling_model_name, model_config):
 def load_model(args, model_name, model_config):
     quant_config = transformers.BitsAndBytesConfig(
         load_in_4bit=True,
-        bnb_4bit_quant_type='nf4',
-        bnb_4bit_use_double_quant=True,
-        bnb_4bit_compute_dtype=bfloat16
     )
     tokenizer = transformers.AutoTokenizer.from_pretrained(model_name)
     tokenizer.pad_token = tokenizer.eos_token
