@@ -105,8 +105,8 @@ args_dict = {
     #'base_model_name': "codellama/CodeLlama-13b-Python-hf",
     #'base_model_name': "codellama/CodeLlama-34b-Python-hf",
     #'base_model_name': "codellama/CodeLlama-7b-Instruct-hf",
-    'base_model_name': "meta-llama/Meta-Llama-3.1-70B-Instruct",
-    #'base_model_name': "meta-llama/CodeLlama-7b-hf",
+    #'base_model_name': "meta-llama/Meta-Llama-3.1-70B-Instruct",
+    'base_model_name': "meta-llama/CodeLlama-7b-hf",
     #'base_model_name': "Salesforce/codet5p-770m",
     #'base_model_name': "facebook/bart-base",
     #'base_model_name': "HuggingFaceH4/starchat-alpha",
@@ -166,8 +166,8 @@ device = args.DEVICE
 #ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_AI_MBPP_gpt.json')
 #human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_Human_MBPP_gpt.json')
 
-ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_AI_HumanEval_gpt.json')
-human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_Human_HumanEval_gpt.json')
+ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_AI_CSDataset_gpt.json')
+human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_Human_CSDataset_gpt.json')
 
 #ai_data = download_data_from_json2('json_data/rewrite_code_GPT_inv.json')
 #human_data = download_data_from_json2('json_data/rewrite_code_human_inv.json')

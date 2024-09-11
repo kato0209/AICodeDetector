@@ -148,7 +148,7 @@ device = args.DEVICE
 #human_data = download_data_from_json('json_data/rewrite_code_human_inv.json')
 
 dataset_paths =[
-    'rewrite_dataset/Rewrite_code_by_gpt_AI_MBPP_gpt.json',
+    'rewrite_dataset/Rewrite_code_by_gpt_AI_CSDataset_gpt.json',
     #'rewrite_dataset/Rewrite_code_by_gpt_AI_HumanEval_gpt.json'
 ]
 ai_data = {
@@ -161,7 +161,7 @@ for path in dataset_paths:
     ai_data["rewrite"] = ai_data["rewrite"] + sep_data["rewrite"]
 
 dataset_paths =[
-    'rewrite_dataset/Rewrite_code_by_gpt_Human_MBPP_gpt.json',
+    'rewrite_dataset/Rewrite_code_by_gpt_Human_CSDataset_gpt.json',
     #'rewrite_dataset/Rewrite_code_by_gpt_Human_HumanEval_gpt.json'
 ]
 human_data = {
