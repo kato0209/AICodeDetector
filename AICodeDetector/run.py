@@ -358,118 +358,196 @@ cosine_loss_values = []
 validation_loss_values = []
 he_validation_loss_values = []
 
-cbm.train()
-num_steps = 0
-for epoch in range(int(args.num_train_epochs)):
-    train_loss = 0.0
-    cosine_loss = 0.0
-    for batch in train_dataloader:
-        input_ids = batch['input_ids'].to(device)
-        attention_mask = batch['attention_mask'].to(device)
-        labels = batch['labels'].to(device)
-        rewrite_input_ids = batch['rewrite_input_ids'].to(device)
-        rewrite_attention_mask = batch['rewrite_attention_mask'].to(device)
+from sklearn.model_selection import KFold
+from sklearn.model_selection import StratifiedKFold
+from torch.utils.data import Subset
 
-        outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels, rewrite_input_ids=rewrite_input_ids, rewrite_attention_mask=rewrite_attention_mask)
-        loss, cos_loss = outputs[0], outputs[1]
-        loss.backward()
-        optimizer.step()
-        scheduler.step()
-        cbm.zero_grad()
+# Set the number of folds for k-fold cross-validation
+k_folds = 5
 
-        train_loss += loss.item()
-        cosine_loss += cos_loss.item()
-        num_steps += 1
+labels = [data['labels'] for data in train_dataset]
+# Prepare for k-fold cross-validation
+kf = StratifiedKFold(n_splits=k_folds, shuffle=True, random_state=42)
 
-    train_loss /= len(train_dataloader)
-    cosine_loss /= len(train_dataloader)
-    train_loss_values.append(train_loss)
-    cosine_loss_values.append(cosine_loss)
-    print(f"Epoch: {epoch}, Training Loss: {train_loss}, Cosine Loss: {cosine_loss}")
+# Initialize lists to store performance metrics across folds
+fold_train_loss = []
+fold_val_loss = []
+fold_he_val_loss = []
+fold_accuracies = []
+fold_aucs = []
 
-    cbm.eval()
-    validation_loss = 0.0
-    with torch.no_grad():
-        for batch in validation_dataloader:
-            input_ids = batch['input_ids'].to(device)
-            attention_mask = batch['attention_mask'].to(device)
-            rewrite_input_ids = batch['rewrite_input_ids'].to(device)
-            rewrite_attention_mask = batch['rewrite_attention_mask'].to(device)
-            labels = batch['labels'].to(device)
-            outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels, rewrite_input_ids=rewrite_input_ids, rewrite_attention_mask=rewrite_attention_mask)
-            loss = outputs[0]
-            validation_loss += loss.item()
+# Iterate over each fold
+for fold, (train_idx, val_idx) in enumerate(kf.split(train_dataset, labels)):
+    print(f"FOLD {fold}")
+    print("-" * 20)
+
+    # Subset the dataset for the current fold
+    train_subset = Subset(train_dataset, train_idx)
+    val_subset = Subset(train_dataset, val_idx)
+
+    # Create DataLoader for the current fold
+    train_dataloader = DataLoader(train_subset, batch_size=args.batch_size, shuffle=True)
+    validation_dataloader = DataLoader(val_subset, batch_size=args.batch_size, shuffle=False)
+
+    # Initialize or reset the model for each fold
+    cbm = CustomBertModel()
+    cbm.to(device)
+
+    optimizer_parameters = []
+    no_decay = ["LayerNorm.weight", "bias"]
+
+    group1 = ['encoder.layer.0.', 'encoder.layer.1.', 'encoder.layer.2.', 'encoder.layer.3.']
+    group2 = ['encoder.layer.4.', 'encoder.layer.5.', 'encoder.layer.6.', 'encoder.layer.7.']
+    group3 = ['encoder.layer.8.', 'encoder.layer.9.', 'encoder.layer.10.', 'encoder.layer.11.']
+    group_all = group1 + group2 + group3
+
+
+    # 正則化を適用しないパラメータ
+    optimizer_parameters.append({
+        'params': [
+            p for n, p in cbm.named_parameters()
+            if any(nd in n for nd in no_decay)
+        ],
+        'weight_decay': 0.0,
+        'lr': base_lr
+    })
+
+    # グループごとのパラメータと学習率
+    optimizer_parameters.append({
+        'params': [
+            p for n, p in cbm.named_parameters()
+            if any(nd in n for nd in group1) and not any(nd in n for nd in no_decay)
+        ],
+        'weight_decay': args.weight_decay,
+        'lr': base_lr
+    })
+    optimizer_parameters.append({
+        'params': [
+            p for n, p in cbm.named_parameters()
+            if any(nd in n for nd in group2) and not any(nd in n for nd in no_decay)
+        ],
+        'weight_decay': args.weight_decay,
+        'lr': base_lr * 1.1
+    })
+    optimizer_parameters.append({
+        'params': [
+            p for n, p in cbm.named_parameters()
+            if any(nd in n for nd in group3) and not any(nd in n for nd in no_decay)
+        ],
+        'weight_decay': args.weight_decay,
+        'lr': base_lr * 1.25
+    })
+
+    #optimizer_parameters.append({
+    #    'params': [
+    #        p for n, p in cbm.named_parameters()
+    #        if 'multihead_attn' in n and not any(nd in n for nd in no_decay)
+    #    ],
+    #    'weight_decay': args.weight_decay,
+    #    'lr': base_lr  # 分類ヘッドの学習率を指定
+    #})
+
+    # 分類ヘッドのパラメータ
+    optimizer_parameters.append({
+        'params': [
+            p for n, p in cbm.named_parameters()
+            if 'classifier' in n and not any(nd in n for nd in no_decay)
+        ],
+        'weight_decay': args.weight_decay,
+        'lr': base_lr  # 分類ヘッドの学習率を指定
+    })
     
-    he_validation_loss = 0.0
+    # Reset optimizer and scheduler
+    optimizer = AdamW(optimizer_parameters, lr=args.learning_rate, eps=args.adam_epsilon)
+    scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps, num_training_steps=total_steps)
+
+    # Training loop for the current fold
+    for epoch in range(int(args.num_train_epochs)):
+        cbm.train()
+        train_loss = 0.0
+        for batch in train_dataloader:
+            input_ids = batch['input_ids'].to(device)
+            attention_mask = batch['attention_mask'].to(device)
+            labels = batch['labels'].to(device)
+            rewrite_input_ids = batch['rewrite_input_ids'].to(device)
+            rewrite_attention_mask = batch['rewrite_attention_mask'].to(device)
+
+            outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels, rewrite_input_ids=rewrite_input_ids, rewrite_attention_mask=rewrite_attention_mask)
+            loss = outputs[0]
+            loss.backward()
+
+            optimizer.step()
+            scheduler.step()
+            cbm.zero_grad()
+
+            train_loss += loss.item()
+
+        # Validation step for the current fold
+        cbm.eval()
+        validation_loss = 0.0
+        he_validation_loss = 0.0
+        with torch.no_grad():
+            for batch in validation_dataloader:
+                input_ids = batch['input_ids'].to(device)
+                attention_mask = batch['attention_mask'].to(device)
+                rewrite_input_ids = batch['rewrite_input_ids'].to(device)
+                rewrite_attention_mask = batch['rewrite_attention_mask'].to(device)
+                labels = batch['labels'].to(device)
+
+                outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels, rewrite_input_ids=rewrite_input_ids, rewrite_attention_mask=rewrite_attention_mask)
+                loss = outputs[0]
+                validation_loss += loss.item()
+
+            for batch in human_eval_dataloader:
+                input_ids = batch['input_ids'].to(device)
+                attention_mask = batch['attention_mask'].to(device)
+                rewrite_input_ids = batch['rewrite_input_ids'].to(device)
+                rewrite_attention_mask = batch['rewrite_attention_mask'].to(device)
+                labels = batch['labels'].to(device)
+
+                outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels, rewrite_input_ids=rewrite_input_ids, rewrite_attention_mask=rewrite_attention_mask)
+                loss = outputs[0]
+                he_validation_loss += loss.item()
+
+        # Calculate average losses for this fold
+        validation_loss /= len(validation_dataloader)
+        he_validation_loss /= len(human_eval_dataloader)
+        
+        # Store the loss for each fold
+        fold_val_loss.append(validation_loss)
+        fold_he_val_loss.append(he_validation_loss)
+
+        print(f"Fold {fold}, Epoch {epoch}, Validation Loss: {validation_loss}, HumanEval Loss: {he_validation_loss}")
+
+    # Evaluate on test data after the fold is trained
+    cbm.eval()
+    label_list, pred_list = [], []
     with torch.no_grad():
-        for batch in human_eval_dataloader:
+        for batch in test_dataloader:
             input_ids = batch['input_ids'].to(device)
             attention_mask = batch['attention_mask'].to(device)
             rewrite_input_ids = batch['rewrite_input_ids'].to(device)
             rewrite_attention_mask = batch['rewrite_attention_mask'].to(device)
-            labels = batch['labels'].to(device)
-            outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels, rewrite_input_ids=rewrite_input_ids, rewrite_attention_mask=rewrite_attention_mask)
-            loss = outputs[0]
-            he_validation_loss += loss.item()
+            outputs = cbm(input_ids, attention_mask=attention_mask, rewrite_input_ids=rewrite_input_ids, rewrite_attention_mask=rewrite_attention_mask)
+            labels = batch["labels"]
+            logits = outputs[0]
+            predictions = torch.argmax(logits, dim=1)
+            label_list += labels.tolist()
+            pred_list += predictions.tolist()
 
-    validation_loss /= len(validation_dataloader)
-    validation_loss_values.append(validation_loss)
-    print(f"Validation Loss after epoch {epoch}: {validation_loss}")
+    # Calculate and store performance metrics for this fold
+    accuracy = accuracy_score(label_list, pred_list)
+    auc = roc_auc_score(label_list, pred_list)
+    fold_accuracies.append(accuracy)
+    fold_aucs.append(auc)
+    print(f"Fold {fold} - Accuracy: {accuracy}, AUC: {auc}")
 
-    he_validation_loss /= len(human_eval_dataloader)
-    he_validation_loss_values.append(he_validation_loss)
-    print(f"HumanEval Validation Loss after epoch {epoch}: {he_validation_loss}")
-    cbm.train()
+# After all folds, print average performance metrics
+print(f"Average Accuracy across folds: {np.mean(fold_accuracies)}")
+print(f"Average AUC across folds: {np.mean(fold_aucs)}")
+print(f"Average Validation Loss across folds: {np.mean(fold_val_loss)}")
+print(f"Average HumanEval Loss across folds: {np.mean(fold_he_val_loss)}")
 
-model_save(cbm)
-print("done training")
-# Plot the learning curve
-plt.figure(figsize=(12, 6))
-
-plt.plot(train_loss_values, label="Training Loss")
-#plt.plot(cosine_loss_values, label="Cosine Loss")
-plt.plot(validation_loss_values, label="Validation Loss")
-plt.plot(he_validation_loss_values, label="HumanEval Validation Loss")
-
-plt.xlabel("Training Steps")
-plt.ylabel("Loss")
-plt.title("Learning Curve")
-plt.legend()
-timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-plt.savefig(f"./learning_result/learning_curve_{timestamp}.png")
-
-# Test the model and print out the confusion matrix
-log_path = './logs'
-os.makedirs(log_path, exist_ok=True)
-timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-logging.basicConfig(filename=os.path.join(log_path, f'test_{timestamp}.log'),
-                    force=True,
-                    format='%(asctime)s - %(levelname)s - %(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S',
-                    level=logging.INFO)
-
-cbm.eval()
-label_list, pred_list = [], []
-with torch.no_grad():
-    for batch in test_dataloader:
-        input_ids = batch['input_ids'].to(device)
-        attention_mask = batch['attention_mask'].to(device)
-        rewrite_input_ids = batch['rewrite_input_ids'].to(device)
-        rewrite_attention_mask = batch['rewrite_attention_mask'].to(device)
-        outputs = cbm(input_ids, attention_mask=attention_mask, rewrite_input_ids=rewrite_input_ids, rewrite_attention_mask=rewrite_attention_mask)
-        labels = batch["labels"]
-        logits = outputs[0]
-        predictions = torch.argmax(logits, dim=1)
-        label_list += labels.tolist()
-        pred_list += predictions.tolist()
-
-accuracy = accuracy_score(label_list, pred_list)
-print(label_list)
-print(pred_list)
-print(accuracy)
-
-auc = roc_auc_score(label_list, pred_list)
-print(f"ROC AUC : {auc}")
 
 
 target_names = ['Human','ChatGPT']

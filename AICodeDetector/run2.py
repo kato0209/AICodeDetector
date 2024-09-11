@@ -77,10 +77,10 @@ parser.add_argument('--max_comment_num', type=int, default=10)
 parser.add_argument('--max_def_num', type=int, default=5)
 parser.add_argument('--cut_def', action='store_true')
 parser.add_argument('--max_todo_num', type=int, default=3)
-parser.add_argument("--learning_rate", default=1e-5, type=float)
+parser.add_argument("--learning_rate", default=2e-6, type=float)
 parser.add_argument("--adam_epsilon", default=1e-6, type=float)
 parser.add_argument("--num_train_epochs", default=30, type=float)
-parser.add_argument("--warmup_ratio", default=0.01, type=float)
+parser.add_argument("--warmup_ratio", default=0.06, type=float)
 parser.add_argument("--weight_decay", default=0.05, type=float)
 
 args_dict = {
@@ -148,22 +148,41 @@ device = args.DEVICE
 #human_data = download_data_from_json('json_data/rewrite_code_human_inv.json')
 
 dataset_paths =[
-    'rewrite_dataset/Train_Rewrite_code_by_gpt_AI_HumanEval_codellama.json',
-    #'rewrite_dataset/Train_Rewrite_code_by_gpt_AI_HumanEval_incoder.json'
+    'rewrite_dataset/Rewrite_code_by_gpt_AI_MBPP_gpt.json',
+    #'rewrite_dataset/Rewrite_code_by_gpt_AI_HumanEval_gpt.json'
 ]
-
 ai_data = {
     "original": [],
     "rewrite": []
 }
-
 for path in dataset_paths:
     sep_data = download_data_from_json(path)
     ai_data["original"] = ai_data["original"] + sep_data["original"]
     ai_data["rewrite"] = ai_data["rewrite"] + sep_data["rewrite"]
 
+dataset_paths =[
+    'rewrite_dataset/Rewrite_code_by_gpt_Human_MBPP_gpt.json',
+    #'rewrite_dataset/Rewrite_code_by_gpt_Human_HumanEval_gpt.json'
+]
+human_data = {
+    "original": [],
+    "rewrite": []
+}
+for path in dataset_paths:
+    sep_data = download_data_from_json(path)
+    human_data["original"] = human_data["original"] + sep_data["original"]
+    human_data["rewrite"] = human_data["rewrite"] + sep_data["rewrite"]
+
+#配列をシャッフル
+random.seed(0)
+random.shuffle(ai_data["original"])
+random.shuffle(ai_data["rewrite"])
+random.shuffle(human_data["original"])
+random.shuffle(human_data["rewrite"])
+
 #ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_AI_HumanEval_codellama.json')
-human_data = download_data_from_json('rewrite_dataset/Train_Rewrite_code_by_gpt3-5_Human.json')
+#human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_Human_MBPP_gpt.json')
+
 
 #from util_func import remove_comments
 #
@@ -232,50 +251,230 @@ test_data["original"] = test_data["original"][:1]
 test_data["sampled"] = test_data["sampled"][:1]
 """
 
+cbm = CustomBertModel()
+cbm.to(device)
 
-from sentence_transformers import InputExample
-train_dataset = []
-for i in range(len(train_data["human"]["original"])):
-    train_dataset.append(InputExample(texts=[train_data["human"]["original"][i], train_data["human"]["rewrite"][i]], label=0))
+model_config = {}
+model_config["tokenizer"] = cbm.tokenizer
+model_config["model"] = cbm.model
 
-for i in range(len(train_data["ai"]["original"])):
-    train_dataset.append(InputExample(texts=[train_data["ai"]["original"][i], train_data["ai"]["rewrite"][i]], label=1))
+train_dataset = CodeDatasetRewriting(train_data, model_config, args)
+val_dataset = CodeDatasetRewriting(val_data, model_config, args)
+test_dataset = CodeDatasetRewriting(test_data, model_config, args)
 
-val_dataset = []
-for i in range(len(val_data["human"]["original"])):
-    val_dataset.append(InputExample(texts=[val_data["human"]["original"][i], val_data["human"]["rewrite"][i]], label=0))
+train_dataloader = DataLoader(train_dataset, args.batch_size, shuffle=True)
+validation_dataloader = DataLoader(val_dataset, args.batch_size, shuffle=False)
+test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle=False)
 
-for i in range(len(val_data["ai"]["original"])):
-    val_dataset.append(InputExample(texts=[val_data["ai"]["original"][i], val_data["ai"]["rewrite"][i]], label=1))
+# HumanEvalでの評価
+ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_AI_HumanEval_gpt.json')
+human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_Human_HumanEval_gpt.json')
 
-test_dataset = []
-for i in range(len(test_data["human"]["original"])):
-    test_dataset.append(InputExample(texts=[test_data["human"]["original"][i], test_data["human"]["rewrite"][i]], label=0))
+data = {
+    "human": human_data,
+    "ai": ai_data
+}
 
-for i in range(len(test_data["ai"]["original"])):
-    test_dataset.append(InputExample(texts=[test_data["ai"]["original"][i], test_data["ai"]["rewrite"][i]], label=1))
+human_eval_dataset = CodeDatasetRewriting(data, model_config, args)
 
-
-train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=32)
+human_eval_dataloader = DataLoader(human_eval_dataset, args.batch_size, shuffle=True)
 
 total_steps = int(len(train_dataloader) * args.num_train_epochs)
 warmup_steps = int(total_steps * args.warmup_ratio)
 
-from sentence_transformers.cross_encoder import CrossEncoder
-from sentence_transformers.cross_encoder.evaluation import CEF1Evaluator, CESoftmaxAccuracyEvaluator
-from sentence_transformers.evaluation import SequentialEvaluator
-from sentence_transformers.cross_encoder.evaluation import CECorrelationEvaluator
-model = CrossEncoder("microsoft/codebert-base", num_labels=1)
+base_lr = args.learning_rate
 
-evaluator = CECorrelationEvaluator.from_input_examples(test_dataset, name="sts-dev")
+optimizer_parameters = []
+no_decay = ["LayerNorm.weight", "bias"]
+
+group1 = ['encoder.layer.0.', 'encoder.layer.1.', 'encoder.layer.2.', 'encoder.layer.3.']
+group2 = ['encoder.layer.4.', 'encoder.layer.5.', 'encoder.layer.6.', 'encoder.layer.7.']
+group3 = ['encoder.layer.8.', 'encoder.layer.9.', 'encoder.layer.10.', 'encoder.layer.11.']
+group_all = group1 + group2 + group3
 
 
-model_save_path = "saved_model/crossModel_" + datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-model.fit(
-    train_dataloader=train_dataloader,
-    evaluator=evaluator,
-    epochs=args.num_train_epochs,
-    evaluation_steps=100,
-    warmup_steps=warmup_steps,
-    output_path=model_save_path,
-)
+# 正則化を適用しないパラメータ
+optimizer_parameters.append({
+    'params': [
+        p for n, p in cbm.named_parameters()
+        if any(nd in n for nd in no_decay)
+    ],
+    'weight_decay': 0.0,
+    'lr': base_lr
+})
+
+# グループごとのパラメータと学習率
+optimizer_parameters.append({
+    'params': [
+        p for n, p in cbm.named_parameters()
+        if any(nd in n for nd in group1) and not any(nd in n for nd in no_decay)
+    ],
+    'weight_decay': args.weight_decay,
+    'lr': base_lr
+})
+optimizer_parameters.append({
+    'params': [
+        p for n, p in cbm.named_parameters()
+        if any(nd in n for nd in group2) and not any(nd in n for nd in no_decay)
+    ],
+    'weight_decay': args.weight_decay,
+    'lr': base_lr * 1.1
+})
+optimizer_parameters.append({
+    'params': [
+        p for n, p in cbm.named_parameters()
+        if any(nd in n for nd in group3) and not any(nd in n for nd in no_decay)
+    ],
+    'weight_decay': args.weight_decay,
+    'lr': base_lr * 1.25
+})
+
+#optimizer_parameters.append({
+#    'params': [
+#        p for n, p in cbm.named_parameters()
+#        if 'multihead_attn' in n and not any(nd in n for nd in no_decay)
+#    ],
+#    'weight_decay': args.weight_decay,
+#    'lr': base_lr  # 分類ヘッドの学習率を指定
+#})
+
+# 分類ヘッドのパラメータ
+optimizer_parameters.append({
+    'params': [
+        p for n, p in cbm.named_parameters()
+        if 'classifier' in n and not any(nd in n for nd in no_decay)
+    ],
+    'weight_decay': args.weight_decay,
+    'lr': base_lr  # 分類ヘッドの学習率を指定
+})
+
+
+optimizer = AdamW(optimizer_parameters, lr=args.learning_rate, eps=args.adam_epsilon)
+scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps, num_training_steps=total_steps)
+
+# Initialize lists to store loss values
+train_loss_values = []
+cosine_loss_values = []
+validation_loss_values = []
+he_validation_loss_values = []
+
+cbm.train()
+num_steps = 0
+for epoch in range(int(args.num_train_epochs)):
+    train_loss = 0.0
+    cosine_loss = 0.0
+    for batch in train_dataloader:
+        input_ids = batch['input_ids'].to(device)
+        attention_mask = batch['attention_mask'].to(device)
+        labels = batch['labels'].to(device)
+        rewrite_input_ids = batch['rewrite_input_ids'].to(device)
+        rewrite_attention_mask = batch['rewrite_attention_mask'].to(device)
+
+        outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels, rewrite_input_ids=rewrite_input_ids, rewrite_attention_mask=rewrite_attention_mask)
+        loss, cos_loss = outputs[0], outputs[1]
+        loss.backward()
+        optimizer.step()
+        scheduler.step()
+        cbm.zero_grad()
+
+        train_loss += loss.item()
+        cosine_loss += cos_loss.item()
+        num_steps += 1
+
+    train_loss /= len(train_dataloader)
+    cosine_loss /= len(train_dataloader)
+    train_loss_values.append(train_loss)
+    cosine_loss_values.append(cosine_loss)
+    print(f"Epoch: {epoch}, Training Loss: {train_loss}, Cosine Loss: {cosine_loss}")
+
+    cbm.eval()
+    validation_loss = 0.0
+    with torch.no_grad():
+        for batch in validation_dataloader:
+            input_ids = batch['input_ids'].to(device)
+            attention_mask = batch['attention_mask'].to(device)
+            rewrite_input_ids = batch['rewrite_input_ids'].to(device)
+            rewrite_attention_mask = batch['rewrite_attention_mask'].to(device)
+            labels = batch['labels'].to(device)
+            outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels, rewrite_input_ids=rewrite_input_ids, rewrite_attention_mask=rewrite_attention_mask)
+            loss = outputs[0]
+            validation_loss += loss.item()
+    
+    he_validation_loss = 0.0
+    with torch.no_grad():
+        for batch in human_eval_dataloader:
+            input_ids = batch['input_ids'].to(device)
+            attention_mask = batch['attention_mask'].to(device)
+            rewrite_input_ids = batch['rewrite_input_ids'].to(device)
+            rewrite_attention_mask = batch['rewrite_attention_mask'].to(device)
+            labels = batch['labels'].to(device)
+            outputs = cbm(input_ids, attention_mask=attention_mask, labels=labels, rewrite_input_ids=rewrite_input_ids, rewrite_attention_mask=rewrite_attention_mask)
+            loss = outputs[0]
+            he_validation_loss += loss.item()
+
+    validation_loss /= len(validation_dataloader)
+    validation_loss_values.append(validation_loss)
+    print(f"Validation Loss after epoch {epoch}: {validation_loss}")
+
+    he_validation_loss /= len(human_eval_dataloader)
+    he_validation_loss_values.append(he_validation_loss)
+    print(f"HumanEval Validation Loss after epoch {epoch}: {he_validation_loss}")
+    cbm.train()
+
+model_save(cbm)
+print("done training")
+# Plot the learning curve
+plt.figure(figsize=(12, 6))
+
+plt.plot(train_loss_values, label="Training Loss")
+#plt.plot(cosine_loss_values, label="Cosine Loss")
+plt.plot(validation_loss_values, label="Validation Loss")
+plt.plot(he_validation_loss_values, label="HumanEval Validation Loss")
+
+plt.xlabel("Training Steps")
+plt.ylabel("Loss")
+plt.title("Learning Curve")
+plt.legend()
+timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+plt.savefig(f"./learning_result/learning_curve_{timestamp}.png")
+
+# Test the model and print out the confusion matrix
+log_path = './logs'
+os.makedirs(log_path, exist_ok=True)
+timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+logging.basicConfig(filename=os.path.join(log_path, f'test_{timestamp}.log'),
+                    force=True,
+                    format='%(asctime)s - %(levelname)s - %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S',
+                    level=logging.INFO)
+
+cbm.eval()
+label_list, pred_list = [], []
+with torch.no_grad():
+    for batch in test_dataloader:
+        input_ids = batch['input_ids'].to(device)
+        attention_mask = batch['attention_mask'].to(device)
+        rewrite_input_ids = batch['rewrite_input_ids'].to(device)
+        rewrite_attention_mask = batch['rewrite_attention_mask'].to(device)
+        outputs = cbm(input_ids, attention_mask=attention_mask, rewrite_input_ids=rewrite_input_ids, rewrite_attention_mask=rewrite_attention_mask)
+        labels = batch["labels"]
+        logits = outputs[0]
+        predictions = torch.argmax(logits, dim=1)
+        label_list += labels.tolist()
+        pred_list += predictions.tolist()
+
+accuracy = accuracy_score(label_list, pred_list)
+print(label_list)
+print(pred_list)
+print(accuracy)
+
+auc = roc_auc_score(label_list, pred_list)
+print(f"ROC AUC : {auc}")
+
+
+target_names = ['Human','ChatGPT']
+logging.info('Confusion Matrix')
+cm = confusion_matrix(label_list, pred_list)
+plot_confusion_matrix(cm, target_names, title='Confusion Matrix')
+logging.info('Classification Report')
+logging.info(classification_report(label_list, pred_list, target_names=target_names))
