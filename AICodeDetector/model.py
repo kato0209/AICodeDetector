@@ -21,7 +21,7 @@ class CustomClassificationHead(nn.Module):
         hidden_size2 = 768
         hidden_size3 = 512
 
-        self.dense = nn.Linear(config.hidden_size*2, hidden_size2)
+        self.dense = nn.Linear(config.hidden_size, hidden_size2)
         self.dense2 = nn.Linear(hidden_size2, hidden_size3)
         self.batch_norm = nn.BatchNorm1d(hidden_size2)
         self.activation = nn.ReLU()
@@ -69,21 +69,21 @@ class CustomBertModel(nn.Module):
         pooled_output = pooled = outputs[1]
         pooled_output = self.dropout(pooled_output)
 
-        rewrite_outputs = self.model2(input_ids=rewrite_input_ids, attention_mask=rewrite_attention_mask)
-        rewrite_pooled_output = rewrite_pooled = rewrite_outputs[1]
-        rewrite_pooled_output = self.dropout(rewrite_pooled_output)
+        #rewrite_outputs = self.model2(input_ids=rewrite_input_ids, attention_mask=rewrite_attention_mask)
+        #rewrite_pooled_output = rewrite_pooled = rewrite_outputs[1]
+        #rewrite_pooled_output = self.dropout(rewrite_pooled_output)
 
         #transformer_layer = nn.TransformerEncoderLayer(d_model=768, nhead=3).to(input_ids.device)
         #combined_output = torch.stack([pooled_output, rewrite_pooled_output], dim=0)
         #new_pooled_output = transformer_layer(combined_output)
         #new_pooled_output = new_pooled_output.mean(dim=0)
 
-        new_pooled_output = torch.cat([pooled_output, rewrite_pooled_output], dim=-1)
+        #new_pooled_output = torch.cat([pooled_output, rewrite_pooled_output], dim=-1)
 
         loss = None
         cos_loss = None
         if labels is not None:
-            dist = ((new_pooled_output.unsqueeze(1) - new_pooled_output.unsqueeze(0)) ** 2).mean(-1)
+            dist = ((pooled_output.unsqueeze(1) - pooled_output.unsqueeze(0)) ** 2).mean(-1)
             mask = (labels.unsqueeze(1) == labels.unsqueeze(0)).float()
             mask = mask - torch.diag(torch.diag(mask))
             neg_mask = (labels.unsqueeze(1) != labels.unsqueeze(0)).float()
@@ -93,11 +93,11 @@ class CustomBertModel(nn.Module):
 
             loss_fct = CrossEntropyLoss()
 
-            logits = self.classifier(new_pooled_output)
+            logits = self.classifier(pooled_output)
             loss = loss_fct(logits.view(-1, self.num_labels), labels.view(-1))
             loss = self.loss_ratio * loss + self.alpha * cos_loss
         else:
-            logits = self.classifier(new_pooled_output)
+            logits = self.classifier(pooled_output)
 
         output = (logits,)
         return ((loss, cos_loss) + output) if loss is not None else output

@@ -3,6 +3,7 @@ import torch
 from torch import cuda,bfloat16
 from sentence_transformers import SentenceTransformer, util
 
+
 def load_mask_filling_model(args, mask_filling_model_name, model_config):
 
     print(f'Loading mask filling model {mask_filling_model_name}...')
@@ -34,7 +35,7 @@ def load_mask_filling_model(args, mask_filling_model_name, model_config):
     return model_config
 
 
-def load_model(args, model_name, model_config):
+def load_model2(args, model_name, model_config):
     quant_config = transformers.BitsAndBytesConfig(
         load_in_4bit=True,
     )
@@ -50,7 +51,7 @@ def load_model(args, model_name, model_config):
     model_config['sentence_model_tokenizer'] = sentence_model_tokenizer
     return model_config
 
-def load_model2(args, model_name, model_config):
+def load_model(args, model_name, model_config):
     quant_config = transformers.BitsAndBytesConfig(
         load_in_4bit=True,
         bnb_4bit_quant_type='nf4',
