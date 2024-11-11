@@ -1,0 +1,402 @@
+[
+    {
+        "original": "def add_run(self, text=None, style=None):\n    \"\"\"\n    Append a run to this paragraph containing *text* and having character\n    style identified by style ID *style*. *text* can contain tab\n    (``\\\\t``) characters, which are converted to the appropriate XML form\n    for a tab. *text* can also include newline (``\\\\n``) or carriage\n    return (``\\\\r``) characters, each of which is converted to a line\n    break.\n    \"\"\"\n    # Implement the function here\n    pass",
+        "rewrite": "Here is the revised code:\n\n```python\ndef add_run(self, text=None, style=None):\n    if not text:\n        text = ''\n    \n    from xml.etree import ElementTree as ET\n    \n    r = ET.Element('w:r')\n    \n    if style is not None:\n        r.set('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}rsid', str(style))\n        \n        t = ET.Element('w:t')\n        \n        for char in text"
+    },
+    {
+        "original": "def _read_execute_info(path, parents):\n    base_dir = None\n    try:\n        with open(path, 'r') as file:\n            for line in file:\n                if line.startswith(\"Base Directory: \"):\n                    base_dir = line.split(\"Base Directory: \")[1].strip()\n                    break\n    except FileNotFoundError:\n        print(f\"File not found at path: {path}\")\n    \n    if not base_dir:\n        for parent in parents:\n            base_dir = _read_execute_info(parent, [])\n            if base_dir:\n                break\n    \n    return base_dir",
+        "rewrite": "```\ndef read_execute_info(path, parents):\n    for line in open_file_with_retry(path):\n        if line.startswith(\"Base Directory: \"):\n            return line.split(\"Base Directory: \")[1].strip()\n    \n    for parent in parents:\n        base_dir = read_execute_info(parent, [])\n        if base_dir:\n            return base_dir\n\ndef open_file_with_retry(path):\n    try:\n        with open(path, 'r') as file:\n            yield from file\n    except FileNotFoundError:\n"
+    },
+    {
+        "original": "def _modify_eni_properties(eni_id, properties=None, vm_=None):\n    \"\"\"\n    Change properties of the interface\n    with id eni_id to the values in properties dict\n    \"\"\" \n    \n    if properties is None:\n        return \"No properties provided\"\n    \n    if vm_ is None:\n        return \"No VM provided\"\n    \n    if eni_id not in vm_:\n        return \"ENI ID not found in VM\"\n    \n    vm_[eni_id].update(properties)\n    \n    return \"ENI properties updated successfully\"",
+        "rewrite": "Here is the revised code:\n\n```\ndef _modify_eni_properties(eni_id, properties=None, vm_=None):\n    if not all([properties, vm_]):\n        return \"Properties and VM are required\"\n    \n    if eni_id not in vm_:\n        return \"ENI ID not found in VM\"\n    \n    vm_[eni_id].update(properties)\n    \n    return \"ENI properties updated successfully\"\n```"
+    },
+    {
+        "original": "def data(self):\n    examples = self.dataset\n    # sort the examples in ascending order based on the keys\n    sorted_examples = sorted(examples, key=lambda x: x['key'])\n    return sorted_examples",
+        "rewrite": "def data(self):\n    return sorted(self.dataset, key=lambda x: x['key'])"
+    },
+    {
+        "original": "def Start(self):\n    # This uploads the rules to the foreman and, thus, starts the hunt.\n    pass",
+        "rewrite": "```\ndef start(self):\n    foreman = Foreman()\n    rules = self.prepare_rules()\n    foreman.upload_rules(rules)\n```"
+    },
+    {
+        "original": "def _partition_spec(self, shape, partition_info):\n    slices = []\n    for dim, part_info in zip(shape, partition_info):\n        if part_info == 0:\n            slices.append('0')\n        elif part_info == 1:\n            slices.append(':')\n        else:\n            block_size = dim // part_info\n            start = 0\n            for _ in range(part_info - 1):\n                slices.append('{}:{}'.format(start, start + block_size))\n                start += block_size\n            slices.append('{}:'.format(start))\n    return ','.join(slices)",
+        "rewrite": "Here is the revised code:\n\n```\ndef _partition_spec(self, shape, partition_info):\n    slices = []\n    for dim, part_info in zip(shape, partition_info):\n        if part_info == 0:\n            slices.append('0')\n        elif part_info == 1:\n            slices.append(':')\n        else:\n            block_size, remainder = divmod(dim, part_info)\n            for i in range(part_info - 1):\n                slices.append('{}:{}'.format(i * block"
+    },
+    {
+        "original": "def connection_id_to_endpoint(self, connection_id):\n    # Retrieve public key for the given connection_id\n    public_key = self.get_public_key(connection_id)\n    \n    # Return the endpoint associated with the public key\n    endpoint = self.get_endpoint(public_key)\n    \n    return endpoint",
+        "rewrite": "```\ndef connection_id_to_endpoint(self, connection_id):\n    return self.get_endpoint(self.get_public_key(connection_id))\n```"
+    },
+    {
+        "original": "import re\n\ndef _ValidateAFF4Type(aff4_type):\n    # Regular expression pattern for matching the AFF4 type format\n    pattern = r'^[a-zA-Z0-9_-]+(/[a-zA-Z0-9_-]+)*$'\n\n    # Check if the aff4_type matches the pattern\n    if re.match(pattern, aff4_type):\n        return True\n    else:\n        return False",
+        "rewrite": "Here is the revised code:\n\n```\nimport re\n\ndef validate_aff4_type(aff4_type):\n    return bool(re.match(r'^[a-zA-Z0-9_-]+(/[a-zA-Z0-9_-]+)*$', aff4_type))\n```"
+    },
+    {
+        "original": "import platform\n\ndef KernelVersion():\n    try:\n        version = platform.platform()\n        if version:\n            return version.split('-')[-1].strip()\n        else:\n            return \"unknown\"\n    except:\n        return \"unknown\"\n\nprint(KernelVersion())",
+        "rewrite": "```\nimport platform\n\ndef get_kernel_version():\n    try:\n        return platform.release().strip() or \"unknown\"\n    except Exception:\n        return \"unknown\"\n\nprint(get_kernel_version())\n```"
+    },
+    {
+        "original": "def guid_to_squid(guid):\n    parts = guid.split('-')\n    reversed_parts = []\n    for part in parts[:3]:\n        reversed_parts.append(part[::-1])\n    for part in parts[3:5]:\n        reversed_parts.append(part[::2][::-1] + part[1::2][::-1])\n    return ''.join(reversed_parts)\n\n# Test the function\ninput_guid = '2BE0FA87-5B36-43CF-95C8-C68D6673FB94'\noutput_squid = guid_to_squid(input_guid)\nprint(output_squid)",
+        "rewrite": "```\ndef guid_to_squid(guid):\n    parts = guid.split('-')\n    return ''.join([parts[0][::-1], parts[1][::-1], parts[2][::-1], \n                    *'-'.join([parts[3][::2][::-1] + parts[3][1::2][::-1], \n                              parts[4][::2][::-1] + parts[4][1::2][[::-1]]])])\n\ninput_guid"
+    },
+    {
+        "original": "def commit_config(self, message=\"\"):\n    \"\"\"Commit configuration.\"\"\"\n    # your code here\n    pass",
+        "rewrite": "```\ndef commit_config(self, message=\"\"):\n    if not message:\n        message = \"Committing configuration changes\"\n    self.repo.git.add(\".\")\n    self.repo.index.commit(message)\n```"
+    },
+    {
+        "original": "def fetch_metric(self, cursor, results, tags):\n    instances = self.get_instances()  # Get the list of instances\n\n    output = []\n\n    for result in results:\n        instance_name = result['instance_name']\n        metric_name = result['metric_name']\n\n        matching_instance = None\n        for instance in instances:\n            if instance['name'] == instance_name:\n                matching_instance = instance\n                break\n\n        if matching_instance is not None:\n            metric_value = self.query_metric(cursor, matching_instance['id'], metric_name)\n            output.append({'instance_name': instance_name, 'metric_name': metric_name, 'value': metric_value})\n\n    return output",
+        "rewrite": "Here is the revised code:\n\n```\ndef fetch_metric(self, cursor, results, tags):\n    instances = {instance['name']: instance for instance in self.get_instances()}\n\n    return [{'instance_name': result['instance_name'], 'metric_name': result['metric_names'], 'value': self.query_metric(cursor, instances[result['instance_name']]['id'], result['metric_names'])} \n            for result in results if result['instance-name'] in instances]\n```"
+    },
+    {
+        "original": "def apply(key, value):\n    \"\"\"\n    Set a single key\n\n    .. note::\n\n        This will strip comments from your config file\n    \"\"\"\n    \n    # Open the config file in write mode\n    with open('config.txt', 'r') as file:\n        lines = file.readlines()\n\n    # Find the index of the key in the config file\n    for i, line in enumerate(lines):\n        if line.startswith(key):\n            key_index = i\n            break\n\n    # Update the value for the key in the config file\n    lines[key_index] = f\"{key} = {value}\\n\"\n\n    # Write the updated config file\n    with open('config.txt', 'w') as file:\n        file.writelines(lines)",
+        "rewrite": "Here is a revised version of your code:\n\n```\ndef apply(key, value):\n    \n    with open('config.txt', 'r') as f:\n        lines = [line.strip() for line in f.readlines() if not line.strip().startswith('#')]\n        \n        found = False\n        \n        for i, line in enumerate(lines):\n            if line.startswith(key + ' '):\n                lines[i] = '{} {}'.format(key, value)\n                found = True\n                break\n                \n        if not found"
+    },
+    {
+        "original": "def refresh_access_token(self, refresh_token):\n    \"\"\"\u5237\u65b0 access token\n\n    :param refresh_token: OAuth2 refresh token\n    :return: JSON \u6570\u636e\u5305\n    \"\"\"\n    \n    # OAuth2 refresh token is used to get a new access token\n    # This function will make a request to the server and retrieve the new access token\n    # You can use your preferred HTTP library to make the request\n    \n    # Sample code to make a request and retrieve the new access token\n    # For example, using requests library\n    import requests\n\n    url = 'https://your_auth_server.com/token'\n    data = {\n        'grant_type': 'refresh_token',\n        'refresh_token': refresh_token,\n        'client_id': 'your_client_id',\n        'client_secret': 'your_client_secret'\n    }\n    \n    response = requests.post(url, data=data)\n    \n    return response.json()",
+        "rewrite": "Here is the revised code:\n\n```\nimport requests\n\ndef refresh_access_token(self, refresh_token):\n    \n    url = 'https://your_auth_server.com/token'\n    \n    data = {\n        'grant_type': 'refresh_token',\n        'refresh_token': refresh_token,\n        'client_id': self.client_id,\n        'client_secret': self.client_secret\n      }\n      \n      response = requests.post(url, data=data)\n      \n      return response.json()\n```"
+    },
+    {
+        "original": "def is_connection_to_a_vcenter(service_instance):\n    \"\"\"\n    Function that returns True if the connection is made to a vCenter Server and\n    False if the connection is made to an ESXi host\n\n    service_instance\n        The Service Instance from which to obtain managed object references.\n    \"\"\"\n    \n    about_info = service_instance.content.about\n    if \"vCenter\" in about_info.apiType:\n        return True\n    else:\n        return False",
+        "rewrite": "```\ndef is_connection_to_a_vcenter(service_instance):\n    about_info = service_instance.content.about\n    return \"vCenter\" in about_info.apiType\n```"
+    },
+    {
+        "original": "def add_column(self, name, *, index=0, values=None):\n    # Check if values is provided\n    if values is None:\n        values = []\n    \n    # Check if index is out of bounds\n    if index > len(self.table) or index < 0:\n        return \"Index out of bounds\"\n    \n    # Add the column name to the header\n    self.header.insert(index, name)\n    \n    # Add the values to the column\n    for i in range(len(self.table)):\n        if i < len(values):\n            self.table[i].insert(index, values[i])\n        else:\n            self.table[i].insert(index, None)\n    \n    return \"Column added successfully\"",
+        "rewrite": "Here is the revised code:\n\n```\ndef add_column(self, name, *, index=0, values=None):\n    values = values if values is not None else []\n    if index < 0 or index > len(self.table):\n        return \"Index out of bounds\"\n    self.header.insert(index, name)\n    for i in range(len(self.table)):\n        self.table[i].insert(index, values[i] if i < len(values) else None)\n    return \"Column added successfully\"\n```"
+    },
+    {
+        "original": "def __get_stat_display(self, stats, layer):\n    display_dict = {}\n    for plugin_name, plugin_data in stats.items():\n        display_dict[plugin_name] = plugin_data.get_stats_display(layer)\n    \n    return display_dict",
+        "rewrite": "```\ndef __get_stat_display(self, stats, layer):\n    return {plugin_name: plugin_data.get_stats_display(layer) for plugin_name, plugin_data in stats.items()}\n```"
+    },
+    {
+        "original": "def delete(self, id, **kwargs):\n    \"\"\"Delete an object on the server.\n\n    Args:\n        id: ID of the object to delete\n        **kwargs: Extra options to send to the server (e.g. sudo)\n\n    Raises:\n        GitlabAuthenticationError: If authentication is not correct\n        GitlabDeleteError: If the server cannot perform the request\n    \"\"\" \n    try:\n        # Perform the delete operation on the server using the given ID\n        # Optionally, send any extra options using **kwargs\n        # Check if the delete operation was successful\n        # If successful, return a success message\n        return \"Object with ID {} has been successfully deleted\".format(id)\n    except AuthenticationError:\n        raise GitlabAuthenticationError(\"Authentication is not correct\")\n    except DeleteError:\n        raise GitlabDeleteError(\"Server cannot perform the request\")\n\n# Example usage:\n# delete(1234, sudo=True)",
+        "rewrite": "Here is the revised code:\n\n```\ndef delete(self, id, **kwargs):\n    try:\n        response = self.gitlab.delete(f\"/api/v4/{self.path}/{id}\", **kwargs)\n        if response.status_code == 204:\n            return f\"Object with ID {id} has been successfully deleted\"\n        else:\n            raise GitlabDeleteError(\"Server cannot perform the request\")\n    except AuthenticationError:\n        raise GitlabAuthenticationError(\"Authentication is not correct\")\n```\n\n"
+    },
+    {
+        "original": "from functools import wraps\nfrom typing import Callable\n\ndef _requires_login(func: Callable) -> Callable:\n    @wraps(func)\n    def wrapper(*args, **kwargs):\n        # Check if user is logged in\n        if not user_logged_in:\n            raise Exception(\"User must be logged in to access this function\")\n        return func(*args, **kwargs)\n    return wrapper",
+        "rewrite": "Here is the revised code:\n\n```\nfrom functools import wraps\nfrom typing import Callable\n\nuser_logged_in = False  # assuming this variable is defined elsewhere in the code\n\ndef requires_login(func: Callable) -> Callable:\n    @wraps(func)\n    def wrapper(*args, **kwargs):\n        if not user_logged_in:\n            raise Exception(\"User must be logged in to access this function\")\n        return func(*args, **kwargs)\n    return wrapper\n```"
+    },
+    {
+        "original": "def _build_next_request(self, verb, prior_request, prior_response):\n    if 'nextPageToken' in prior_response:\n        next_page_token = prior_response['nextPageToken']\n        new_request = prior_request.copy()\n        new_request.body = new_request.body.replace('pageToken=None', f'pageToken={next_page_token}')\n        return new_request\n    return None",
+        "rewrite": "Here is the revised code:\n\n```\ndef _build_next_request(self, verb, prior_request, prior_response):\n    if 'nextPageToken' in prior_response:\n        next_page_token = prior_response['nextPageToken']\n        new_request =prior_request.copy()\n        new_request.body = new_request.body.replace('pageToken=None', f'pageToken={next_page_token}')\n        return new_request\n    return None\n```"
+    },
+    {
+        "original": "import numpy as np\nfrom scipy.optimize import fsolve\n\ndef _gpinv(probs, kappa, sigma):\n    \"\"\"Inverse Generalized Pareto distribution function.\"\"\"\n    \n    def equation(x):\n        return 1 - np.exp(-(1 + kappa*(x/sigma))**(-1/kappa)) - probs\n    \n    x0 = np.full_like(probs, sigma)  # Initial guess for fsolve\n    return fsolve(equation, x0)\n\n# Example usage:\nprobs = [0.1, 0.2, 0.3]\nkappa = 0.5\nsigma = 1.0\nprint(_gpinv(probs, kappa, sigma))",
+        "rewrite": "Here is the revised code:\n\n```\nimport numpy as np\nfrom scipy.optimize import root\n\ndef _gpinv(probs, kappa, sigma):\n    def equation(x):\n        return 1 - np.exp(-(1 + kappa*(x/sigma))**(-1/kappa)) - probs\n    \n    res = root(equation, sigma*np.ones_like(probs))\n    return res.x\n\nprobs = [0.1, 0.2, 0.3]\nk"
+    },
+    {
+        "original": "def _create_container_args(kwargs):\n    container_args = {}\n    for key, value in kwargs.items():\n        if key == 'image':\n            container_args['image'] = value\n        elif key == 'command':\n            container_args['command'] = value.split()\n        elif key == 'network':\n            container_args['network'] = value\n        elif key == 'name':\n            container_args['name'] = value\n        elif key == 'environment':\n            container_args['environment'] = {k: v for k, v in value.items()}\n        elif key == 'volumes':\n            container_args['volumes'] = {k: {} for k in value}\n        elif key == 'ports':\n            container_args['ports'] = {k: {} for k in value}\n        elif key == 'labels':\n            container_args['labels'] = {k: v for k, v in value.items()}\n        elif key == 'detach':\n            container_args['detach'] = value\n        elif key == 'auto_remove':\n            container_args['auto_remove'] = value\n        elif key == 'stdin_open':\n            container_args['stdin_open'] = value\n        elif key == 'tty':\n            container_args['tty'] = value\n        elif key == 'shm_size':\n            container_args['shm_size'] = int(value)\n    return container_args",
+        "rewrite": "Here is the revised code:\n\n```\ndef _create_container.args(kwargs):\n   \tcontainer_Args= {}\n\tfor Key, Value in kwargs.items():\n\t\tif Key in ['image', 'network',  name]:\n\t\t\tcontainer_Args[Key]  Value \n\t\telif Key =='command':  \n\t\t\tcontainer_Args[Key]  Value.split() \n\t\telif Key =='environment':  \n\t\t\tcontainer_Args[Key] ={K : V for K ,V  n VALUE .items()} \n"
+    },
+    {
+        "original": "def _CollectArtifact(self, artifact, apply_parsers):\n    # Perform operations to collect and parse the artifact\n    collected = collect(artifact)\n    \n    if apply_parsers:\n        for parser in apply_parsers:\n            parsed_data = parse(collected, parser)\n            collected.update(parsed_data)\n    \n    return CollectedArtifact(collected)",
+        "rewrite": "```\ndef _CollectArtifact(self, artifact, apply_parsers):\n    collected = collect(artifact)\n    \n    if apply_parsers:\n        for parser in apply_parsers:\n            collected.update(parse(collected, parser))\n    \n    return CollectedArtifact(collected)\n```"
+    },
+    {
+        "original": "def moments_match_ep(self, data_i, tau_i, v_i, Y_metadata_i=None):\n    # Calculate the mean and variance of the site parameters\n    mean_i = v_i / tau_i\n    var_i = 1.0 / tau_i\n\n    # Calculate the updated values for the global parameters\n    self.global_tau = self.global_tau - tau_i\n    self.global_v = self.global_v - v_i + mean_i\n    self.global_X = self.global_X - tau_i * (v_i + mean_i**2) + self.global_tau * (self.global_v + self.global_mean**2)\n\n    # Update the global mean\n    self.global_mean = self.global_v / self.global_tau\n\n    # Calculate the new site parameters based on the updated global parameters\n    new_tau_i = 1.0 / (var_i + self.global_tau)\n    new_v_i = new_tau_i * (mean_i * var_i + self.global_v - self.global_mean * self.global_tau)\n\n    return new_tau_i, new_v_i",
+        "rewrite": "Here is a revised version of your function:\n\n```\ndef moments_match_ep(self, data=None, tau_I=None, v_I=None, Y_metadata_I=None):\n        m_I = v_I / tau_I \n        s2_I = 1.0 / tau_I \n\n        delta_S=tau_I*(v_I+m_I**2) \n        delta_m=v_I-m_I \n\n        dt=self-global_tau \n        dv=self/global_v-delta_m  \n        dS=self/global_X"
+    },
+    {
+        "original": "def validate_ports_string(ports):\n    port_list = ports.split(\",\")\n    \n    for port_range in port_list:\n        if \"-\" in port_range:\n            start, end = port_range.split(\"-\")\n            if not start.isdigit() or not end.isdigit():\n                return False\n            if int(start) >= int(end) or int(start) > 65535 or int(end) > 65535:\n                return False\n        else:\n            if not port_range.isdigit() or int(port_range) > 65535:\n                return False\n            \n    return True",
+        "rewrite": "Here is the revised code:\n\n```\ndef validate_ports_string(ports):\n    for port_range in ports.replace(\" \", \"\").split(\",\"):\n        parts = port_range.split(\"-\")\n        if len(parts) == 2:\n            start, end = parts\n            if not (start.isdigit() and end.isdigit()):\n                return False\n            start, end = int(start), int(end)\n            if start >= end or start > 65535 or end > 65535:\n                return False\n"
+    },
+    {
+        "original": "def strongest_match(cls, overlay, mode, backend=None):\n    best_match = None\n    best_match_value = 0\n    \n    for operation in cls.get_compositor_operations():\n        match_value = operation.match_level(overlay, mode)\n        if match_value > best_match_value:\n            best_match = operation\n            best_match_value = match_value\n    \n    return best_match",
+        "rewrite": "```\ndef strongest_match(cls, overlay, mode, backend=None):\n    return max((op for op in cls.get_compositor_operations()), key=lambda op: op.match_level(overlay, mode))\n```"
+    },
+    {
+        "original": "def _to_dict(self):\n    \"\"\"Return a json dictionary representing this model.\"\"\"\n    \n    return {\n        \"attribute1\": self.attribute1,\n        \"attribute2\": self.attribute2,\n        \"attribute3\": self.attribute3\n    }",
+        "rewrite": "```\ndef to_dict(self):\n    return {attr: getattr(self, attr) for attr in dir(self) if not attr.startswith('__')}\n```"
+    },
+    {
+        "original": "def _post_master_init(self, master):\n    \"\"\"\n    Function to finish init after connecting to a master\n    \n    This is primarily loading modules, pillars, etc. (since they need\n    to know which master they connected to)\n    \n    If this function is changed, please check Minion._post_master_init\n    to see if those changes need to be propagated.\n    \n    ProxyMinions need a significantly different post master setup,\n    which is why the differences are not factored out into separate helper\n    functions.\n    \"\"\"\n    # Add your code here to finish initialization after connecting to a master",
+        "rewrite": "Here is the revised code:\n\n```\ndef _post_master_init(self, master):\n    self.master = master\n    self.opts = salt.config.master_config(master.opts)\n    \n    # Load pillar Cache \n    self.pillar_wrap = salt.pillar.Pillar(self.opts)\n    \n     # Load grains \n     self.grains = salt.loader.grains(self.opts)\n     \n     # Load modules \n     self._modulesUITableViewed = salt.loader.modules(self)\n     \n     # Set up be"
+    },
+    {
+        "original": "def get_occupation(self, atom_index, orbital):\n    total_occupation = 0\n    for entry in PROCAR_data[atom_index]:  # Assuming PROCAR_data is a list of dictionaries where each dictionary represents an atom and its orbitals occupations\n        if '-' in orbital:\n            if entry['orbital'] == orbital:\n                total_occupation += entry['occupation']\n        else:\n            if len(orbital) == 1:\n                if entry['orbital'][0] == orbital:\n                    total_occupation += entry['occupation']\n            else:\n                if entry['orbital'].startswith(orbital):\n                    total_occupation += entry['occupation']\n    return total_occupation",
+        "rewrite": "Here is the revised code:\n\n```\ndef get_occupation(self, atom_index, orbital):\n    return sum(entry[' occupation'] for entry in PROCAR_data[atom_index] \n               if (('-' in orbital and entry['orbital'] == orbital) \n                   or (len(orbital) == 1 and entry['orbital'][0] == orbital) \n                   or (len(orbital) > 1 and entry['orbital'].startswith(orbital)))))\n```"
+    },
+    {
+        "original": "def _process_range_request(self, environ, complete_length=None, accept_ranges=None):\n    if 'HTTP_RANGE' not in environ:\n        return False\n    \n    range_header = environ['HTTP_RANGE']\n    range_match = re.match(r'bytes=(\\d+)?-(\\d+)?$', range_header)\n    \n    if not range_match:\n        raise RequestedRangeNotSatisfiable()\n    \n    start_byte = int(range_match.group(1) or 0)\n    end_byte = int(range_match.group(2) or complete_length - 1)\n    \n    if start_byte >= complete_length or end_byte >= complete_length:\n        raise RequestedRangeNotSatisfiable\n    \n    response_headers = {\n        'Accept-Ranges': accept_ranges or 'bytes',\n        'Content-Range': f'bytes {start_byte}-{end_byte}/{complete_length}',\n        'Content-Length': end_byte - start_byte + 1\n    }\n    \n    start_response('206 Partial Content', list(response_headers.items()))\n    \n    return True",
+        "rewrite": "Here is the revised code:\n\n```\nimport re\n\nclass RequestedRangeNotSatisfiable(Exception):\n    pass\n\ndef _process_range_request(self, environ, complete_length=None, accept_ranges=None):\n    if 'HTTP_RANGE' not in environ:\n        return False\n    \n    range_header = environ['HTTP_RANGE']\n    range_match = re.match(r'bytes=(\\d+)?-(\\d+)?$', range_header)\n    \n    if not range_match:\n        raise RequestedRangeNot"
+    },
+    {
+        "original": "def _to_dict(self):\n    return {\n        \"attribute1\": self.attribute1,\n        \"attribute2\": self.attribute2,\n        \"attribute3\": self.attribute3,\n        # Add more attributes as needed\n    }",
+        "rewrite": "Here is a revised version of the code:\n\n```\ndef _to_dict(self):\n    return {attr: getattr(self, attr) for attr in dir(self) if not attr.startswith('__')}\n```"
+    },
+    {
+        "original": "def on_consumer_cancelled(self, method_frame):\n    \"\"\"Invoked by pika when RabbitMQ sends a Basic.Cancel for a consumer\n    receiving messages.\n\n    :param pika.frame.Method method_frame: The Basic.Cancel frame\n    \"\"\"\n    # Your python solution here\n    pass",
+        "rewrite": "```\ndef on_consumer_cancelled(self, method_frame):\n    self._channel.basic_ack(method_frame.method-frame.delivery_tag)FunctionFlags \n```"
+    },
+    {
+        "original": "class DataStore:\n    def __init__(self):\n        self.data = {}\n\n    def record(self, timestamp, *args, **kwargs):\n        if 'data' not in self.data:\n            self.data['data'] = []\n        \n        record_data = {'timestamp': timestamp}\n\n        for arg in args:\n            record_data[arg] = args.index(arg)\n\n        for key, value in kwargs.items():\n            record_data[key] = value\n\n        self.data['data'].append(record_data)\n\n    def get_data(self):\n        return self.data\n\n# Usage\ndata_store = DataStore()\ndata_store.record(1, 'name', 'John', age=25)\ndata_store.record(2, 'name', 'Alice', age=30)\nprint(data_store.get_data())",
+        "rewrite": "```\nclass DataStore:\n    def __init__(self):\n        self.data = {'data': []}\n\n    def record(self, timestamp, *args, **kwargs):\n        record_data = {'timestamp': timestamp}\n        \n        for i, arg in enumerate(args):\n            record_data[f'arg_{i+1}'] = arg\n        \n        record_data.update(kwargs)\n        \n        self.data['data'].append(record_data)\n\n    def get_data(self):\n        return self.data\n\n\n# Usage\n"
+    },
+    {
+        "original": "import numpy as np\n\ndef dlogpdf_dlink(self, link_f, y, Y_metadata=None):\n    if Y_metadata is not None and 'censored' in Y_metadata:\n        censored = Y_metadata['censored']\n    else:\n        censored = np.zeros_like(y)\n\n    dL_dlink = np.zeros_like(link_f)\n    for i in range(len(link_f)):\n        if censored[i] == 1:  # if censored\n            dL_dlink[i] = 0\n        else:\n            dL_dlink[i] = (y[i] - self.link_out(link_f[i])) / self.variance_function(link_f[i])\n\n    return dL_dlink",
+        "rewrite": "Here is the revised code:\n\n```\nimport numpy as np\n\ndef dlogpdf_dlink(self, link_f, y, Y_metadata=None):\n    censored = np.zeros_like(y) if Y_metadata is None or 'censored' not in Y_metadata else Y_metadata['censored']\n    return np.where(censored, 0, (y - self.link_out(link_f)) / self.variance_function(link_f))\n```"
+    },
+    {
+        "original": "def _compare_by_version(path1, path2):\n    # Extract source/peer and version number from the paths\n    source_peer1, version1 = path1.split(\"/\")[-2:]\n    source_peer2, version2 = path2.split(\"/\")[-2:]\n    \n    # Check if paths are from the same source/peer\n    if source_peer1 != source_peer2:\n        return None\n    \n    # Compare version numbers to determine which path is received later\n    if int(version1) < int(version2):\n        return path2\n    else:\n        return path1",
+        "rewrite": "Here is the revised code:\n\n```\ndef _compare_by_version(path1, path2):\n    source-peer1, version1 = path1.rsplit('/', 2)[-2:]\n    source-peer2, version2 = path2.rsplit('/', 2)[-2:]\n    \n    if source_peer1 != source_peer2:\n        return None\n    \n    if int(version1) < int(version2):\n        return path2\n    else:\n        return path1"
+    },
+    {
+        "original": "class ContentType:\n    @classmethod\n    def from_parts(cls, parts):\n        content_types = '<?xml version=\"1.0\" encoding=\"UTF-8\"?>\\n<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">'\n        \n        for part in parts:\n            extension = part.split('.')[-1]\n            if extension == 'xml':\n                content_type = 'application/xml'\n            elif extension == 'jpeg' or extension == 'jpg':\n                content_type = 'image/jpeg'\n            elif extension == 'png':\n                content_type = 'image/png'\n            else:\n                content_type = 'application/octet-stream'\n            \n            content_types += f'\\n  <Override PartName=\"/{part}\" ContentType=\"{content_type}\"/>'\n        \n        content_types += '\\n</Types>'\n        \n        return content_types\n\n# Test the method\nparts = ['document.xml', 'image.jpg', 'sheet.xml', 'data.csv']\nprint(ContentType.from_parts(parts))",
+        "rewrite": "Here is the revised code:\n\n```\nclass ContentType:\n    @classmethod\n    def from_parts(cls, parts):\n        CONTENT_TYPES_XML_HEADER = '<?xml version=\"1.0\" encoding=\"UTF-8\"?>\\n<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">'\n        CONTENT_TYPES_XML_FOOTER = '</Types>'\n        \n        MIMETYPE_MAPPING = {\n            \"xml\": \"application/xml\",\n            \"jpeg\": \"image/jpeg\",\n"
+    },
+    {
+        "original": "def ConfigureDatastore(config):\n    # Guide the user through configuration of the datastore\n    datastore_config = {}\n    \n    for key, value in config.items():\n        datastore_config[key] = value\n    \n    return datastore_config",
+        "rewrite": "```\ndef ConfigureDatastore(config):\n    return dict(config)\n```"
+    },
+    {
+        "original": "def _get_century_code(year):\n    century_digit = int(str(year)[:2])\n    \n    codes = {\n        17: 4,\n        18: 2,\n        19: 0,\n        20: 6,\n        21: 4,\n        22: 2,\n        23: 0,\n        24: 6,\n    }\n    \n    return codes[century_digit]\n\n# test the function\nprint(_get_century_code(1776))  # Output: 4",
+        "rewrite": "Here is the revised code:\n\n```\ndef _get_century_code(year):\n    century_digit = year // 100 %\u0446\u0435\u0437\n    \ncodes = {\n    cez17,heksto cz4),\n    cez18,heksto cz2),\n    cez19,heksto cz0),\n    cezo20,heksto cz6),\n    cez21,heksto cz4),\n    cez22,heksto cz2),\n      cezo23cekzo ,hekstocz0), \n      ce"
+    },
+    {
+        "original": "def bulk_build(jail, pkg_file, keep=False):\n    # Logic for bulk build\n    return num_pkg_builds, num_failures, num_errors",
+        "rewrite": "Here is the revised code:\n\n```\ndef bulk_build(jail, pkg_file, keep=False):\n    num_pkg_builds = 0\n    num_failures = 0\n    num_errors = 0\n\n    with open(pkg_file, 'r') as f:\n        for line in f:\n            pkg_name = line.strip()\n            if build_pkg(jail, pkg_name, keep):\n                num_pkg_builds += 1\n            else:\n                num_failures += 1"
+    },
+    {
+        "original": "def copy_snapshot(kwargs=None, call=None):\n    \"\"\"\n    Copy a snapshot\n    \"\"\"\n    \n    if kwargs is None:\n        kwargs = {}\n    \n    new_snapshot = kwargs.copy()\n    \n    if call is not None:\n        new_snapshot['call'] = call\n    \n    return new_snapshot",
+        "rewrite": "```\ndef copy_snapshot(**=None, **call=None):\n   if kwargs is None:\n       kwargs = {}\n   return {**.update({'call': call}) if call else {}, **} \n```"
+    },
+    {
+        "original": "def _left_zero_blocks(self, r):\n    count = 0\n    for i in range(self.size):\n        if self.block(r, i) == 0:\n            count += 1\n        else:\n            break\n    return count",
+        "rewrite": "```\ndef _left_zero_blocks(self, r):\n    return sum(1 for i in range(self.size) if self.block(r, i) == 0)\n```"
+    },
+    {
+        "original": "def execute(self):\n        results = []\n\n        for operation in self.operations:\n            if operation[0] == 'SET':\n                self.bitfield = self.bitfield[:operation[1]] + '1' + self.bitfield[operation[1]+1:]\n            elif operation[0] == 'GET':\n                results.append(int(self.bitfield[operation[1]]))\n        \n        return results",
+        "rewrite": "Here is the revised code:\n\n```\ndef execute(self):\n    results = []\n\n    for op, idx in [(op, idx) for op, idx in self.operations]:\n        if op == 'SET':\n            self.bitfield = self.bitfield[:idx] + '1' + self.bitfield[idx+1:]\n        elif op == 'GET':\n            results.append(int(self\tbitfield[idx]))\n\n    return results\n```"
+    },
+    {
+        "original": "def InferUserAndSubjectFromUrn(self):\n    \"\"\"Infers user name and subject urn from self.urn.\"\"\"\n    \n    parts = self.urn.split(':') # Split the URN string by ':'\n    \n    user = parts[-2] # Get the second to last element as user name\n    subject = parts[-1] # Get the last element as subject urn\n    \n    return user, subject",
+        "rewrite": "Here is the revised code:\n\n```\ndef InferUserAndSubjectFromUrn(self):\n    parts = self.urn.rsplit(':', 2)\n    return parts[0], parts[1]\n```"
+    },
+    {
+        "original": "def _api_config_item(self, item):\n    if item in glances_config:\n        return jsonify(glances_config[item]), 200\n    else:\n        return jsonify({\"error\": \"Item not found\"}), 400\n    return jsonify({\"error\": \"Unknown error\"}), 404",
+        "rewrite": "```\ndef _api_config_item(self, item):\n    if item in glances_config:\n        return jsonify(glances_config[item]), 200\n    return jsonify({\"error\": \"Item not found\"}), 400\n```"
+    },
+    {
+        "original": "async def get_response(self, message=None, *, timeout=None):\n    return await self._get_response(message, timeout)\n\nasync def _get_response(self, message=None, timeout=None):\n    if message is None:\n        message = await self.get_last_message()\n    elif isinstance(message, int):\n        message = await self.get_message(message)\n\n    if message:\n        for _ in range(3):  # Try 3 times\n            response = await self._wait_for_response(timeout)\n            if response:\n                return response\n        return None\n    return None\n\nasync def _wait_for_response(self, timeout=None):\n    # Some internal logic to wait for response\n    pass",
+        "rewrite": "Here is the revised code:\n\n```\nasync def get_response(self, message=None, *, timeout=None):\n    return await self._get_response(message, timeout)\n\nasync def _get_response(self, message=None, timeout=None):\n    if message is None:\n        message = await self.get_last_message()\n    elif isinstance(message, int):\n        message = await self.get_message(message)\n\n    if message:\n        for _ in range(3):\n            if response := await self._wait_for_response(timeout):\n"
+    },
+    {
+        "original": "import re\n\n    def _extract_field_with_regex(self, field):\n        match = re.search(field, self.text)\n        if match:\n            return match.group(1)\n        else:\n            raise exceptions.ExtractFailure(\"No content matched with regex.\")",
+        "rewrite": "```\nimport re\n\ndef _extract_field_with_regex(self, field):\n    pattern = re.compile(field)\n    match = pattern.search(self.text)\n    return match.group(1) if match else None\n```"
+    },
+    {
+        "original": "import os\n\ndef get_accumulator_dir(cachedir):\n    accumulator_dir = os.path.join(cachedir, 'accumulator')\n    \n    if not os.path.exists(accumulator_dir):\n        os.makedirs(accumulator_dir)\n    \n    return accumulator_dir",
+        "rewrite": "```\nimport os\nimport pathlib\n\ndef get_accumulator_dir(cachedir):\n    accumulator_dir = pathlib.Path(cachedir) / 'accumulator'\n    accumulator_dir.mkdir(parents=True, exist_ok=True)\n    return str(accumulator_dir)\n```"
+    },
+    {
+        "original": "def differing_functions_with_consts(self):\n    functions = self.get_all_functions()\n    matches = []\n    \n    for i in range(len(functions)):\n        for j in range(i+1, len(functions)):\n            if self.differ_only_by_consts(functions[i], functions[j]):\n                matches.append((functions[i], functions[j]))\n    \n    return matches\n\ndef differ_only_by_consts(self, func1, func2):\n    if func1[\"const\"] != func2[\"const\"]:\n        return False\n    \n    if func1[\"op\"] != func2[\"op\"]:\n        return False\n    \n    if len(func1[\"args\"]) != len(func2[\"args\"]):\n        return False\n    \n    for arg1, arg2 in zip(func1[\"args\"], func2[\"args\"]):\n        if arg1[\"op\"] != arg2[\"op\"]:\n            return False\n        if arg1[\"const\"] != arg2[\"const\"]:\n            return False\n    \n    return True",
+        "rewrite": "Here is the revised code:\n\n```\ndef differing_functions_with_consts(self):\n    functions = self.get_all_functions()\n    matches = []\n    \n    for i, func1 in enumerate(functions):\n        for func2 in functions[i+1:]:\n            if self.differ_only_by_consts(func1, func2):\n                matches.append((func1, func2))\n    \n    return matches\n\ndef differ_only_by_consts(self, func1, func2):\n    return (func1[\"const\"] =="
+    },
+    {
+        "original": "import matplotlib.pyplot as plt\n\ndef single_frame_plot(obj):\n    \"\"\"\n    Returns plot, renderer and format for single frame export.\n    \"\"\" \n    fig, ax = plt.subplots()\n    ax.plot(obj)\n    \n    return fig, ax, 'png'",
+        "rewrite": "Here is the revised code:\n\n```\nimport matplotlib.pyplot as plt\n\ndef single_frame_plot(obj):\n    fig, ax = plt.subplots()\n    ax.plot(obj)\n    return fig, ax, 'png'\n```"
+    },
+    {
+        "original": "import psutil\n\nclass YourProgrammingAssistant:\n    \n    def __get_cpu(self):\n        \"\"\"Update and/or return the CPU using the psutil library.\"\"\" \n        cpu_percent = psutil.cpu_percent(interval=1)\n        return cpu_percent",
+        "rewrite": "Here is the revised code:\n\n```\nimport psutil\n\nclass YourProgrammingAssistant:\n    def get_cpu(self):\n        return psutil.cpu_percent(interval=1)\n```"
+    },
+    {
+        "original": "def text_of(relpath):\n    \"\"\"\n    Return string containing the contents of the file at *relpath* relative to\n    this file.\n    \"\"\" \n    with open(relpath, 'r') as file:\n        return file.read()",
+        "rewrite": "```\nimport os\n\ndef text_of(relpath):\n    this_file = os.path.abspath(__file__)\n    this_dir = os.path.dirname(this_file)\n    filepath = os.path.join(this_dir, relpath)\n    with open(filepath, 'r') as file:\n        return file.read()\n```"
+    },
+    {
+        "original": "def relativize(self, absolute_address, target_region_id=None):\n    # Your code here\n    pass",
+        "rewrite": "```\ndef relativize(self, absolute_address, target_region_id=None):\n    if target_region_id is None:\n        target_region_id = self.region_id\n    region = self.get_region(target_region_id)\n    if region is None:\n        raise ValueError(f\"Region {target_region_id} not found\")\n    relative_address = absolute_address - region.base_address\n    if relative_address < 0 or relative_address >= region.size:\n        raise ValueError(f\"Address {absolute_address} is out of"
+    },
+    {
+        "original": "import tensorflow as tf\n\ndef _build(self, images):\n    if images.shape.ndims != 4:\n        raise IncompatibleShapeError(\"images must be rank 4\")\n    \n    if self.model_size not in ['basic', 'large']:\n        raise ValueError(\"model_size must be one of 'basic' or 'large'\")\n    \n    if self.model_size == 'basic':\n        num_output_classes = 10\n    elif self.model_size == 'large':\n        num_output_classes = 20\n\n    # convolutional layers\n    conv1 = tf.layers.conv2d(images, filters=32, kernel_size=(3,3), padding='same', activation=tf.nn.relu)\n    conv2 = tf.layers.conv2d(conv1, filters=64, kernel_size=(3,3), padding='same', activation=tf.nn.relu)\n    \n    # fully connected layer\n    flat = tf.layers.flatten(conv2)\n    fc = tf.layers.dense(flat, units=128, activation=tf.nn.relu)\n    \n    # output layer\n    logits = tf.layers.dense(fc, units=num_output_classes)\n    \n    return logits",
+        "rewrite": "Here is the revised code:\n\n```\nimport tensorflow as tf\n\ndef _build(self, images):\n    if images.shape.ndims != 4:\n        raise ValueError(\"images must be rank 4\")\n    \n    if self.model_size not in ['basic', 'large']:\n        raise ValueError(\"model_size must be one of 'basic' or 'large'\")\n\n    num_output_classes = 10 if self.model_size == 'basic' else 20\n\n    conv1 = tf.layers.conv2"
+    },
+    {
+        "original": "def load(self):\n    # your code here\n    pass",
+        "rewrite": "```\ndef load(self):\n    try:\n        with open('data.pkl', 'rb') as f:\n            self.model, self.label_encoder = pickle.load(f)\n    except FileNotFoundError:\n        self.model, self.label_encoder = None, None\n```"
+    },
+    {
+        "original": "def order_by_line_nos(objs, line_nos):\n    # Create a dictionary to store the line numbers as keys and objects as values\n    obj_dict = {line_nos[i]: objs[i] for i in range(len(objs))}\n    \n    # Sort the dictionary by keys (line numbers)\n    sorted_obj_dict = dict(sorted(obj_dict.items()))\n\n    # Return the values (objects) in the sorted order\n    return list(sorted_obj_dict.values())",
+        "rewrite": "```\ndef order_by_line_nos(objs, line_nos):\n    return [obj for _, obj in sorted(zip(line_nos, objs))]\n```"
+    },
+    {
+        "original": "def get_function_subgraph(self, start, max_call_depth=None):\n    sub_graph = CFG()\n\n    if start not in self.graph:\n        return sub_graph\n\n    queue = [(start, 0)]\n    visited = set()\n\n    while queue:\n        current_node, depth = queue.pop(0)\n\n        if current_node in visited:\n            continue\n\n        sub_graph.add_node(current_node)\n\n        if max_call_depth is not None and depth >= max_call_depth:\n            continue\n\n        visited.add(current_node)\n\n        for neighbor in self.graph[current_node]:\n            sub_graph.add_node(neighbor)\n            sub_graph.add_edge(current_node, neighbor)\n\n            if neighbor not in visited:\n                queue.append((neighbor, depth + 1))\n\n    return sub_graph",
+        "rewrite": "```\ndef get_function_subgraph(self, start, max_call_depth=None):\n    sub_graph = CFG()\n    \n    if start not in self.graph:\n        return sub_graph\n    \n    queue = [(start, 0)]\n    visited = set()\n    \n    while queue:\n        current_node, depth = queue.pop(0)\n        \n        if current_node not in visited:\n            sub_graph.add_node(current_node)\n            visited.add(current_node)\n        \n            if max_call_depth is None or depth "
+    },
+    {
+        "original": "def _create_core_dns_instance(self, instance):\n    \"\"\"\n    Set up coredns instance so it can be used in OpenMetricsBaseCheck\n    \"\"\"\n    # Add your python code here\n    pass",
+        "rewrite": "```\ndef _create_core_dns_instance(self, instance):\n    from kubernetes import client, config\n    config.load_kube_config()\n    api_client = client.ApiClient()\n    \n    v1 = client.V1Api(api_client)\n    \n    core_dns_deployment_name = \"core-dns\"\n    \n    body = {\n        \"apiVersion\": \"v1\",\n        \"kind\": \"Deployment\",\n        \"metadata\": {\"name\": core_dns_deployment_name},\n        \"spec\": {\n"
+    },
+    {
+        "original": "def exclude(self, scheduled_operation: ScheduledOperation) -> bool:\n    if scheduled_operation in self.schedule:\n        self.schedule.remove(scheduled_operation)\n        return True\n    else:\n        return False",
+        "rewrite": "```\ndef exclude(self, scheduled_operation: ScheduledOperation) -> bool:\n    return self.schedule.remove(scheduled_operation) if scheduled_operation in self.schedule else False\n```"
+    },
+    {
+        "original": "def server_show_libcloud(self, uuid):\n    \"\"\"\n    Make output look like libcloud output for consistency\n    \"\"\"\n    # Your code here\n    pass",
+        "rewrite": "```\ndef server_show_libcloud(self, uuid):\n    server = self.nova.servers.get(uuid)\n    if not server:\n        return None\n    output = {\n        'id': server.id,\n        'name': server.name,\n        'status': server.status,\n        'public_ip': [ipaddr for ipaddr in server.addresses.values()[0] if ipaddr['version'] == 4][0]['addr'],\n        'private_ip': [ipaddr for ipaddr in"
+    },
+    {
+        "original": "def extract(self, topic: str, parseNumbers=True) -> list:\n    extracted_items = []\n    \n    for item in self.data:\n        if item.get('topic') == topic:\n            extracted_item = {}\n            for key, value in item.items():\n                if key != 'topic':\n                    extracted_item[key] = int(value) if parseNumbers and value.isdigit() else value\n            extracted_items.append(extracted_item)\n    \n    return extracted_items",
+        "rewrite": "Here is the revised code:\n\n```\ndef extract(self, topic: str, parseNumbers=True) -> list:\n    return [{k: int(v) if parseNumbers and v.isdigit() else v for k, v in item.items() if k != 'topic'] \n            for item in self.data if item.get('topic') == topic]\n```"
+    },
+    {
+        "original": "def pin_auth(self, request):\n    pin = '1234'  # Example PIN, can be changed to desired value\n    if 'pin' in request:\n        if request['pin'] == pin:\n            return True\n    return False",
+        "rewrite": "```\ndef pin_auth(self, request):\n    pin = '1234'\n    return 'pin' in request and request['pin'] == pin\n```"
+    },
+    {
+        "original": "def set_lim(min_val, max_val, name): \n    if name not in context_vars:\n        raise KeyError(\"No context figure associated with the provided key.\")\n    context_vars[name]['min'] = min_val\n    context_vars[name]['max'] = max_val",
+        "rewrite": "Here is the revised code:\n\n```\ndef set_lim(min_val, max_val, name):\n    if name not in context_vars:\n        raise KeyError(f\"No context figure associated with the key {name}.\")\n    fig = context_vars[name]\n    fig['lims'] = (min_val, max_val)\n```"
+    },
+    {
+        "original": "def ParseMultiple(self, stats, unused_file_obj, unused_kb):\n    for stat in stats:\n        if stat.path.startswith(\"/etc/rc\"):\n            runlevel = stat.path.split(\"/\")[-1]\n            with open(stat.path, \"r\") as f:\n                for line in f:\n                    line = line.strip()\n                    if line.startswith(\"start\") or line.startswith(\"stop\"):\n                        parts = line.split()\n                        name = parts[1]\n                        if \"->\" in name:\n                            name = name.split(\"->\")[-1].strip()\n                        yield rdf_client.LinuxServiceInformation(name=name, runlevel=runlevel, start=line.startswith(\"start\"), stop=line.startswith(\"stop\"))\n                    else:\n                        yield rdf_anomaly.Anomaly(\"Unexpected line in runlevel file: {}\".format(line))",
+        "rewrite": "```\ndef ParseMultiple(self, stats, _, __):\n    for stat in stats:\n        if stat.path.startswith(\"/etc/rc\"):\n            run_level = stat.path.split(\"/\")[-1]\n            with open(stat.path) as f:\n                for line in f:\n                    line = line.strip()\n                    if not (line and (line.startswith(\"start\") or line.startswith(\"stop\"))):\n                        yield rdf_anomaly.Anomaly(f\"Unexpected line in runlevel file: {line}\")\n                    else:\n"
+    },
+    {
+        "original": "def get_ext_outputs(self):\n    extensions = []\n    for path in self.output_distro:\n        if path.endswith(\".c\"):\n            extensions.append(path)\n    return extensions",
+        "rewrite": "```\ndef get_ext_outputs(self):\n    return [path for path in self.output_distro if path.endswith(\".c\")]\n```"
+    },
+    {
+        "original": "import base64\n\ndef base64_bytes(x):\n    return base64.b64decode(x)",
+        "rewrite": "```\nimport base64\n\ndef encode_base64_bytes(x):\n    return base64.b64encode(x.encode())\n\ndef decode_base64_bytes(x):\n    return base64.b64decode(x).decode()\n```"
+    },
+    {
+        "original": "def fold(self, node):\n    if node.left and node.right:\n        if isinstance(node.left, Constant) and isinstance(node.right, Constant):\n            if node.op == '+':\n                return Constant(node.left.value + node.right.value)\n            elif node.op == '-':\n                return Constant(node.left.value - node.right.value)\n            elif node.op == '*':\n                return Constant(node.left.value * node.right.value)\n            elif node.op == '/':\n                return Constant(node.left.value / node.right.value)\n    return node",
+        "rewrite": "Here is the revised code:\n\n```\ndef fold(self, node):\n    if node.left and node.right:\n        if isinstance(node.left, Constant) and isinstance(node.right, Constant):\n            ops = {\n                '+': lambda x, y: x + y,\n                '-': lambda x, y: x - y,\n                '*': lambda x, y: x * y,\n                '/': lambda x, y: x / y\n            }\n            return Constant(ops[node.op](node"
+    },
+    {
+        "original": "class ClusterConfig:\n    @staticmethod\n    def from_node(index, data, modify_index=None):\n        bracket_stack = []\n        for i in range(index, len(data)):\n            if data[i] == '{':\n                bracket_stack.append('{')\n            elif data[i] == '}':\n                if len(bracket_stack) == 0:\n                    return None\n                bracket_stack.pop()\n                if len(bracket_stack) == 0:\n                    if modify_index is None or modify_index == index:\n                        return ClusterConfig(data[index:i+1])\n        return None",
+        "rewrite": "```\nclass ClusterConfig:\n    @staticmethod\n    def from_node(index, data, modify_index=None):\n        bracket_count = 0\n        for i in range(index, len(data)):\n            if data[i] == '{':\n                bracket_count += 1\n            elif data[i] == '}':\n                bracket_count -= 1\n                if bracket_count == 0:\n                    if modify_index is None or modify_index == index:\n                        return ClusterConfig(data[index:i+1])\n                   "
+    },
+    {
+        "original": "def save_config(\n        self,\n        cmd=\"copy running-config startup-config\",\n        confirm=True,\n        confirm_response=\"y\",\n    ):\n        \"\"\"Save Config for Extreme VDX.\"\"\" \n\n        # Your code here\n        # Implement the logic to interact with Extreme VDX device\n        # Save the configuration using the provided cmd, confirm, and confirm_response parameters",
+        "rewrite": "```\nimport paramiko\n\ndef save_config(self, cmd=\"copy running-config startup-config\", confirm=True, confirm_response=\"y\"):\n    ssh = paramiko.SSHClient()\n    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())\n    ssh.connect(self.host, username=self.username, password=self.password)\n    \n    stdin, stdout, stderr = ssh.exec_command(cmd)\n    \n    if confirm:\n        stdin.write(confirm_response + \"\\n\")\n        stdin.flush()\n        \n    output = stdout.read"
+    },
+    {
+        "original": "class Validate:\n    \n    def is_valid(self, glob_expression):\n        stack = []\n        for char in glob_expression:\n            if char == '(' or char == '[' or char == '{':\n                stack.append(char)\n            elif char == ')' and (not stack or stack.pop() != '('):\n                return False\n            elif char == ']' and (not stack or stack.pop() != '['):\n                return False\n            elif char == '}' and (not stack or stack.pop() != '{'):\n                return False\n                \n        return len(stack) == 0\n\n# Test the solution\nvalidator = Validate()\nprint(validator.is_valid(\"{{([])}}\"))  # Output: True\nprint(validator.is_valid(\"{{[)}}\"))    # Output: False\nprint(validator.is_valid(\"[()\"))       # Output: False",
+        "rewrite": "Here is the revised code:\n\n```\nclass Validate:\n    def is_valid(self, glob_expression):\n        stack = []\n        pairs = {')': '(', ']': '[', '}': '{'}\n        for char in glob_expression:\n            if char in pairs.values():\n                stack.append(char)\n            elif char in pairs.keys():\n                if not stack or stack.pop() != pairs[char]:\n                    return False\n        return len(stack) == 0\n\nvalidator = Validate()\nprint(validator.is_valid"
+    },
+    {
+        "original": "class Gauge:\n    def __init__(self, name):\n        self.name = name\n        self.value = 0\n\ndef gauge(self, name):\n    if name in self.gauges:\n        return self.gauges[name]\n    else:\n        new_gauge = Gauge(name)\n        self.gauges[name] = new_gauge\n        return new_gauge",
+        "rewrite": "Here is the revised code:\n\n```\nclass Gauge:\n    gauges = {}\n\n    def __init__(self, name):\n        self.name = name\n        self.value = 0\n\n    @classmethod\n    def get_gauge(cls, name):\n        if name in cls.gauges:\n            return cls.gauges[name]\n        else:\n            new_gauge = cls(name)\n            cls.gauges[name] = new_gauge\n            return new_gauge\n```"
+    },
+    {
+        "original": "def disconnect(service_instance):\n    service_instance.content.sessionManager.Logout()\n    service_instance.disconnect()",
+        "rewrite": "```\ndef disconnect(service_instance):\n    try:\n        service_instance.content.sessionManager.Logout()\n    finally:\n        service_instance.disconnect()\n```"
+    },
+    {
+        "original": "import struct\n\ndef h2i(pkt, seconds):\n    return struct.pack('!I', seconds)\n\n# Test the function\nseconds = 1234567890\nresult = h2i(None, seconds)\nprint(result)",
+        "rewrite": "```\nimport struct\n\ndef h2i(pkt, seconds):\n    return struct.pack('>I', seconds)\n\nseconds = 1234567890\nresult = h2i(None, seconds)\nprint(result.hex())"
+    },
+    {
+        "original": "def notebook_start(self, **kwargs):\n    self.metadata = {}\n    self.cells = []\n    self.save_notebook(kwargs['output_path'])",
+        "rewrite": "```\ndef notebook_start(self, output_path, **kwargs):\n    self.metadata = {}\n    self.cells = []\n    self.save_notebook(output_path)\n```"
+    },
+    {
+        "original": "def dispatch_request(self, req):\n    # your solution here\n    pass",
+        "rewrite": "```\ndef dispatch_request(self, req):\n    if req.method == 'GET':\n        return self.get(req)\n    elif req.method == 'POST':\n        return self.post(req)\n    elif req.method == 'PUT':\n        return self.put(req)\n    elif req.method == 'DELETE':\n        return self.delete(req)\n    else:\n        raise NotImplementedError(f\"Method {req.method} not implemented\")\n```"
+    },
+    {
+        "original": "from collections import Counter\nimport nltk\n\ndef _get_ngrams_with_counter(segment, max_order):\n    tokens = nltk.word_tokenize(segment)\n    ngrams_counter = Counter()\n    for n in range(1, max_order+1):\n        ngrams = nltk.ngrams(tokens, n)\n        ngrams_counter.update(ngrams)\n    return ngrams_counter",
+        "rewrite": "Here is the revised code:\n\n```\nfrom collections import Counter\nimport nltk\n\ndef get_ngrams_with_counter(segment, max_order):\n    tokens = nltk.word_tokenize(segment)\n    ngrams_counter = Counter()\n    for n in range(1, max_order + 1):\n        ngrams_counter.update(nltk.ngrams(tokens, n))\n    return ngrams_counter\n```"
+    },
+    {
+        "original": "def replace_species(self, species_mapping):\n    for species_in, species_out in species_mapping.items():\n        for site in self.sites:\n            if isinstance(species_in, Element):\n                amount = site.species.amount(species_in)\n                site.replace_species({species_in: amount * species_out})\n            else:\n                total_amount = sum(site.species.amount(sp) for sp in species_in)\n                for sp, frac in species_in.items():\n                    site.replace_species({sp: total_amount * frac * species_out})",
+        "rewrite": "Here is the revised code:\n\n```\ndef replace_species(self, species_mapping):\n    for target_species, replacementspecies in species_mapping.items():\n        for site in self.sites:\n            if isinstance(target_species, Element):\n                amount = site.species.get_amount(target_species)\n                new_amount = amount * replacementspecies\n                site.replace_species({target_species: new_amount})\n            else:\n                totalAmount = sum(site.species.get_amount(sp) for sp in target Species)\n               \tfor sp, fraction in"
+    },
+    {
+        "original": "def show_item_dict(self, item):\n        show_dict = {\n            \"show_id\": item.show_id,\n            \"title\": item.title,\n            \"description\": item.description,\n            \"genre\": item.genre,\n            \"release_date\": item.release_date.strftime('%Y-%m-%d'),\n            \"rating\": item.rating\n        }\n        return show_dict",
+        "rewrite": "Here's the revised code:\n\n```\ndef show_item_dict(self, item):\n    return {\n        \"show_id\": getattr(item, 'show_id'),\n        \"title\": getattr(item, 'title'),\n        \"description\": getattr(item, 'description'),\n        \"genre\": getattr(item, 'genre'),\n        \"release_date\": getattr(item, 'release_date').strftime('%Y-%m-%d') if hasattr(item, 'release_date') else None,\n        \"rating\": getattr(item, '"
+    },
+    {
+        "original": "class FilterRange:\n    def __init__(self, data):\n        self.data = data\n\n    def FilterRange(self, start_time=None, stop_time=None):\n        filtered_data = []\n        for timestamp, value in self.data:\n            if (start_time is None or timestamp >= start_time) and (stop_time is None or timestamp < stop_time):\n                filtered_data.append((timestamp, value))\n        return filtered_data",
+        "rewrite": "```\nclass FilterRange:\n    def __init__(self, data):\n        self.data = data\n    \n    def filter_range(self, start_time=None, stop_time=None):\n        return [(t, v) for t, v in self.data if (start_time is None or t >= start_time) and (stop_time is None or t < stop_time)]\n```"
+    },
+    {
+        "original": "def get_connection(self, command_name, *keys, **options):\n    \"\"\"\n    Get a connection, blocking for ``self.timeout`` until a connection\n    is available from the pool.\n\n    If the connection returned is ``None`` then creates a new connection.\n    Because we use a last-in first-out queue, the existing connections\n    (having been returned to the pool after the initial ``None`` values\n    were added) will be returned before ``None`` values. This means we only\n    create new connections when we need to, i.e.: the actual number of\n    connections will only increase in response to demand.\n    \"\"\"\n    # Implementation of getting a connection from the pool or creating a new one\n    pass",
+        "rewrite": "Here is the revised code:\n\n```\ndef get_connection(self, command_name, keys, options):\n    while True:\n        try:\n            conn = self.pool.get_nowait()\n            if conn is not None:\n                return conn\n        except asyncio.QueueEmpty:\n            pass\n        \n        if selfpool.size() + 1 <= self.max_connections:\n            return self.create_connection(command_name, keys)\n        else:\n            try:\n                yield from asyncio.sleep(self.timeout)\n            except asyncio.CancelledError"
+    },
+    {
+        "original": "def check_error(res, error_enum):\n    \"\"\"Raise if the result has an error, otherwise return the result.\"\"\"\n    \n    if res == error_enum:\n        raise ValueError(\"Error encountered\")\n    return res",
+        "rewrite": "```\ndef check_error(res, error_enum):\n    if res == error_enum:\n        raise ValueError(\"Error encountered\")\n    return res\n```"
+    },
+    {
+        "original": "import matplotlib.pyplot as plt\n\ndef initialize_plot(self, ranges=None):\n    num_views = len(self.views)\n    num_cols = 2\n    num_rows = (num_views + 1) // 2\n\n    fig, axs = plt.subplots(num_rows, num_cols, figsize=(10, 5*num_rows))\n\n    for i, view in enumerate(self.views):\n        ax = axs[i // num_cols, i % num_cols]\n        view.plot(ax)\n    \n    # Hide any remaining empty axes\n    for i in range(num_views, num_rows * num_cols):\n        axs.flatten()[i].axis('off')\n    \n    plt.tight_layout()\n    plt.show()",
+        "rewrite": "Here is the revised code:\n\n```\nimport matplotlib.pyplot as plt\n\nclass Plotter:\n    def __init__(self, views):\n        self.views = views\n\n    def initialize_plot(self, ranges=None):\n        num_views = len(self.views)\n        num_cols = 2\n        num_rows = (num_views + 1) // 2\n        \n        fig, axs = plt.subplots(num_rows, num_cols, figsize=(10, 5*num_rows))\n\n        for i, view in"
+    },
+    {
+        "original": "import re\n\ndef split(sql, encoding=None):\n    statements = []\n    statement = ''\n    in_string = False\n    for i in range(len(sql)):\n        if sql[i] == \"'\" and (i == 0 or sql[i-1] != \"\\\\\"):\n            in_string = not in_string\n        if sql[i] == ';' and not in_string:\n            statements.append(statement)\n            statement = ''\n        else:\n            statement += sql[i]\n    \n    # Add the last statement if it's not empty\n    if statement:\n        statements.append(statement)\n    \n    return statements",
+        "rewrite": "Here is a revised version of the code using regular expressions:\n\n```\nimport re\n\ndef split(sql, encoding=None):\n    return [s.strip() for s in re.split(r';(?!(?:(?:[^='\"dehyde]|\"[^\"]*\")*(?!\\\\)[\\'\"]))', sql) if s.strip()]\n```"
+    },
+    {
+        "original": "def page_str(self):\n    \"\"\"\n    The RestructuredText documentation page for the enumeration. This is\n    the only API member for the class.\n    \"\"\"",
+        "rewrite": "```\ndef page_str(self):\n    return \".. _{}_enum:\\n\\n{}\\n\u0e47\u0e2d\u0e15\".format(self.__class__.__name__, self)\n```"
+    },
+    {
+        "original": "class Attachment:\n    def __init__(self, attachment_id, name, size):\n        self.attachment_id = attachment_id\n        self.name = name\n        self.size = size\n\n    def get(self):\n        return {\n            \"attachment_id\": self.attachment_id,\n            \"name\": self.name,\n            \"size\": self.size\n        }",
+        "rewrite": "```\nclass Attachment:\n    def __init__(self, attachment_id, name, size):\n        self.attachment_id = attachment_id\n        self.name = name\n        self.size = size\n\n    def to_dict(self):\n        return vars(self)\n```"
+    },
+    {
+        "original": "def load_ner_model(lang=\"en\", version=\"2\"):\n    return f\"Named Entity Extractor for language {lang} using version {version}\"",
+        "rewrite": "Here is the revised code:\n\n```\ndef load_ner_model(lang=\"en\", version=\"2\"):\n    return f\"Named Entity Extractor for language {lang.upper()} using version {version}\"\n```"
+    },
+    {
+        "original": "def _reset_state_mode(self, state, mode):\n    state.mode = mode\n    if mode == 'custom':\n        state.custom_options = self.custom_options",
+        "rewrite": "```\ndef _reset_state_mode(self, state, mode):\n    state.mode = mode\n    if mode == 'custom':\n        state.custom_options = self.custom_options.copy()\n```"
+    },
+    {
+        "original": "import numpy as np\n\ndef normalize_words(embeddings, ord=2, inplace=False):\n    embeddings_norm = np.linalg.norm(embeddings, ord=ord, axis=1, keepdims=True)\n    if inplace:\n        embeddings /= embeddings_norm\n        return embeddings\n    else:\n        return embeddings / embeddings_norm",
+        "rewrite": "Here is the revised code:\n\n```\nimport numpy as np\n\ndef normalize_words(embeddings, ord=2, inplace=False):\n    norm = np.linalg.norm(embeddings, ord=ord, axis=1, keepdims=True)\n    result = embeddings / norm\n    if inplace: \n        return object.__setattr__(embeddings,'data',result) if hasattr(embeddings,'data') else np\u0e49\u0e49copy.copyto(embeddings,result)\n    return result\n```"
+    },
+    {
+        "original": "def DEFINE_integer(self, name, default, help, constant=False):\n    \"\"\"A helper for defining integer options.\"\"\"\n    pass",
+        "rewrite": "Here is the revised code:\n\n```\ndef define_integer(self, name, default, help_message, constant=False):\n    self.add_option(name, type='int', default=default, help=help_message)\n```"
+    },
+    {
+        "original": "import time\n\ndef WaitUntilDone(self, timeout=None):\n    start_time = time.time()\n    while True:\n        if self.is_done():\n            if not self.is_successful():\n                raise FlowFailedError(\"Flow failed\")\n            return self\n        if timeout is not None and time.time() - start_time >= timeout:\n            raise PollTimeoutError(\"Timeout reached\")\n        time.sleep(1)",
+        "rewrite": "```\nimport time\n\ndef wait_until_done(self, timeout=None):\n    start_time = time.time()\n    while True:\n        if self.is_done():\n            if not self.is_successful():\n                raise FlowFailedError(\"Flow failed\")\n            return self\n        if timeout is not None and time.time() - start_time >= timeout:\n            raise PollTimeoutError(\"Timeout reached\")\n        time.sleep(1)\n```"
+    },
+    {
+        "original": "import datetime\n\ndef date_this_month(before_today=True, after_today=False):\n    today = datetime.date.today()\n    first_day = today.replace(day=1)\n    last_day = today.replace(day=1, month=(today.month % 12) + 1)\n\n    dates_in_month = []\n\n    if before_today:\n        dates_in_month.extend([first_day + datetime.timedelta(days=i) for i in range((today - first_day).days)])\n    \n    if after_today:\n        dates_in_month.extend([last_day + datetime.timedelta(days=i) for i in range((last_day - today).days)])\n\n    return dates_in_month\n\n# Testing the function\nprint(date_this_month(before_today=True, after_today=True))",
+        "rewrite": "```\nimport datetime\n\ndef date_this_month(before_today=True, after_today=False):\n    today = datetime.date.today()\n    first_day = today.replace(day=1)\n    last_day_of_month = (today.replace(day=28) + datetime.timedelta(days=4)).day - (today.replace(day=28) + datetime.timedelta(days=4)).day % 7\n    last_day = today.replace(day=last_day_of_month)\n\n    dates_in_month = []\n\n    if before_today:\n       "
+    },
+    {
+        "original": "def _update_tree_feature_weights(X, feature_names, clf, feature_weights):\n    # Initialize feature weight dictionary\n    tree_feature_weights = {}\n\n    # Get decision path for each sample in X\n    for i in range(len(X)):\n        node_indicator = clf.decision_path(X[i])\n        feature_importance = np.zeros(len(feature_names))\n        \n        # Update feature importance for each node in decision path\n        for node in np.where(node_indicator.toarray()[0] == 1)[0]:\n            feature = feature_names[clf.tree_.feature[node]]\n            feature_importance[feature] += 1\n        \n        # Normalize feature importance and update tree feature weights\n        feature_weights_sum = sum(feature_importance)\n        normalized_feature_importance = feature_importance / feature_weights_sum if feature_weights_sum != 0 else feature_importance\n        tree_feature_weights[i] = normalized_feature_importance\n\n    return tree_feature_weights",
+        "rewrite": "Here is the revised code:\n\n```\ndef _update_tree_feature_weights(X, features, clf, _):\n    tree_features_weight = {}\n    \n    for i, x in enumerate(X):\n        node_indicator = clf.decision_path(x)\n        features_importance = np.zeros(len(features))\n        \n        for node in np.where(node_indicator.toarray()[0] == 1)[0]:\n            features_importance[clf.tree_.feature[node]] += 1\n        \n        features_weight_sum = sum(features"
+    },
+    {
+        "original": "def get_team_push_restrictions(self):\n    \"\"\"\n    :calls: `GET /repos/:owner/:repo/branches/:branch/protection/restrictions/teams <https://developer.github.com/v3/repos/branches>`_\n    :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.Team.Team`\n    \"\"\"\n\n    # Your python solution here\n    # This function should make a GET request to the specified endpoint\n    # and return a PaginatedList of Team objects",
+        "rewrite": "Here is the revised code:\n\n```\nfrom github import Github\n\ndef get_team_push_restrictions(self):\n    g = Github(self.token)\n    repo = g.get_repo(self.repo_name)\n    branch = repo.get_branch(self.branch_name)\n    restrictions = branch.get_protection().get_restriction_usersteam()\n    \n    teams = []\n    \n    for team in restrictions:\n        teams.append(g.get_team(team.slug))\n        \n    return teams\n```"
+    },
+    {
+        "original": "import random\n\nclass UrlGenerator:\n    def __init__(self):\n        self.schemes = [\"http\", \"https\"]\n\n    def url(self, schemes=None):\n        if schemes is not None:\n            self.schemes = schemes\n\n        scheme = random.choice(self.schemes)\n        if scheme:\n            return f\"{scheme}://domain.com\"\n        else:\n            return \"://domain.com\"",
+        "rewrite": "```\nimport random\n\nclass UrlGenerator:\n    def __init__(self):\n        self.schemes = [\"http\", \"https\"]\n\n    def url(self, schemes=None):\n        if schemes is not None:\n            self.schemes = schemes\n        return f\"{random.choice(self.schemes or ['http', 'https'])}://domain.com\"\n```"
+    },
+    {
+        "original": "import pandas as pd\n\ndef get_data():\n    data = {\n        'category': ['plot'],\n        'filename': ['subjectivity_html/obj/2002/Abandon.html'],\n        'text': ['A senior at an elite college (Katie Holmes), a...'],\n        'movie_name': ['abandon']\n    }\n\n    df = pd.DataFrame(data)\n    return df",
+        "rewrite": "Here is the revised code:\n\n```\nimport pandas as pd\n\ndef get_data():\n    data = {\n        \"category\": [\"plot\"],\n        \"filename\": [\"subjectivity_html/obj/2002/Abandon.html\"],\n        \"text\": [\"A senior at an elite college (Katie Holmes), a...\"],\n        \"movie_name\": [\"abandon\"]\n    }\n    \n    return pd.DataFrame(data)\n```"
+    },
+    {
+        "original": "def add_reward_function(self):\n    reward_function = \"<RewardFunction>\\n\"\n    reward_function += \"\\t<Reward>\\n\"\n    reward_function += \"\\t\\t<Var></Var>\\n\"\n    reward_function += \"\\t\\t<Expr></Expr>\\n\"\n    reward_function += \"\\t</Reward>\\n\"\n    reward_function += \"</RewardFunction>\\n\"\n\n    return reward_function",
+        "rewrite": "Here is the revised code:\n\n```\ndef add_reward_function(self):\n    return \"\"\"<RewardFunction>\n    <Reward>\n        <Var></Var>\n        <Expr></Expr>\n    </Reward>\n</RewardFunction>\"\"\"\n```"
+    },
+    {
+        "original": "def get_all_values(self):\n    result = []\n    for row in range(self.sheet.nrows):\n        current_row = []\n        for col in range(self.sheet.ncols):\n            cell_value = self.sheet.cell(row, col).value\n            current_row.append(str(cell_value))\n        if any(current_row):  # Check if row is not empty\n            result.append(current_row)\n    return result",
+        "rewrite": "Here is the revised code:\n\n```\ndef get_all_values(self):\n    return [[str(self.sheet.cell(row, col).value) for col in range(self.sheet.ncols)] \n           for row in range(self.sheet.nrows) if any(str(self.sheet.cell(row, col).value) for col in range(self.sheet.ncols))]\n```"
+    },
+    {
+        "original": "def modify_domain(self, action, request_domain=(), wsrequest_domain=(), upload_domain=(), download_domain=()):\n    if action == 'add':\n        # Add the provided domains to the corresponding domain lists\n        self.request_domain.extend(request_domain)\n        self.wsrequest_domain.extend(wsrequest_domain)\n        self.upload_domain.extend(upload_domain)\n        self.download_domain.extend(download_domain)\n    elif action == 'delete':\n        # Remove the provided domains from the corresponding domain lists\n        for domain in request_domain:\n            if domain in self.request_domain:\n                self.request_domain.remove(domain)\n        for domain in wsrequest_domain:\n            if domain in self.wsrequest_domain:\n                self.wsrequest_domain.remove(domain)\n        for domain in upload_domain:\n            if domain in self.upload_domain:\n                self.upload_domain.remove(domain)\n        for domain in download_domain:\n            if domain in self.download_domain:\n                self.download_domain.remove(domain)\n    elif action == 'set':\n        # Set the domain lists to the provided domains\n        self.request_domain = list(request_domain)\n        self.wsrequest_domain = list(wsrequest_domain)\n        self.upload_domain = list(upload_domain)\n        self.download_domain = list(download_domain)\n    elif action == 'get':\n        # Return the current domain lists\n        return {\n            'request_domain': self.request_domain,\n            'wsrequest_domain': self.wsrequest_domain,\n            'upload_domain': self.upload_domain,\n            'download_domain': self.download_domain\n        }",
+        "rewrite": "Here is a revised version of your function:\n\n```\ndef modify-domain(self, action, *=None, ws=None, u=None, d=None):\n    r,d,w,u=self.request_DOMAIN,self.download_DOMAIN,self.ws_request_DOMAIN,self.upload_DOMAIN\n    \n    if action == 'add':\n       r.extend(a or []);w.extend(ws or []);u.extend(u or []);d.extend(d or [])\n \n    elif action == 'delete':\n       r[:] = [i for i in r if i"
+    },
+    {
+        "original": "def ListChildren(self, urn, limit=None, age=NEWEST_TIME):\n    children = []\n    \n    # logic to retrieve children based on urn, limit, and age parameters\n    \n    return children",
+        "rewrite": "Here is the revised code:\n\n```\ndef list_children(self, urn, limit=None, age=NEWEST_TIME):\n    children = []\n    query = {\"parent\": urn}\n    if limit:\n        query[\"limit\"] = limit\n    if age:\n        query[\"age\"] = age\n    for child in self.collection.find(query):\n        children.append(child)\n    return children\n```"
+    },
+    {
+        "original": "def saveFile(self):\n    \"\"\"User clicked Save menu. Display a Dialog to ask where to save.\"\"\"\n    save_path = input(\"Enter the file path to save: \")\n    # Perform saving logic here\n    print(f\"File saved to: {save_path}\")",
+        "rewrite": "```\nfrom PyQt5.QtWidgets import QFileDialog, QMessageBox\n\ndef saveFile(self):\n    save_path, _ = QFileDialog.getSaveFileName()\n    if save_path:\n        # Perform saving logic here\n        QMessageBox.information(self, \"Save\", f\"File saved to: {save_path}\")\n```"
+    },
+    {
+        "original": "def Copy(self, field_number=None):\n    if field_number is not None:\n        return self.descriptor_copy[field_number]\n    else:\n        return self.descriptor_copy",
+        "rewrite": "```\ndef Copy(self, field_number=None):\n    return self.descriptor_copy[field_number] if field_number is not None else self.descriptor_copy\n```"
+    }
+]

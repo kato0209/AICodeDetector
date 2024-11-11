@@ -99,7 +99,7 @@ def save_to_json_rewritten_code(codes, rewrite_codes, origin, by="gpt"):
             "rewrite": rewrite_codes[i]
         }
         data.append(sec)
-    with open(f'rewrite_dataset/Rewrite_code_by_{by}_{origin}_{rewrite_string}.json', 'w') as file:
+    with open(f'rewrite_dataset/A_Rewrite_code_by_{by}_{origin}_{rewrite_string}.json', 'w') as file:
         json.dump(data, file, indent=4)
 
 def rewrite_code_gpt(codes, model_config, args, origin=None):
@@ -142,14 +142,14 @@ def rewrite_gpt():
     #data["original"] = random.sample(data["original"], data_num)
     #data["sampled"] = data["sampled"][:data_num]
 
-    #with open("HumanEval/outputs_codellama_spaceline_ex.json", 'r') as file:
-    with open("CSDataset/outputs_gpt.json", 'r') as file:
+    #with open("HumanEval/outputs_codellama-CodeLlama-7b-Instruct-hf.json", 'r') as file:
+    with open("CSDataset/outputs_llama3.json", 'r') as file:
         json_data = json.load(file)
     original_codes = [item['original'] for item in json_data]
     sampled_codes = [item['sampled'] for item in json_data]
 
-    original_codes = original_codes[:100]
-    sampled_codes = sampled_codes[:100]
+    #original_codes = original_codes[:100]
+    #sampled_codes = sampled_codes[:100]
     
     rewrite_code_gpt(original_codes, None, None, "Human")
     rewrite_code_gpt(sampled_codes, None, None, "AI")
