@@ -28,7 +28,7 @@ def load_model(model_name, model_config):
         trust_remote_code=True, 
         quantization_config=quant_config, 
         device_map="auto", 
-        torch_dtype=torch.float32
+        torch_dtype="auto"
     )
     
     # Load sentence model
@@ -48,6 +48,7 @@ def setup_ddp(local_rank):
 
 def load_distributed_model(model_name, model_config, local_rank):
     model_config = load_model(model_name, model_config)
+    print(2)
     
     # Wrap the model with DDP
     model = model_config['model'].to(local_rank)
@@ -64,16 +65,19 @@ def demo_basic(local_rank, local_world_size):
     model_config = {}
     model_name = "meta-llama/Meta-Llama-3.1-70B-Instruct"
     
+    print(1)
     # Load the model using DDP
     model_config = load_distributed_model(model_name, model_config, local_rank)
-    
+    print(9)
     print(f"Model loaded on rank {local_rank}!")
 
 def spmd_main(local_world_size, local_rank):
     setup_ddp(local_rank)
+    print("Done setting up DDP!")
     
     # Call your model demo or training loop
     demo_basic(local_rank, local_world_size)
+    print("Done with the demo!")
     
     # Clean up
     dist.destroy_process_group()
@@ -83,3 +87,4 @@ if __name__ == "__main__":
     local_rank = int(os.environ["LOCAL_RANK"])
 
     spmd_main(local_world_size, local_rank)
+    print("Done!")

@@ -17,40 +17,78 @@ def rewrite_code(codes, model_config, args):
     api_key = os.getenv('OPENAI_API_KEY')
     model = "gpt-3.5-turbo"
     #temperature = 0.2
-    prompt_str = "Revise the code with your best effort"
-    #prefix = ". No need to explain. Just write code:"
-    
-    #prompt_str = """
-    #Please first explain the functionality of the python code above.(Do not output explanation)
-    #Then, revise the code with your explanation in mind.
-#
-    #"""
-    prefix = ". No need to explain. Just write code:"
+    prompt_str = "Rewrite the code provided below to improve its efficiency and readability."
+    prefix = ". Output the revised code directly, without repeating any lines or including extra comments:"
     
     rewrite_codes = []
     i = 0
     client = OpenAI()
     OpenAI.api_key = api_key
     for code in codes:
-        prompt = f"{prompt_str}: \"{code}\" {prefix}"
-        response = client.chat.completions.create(
-            model=model,
-            messages=[
-                {"role": "user", "content": prompt}
-            ],
-        )
+        base_prompt = f"{prompt_str}: \"{code}\" {prefix}"
+        tokens = base_prompt
+        outputs = ""
+        for t in range(128):
+            response = client.chat.completions.create(
+                model=model,
+                messages=[
+                    {"role": "user", "content": tokens}
+                ],
+                max_tokens=1,
+                temperature=0.7,
+                top_p=0.9
+            )
+            token = response.choices[0].message.content.strip()
+            tokens += " "+ token
+            outputs += " "+ token
+            print("token: ", token)
+            print("tokens: ", tokens)
+            print("outputs: ", outputs)
+        print(outputs)
+        exit()
         
-        response_text = response.choices[0].message.content.strip()
-        #response_text = remove_code_block_indicator(response_text)
-        rewrite_codes.append(response_text)
+        rewrite_codes.append(outputs)
         i += 1
         print("S-----")
+        print(code)
+        print("---------")
+        print(outputs)
+        print("E---------")
+    
+    return rewrite_codes
+
+from llamaapi import LlamaAPI
+def rewrite_code2(codes):
+    api_key = os.getenv('LLAMA_API_KEY')
+    llama = LlamaAPI(api_key)
+
+    prompt_str = "Revise the code with your best effort"
+    prefix = ". No need to explain. Just write code(No code comments needed):"
+
+    rewrite_codes = []
+    i = 0
+    for code in codes:
+        prompt = f"{prompt_str}: \"{code}\" {prefix}"
+
+        api_request_json = {
+            "model": "llama3-70b",
+            "messages": [
+                {"role": "user", "content": prompt},
+            ],
+            "max_tokens": 128,
+        }
+        response = llama.run(api_request_json)
+        data = response.json()
+        response_text = data["choices"][0]["message"]["content"]
+        rewrite_codes.append(response_text)
+        i += 1
         print(code)
         print("---------")
         print(response_text)
         print("E---------")
     
     return rewrite_codes
+
 
 def save_to_json_rewritten_code(codes, rewrite_codes, origin, by="gpt"):
     rewrite_string = "CSDataset_gpt"
@@ -65,8 +103,8 @@ def save_to_json_rewritten_code(codes, rewrite_codes, origin, by="gpt"):
         json.dump(data, file, indent=4)
 
 def rewrite_code_gpt(codes, model_config, args, origin=None):
-    rewrite_codes = rewrite_code(codes, model_config, args)
-    save_to_json_rewritten_code(codes, rewrite_codes, origin, by="gpt")
+    rewrite_codes = rewrite_code2(codes)
+    save_to_json_rewritten_code(codes, rewrite_codes, origin, by="llama3")
 
 def rewrite_gpt():
     #datasets_paths = [
@@ -109,6 +147,9 @@ def rewrite_gpt():
         json_data = json.load(file)
     original_codes = [item['original'] for item in json_data]
     sampled_codes = [item['sampled'] for item in json_data]
+
+    original_codes = original_codes[:100]
+    sampled_codes = sampled_codes[:100]
     
     rewrite_code_gpt(original_codes, None, None, "Human")
     rewrite_code_gpt(sampled_codes, None, None, "AI")
@@ -120,19 +161,27 @@ def rewrite_gpt():
     #rewrite_code_gpt(ai_data["original"], None, None, "AI")
     return None
 
-"""
+
 import transformers
 import torch
+from torch import cuda,bfloat16
 def codellama_gen(codes, model_config, args):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     prompt_str = "Revise the code with your best effort"
     prefix = ". No need to explain. Just write code:"
 
-    model_name = "codellama/CodeLlama-7b-Instruct-hf"
+    quant_config = transformers.BitsAndBytesConfig(
+        load_in_4bit=True,
+        bnb_4bit_quant_type='nf4',
+        bnb_4bit_use_double_quant=True,
+        bnb_4bit_compute_dtype=bfloat16
+    )
+
+    model_name = "codellama/CodeLlama-13b-Instruct-hf"
     #model_name = "bigcode/starcoderbase-3b"
     tokenizer = transformers.AutoTokenizer.from_pretrained(model_name)
     tokenizer.pad_token = tokenizer.eos_token
-    model = transformers.AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True, device_map="auto", torch_dtype=torch.float16)
+    model = transformers.AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True, quantization_config=quant_config, device_map="auto", torch_dtype=torch.float16)
     
     rewrite_codes = []
     i = 0
@@ -159,13 +208,16 @@ def rewrite_code_codellama(codes, model_config, args, origin=None):
     save_to_json_rewritten_code(codes, rewrite_codes, origin, by="codellama")
 
 def rewrite_codellama():
-    with open("HumanEval/outputs_codellama-CodeLlama-7b-Instruct-hf.json", 'r') as file:
+    with open("CSDataset/outputs_gpt.json", 'r') as file:
         json_data = json.load(file)
-    #original_codes = [item['original'] for item in json_data]
+    original_codes = [item['original'] for item in json_data]
     sampled_codes = [item['sampled'] for item in json_data]
-    #rewrite_code_codellama(original_codes, None, None, "Human")
+    #データ数を100にする
+    original_codes = original_codes[:100]
+    sampled_codes = sampled_codes[:100]
+    rewrite_code_codellama(original_codes, None, None, "Human")
     rewrite_code_codellama(sampled_codes, None, None, "AI")
-"""
+
 
 if __name__ == "__main__":
     rewrite_gpt()

@@ -197,6 +197,15 @@ class CodeDatasetSimilarity(Dataset):
         
         return {'code': code, 'rewrite_code': rewrite_code, 'labels': torch.tensor(label, dtype=torch.long)}
 
+    def select(self, indices):
+        # 選択されたインデックスを使って新しいサブセットを作成
+        selected_samples = [self.samples[i] for i in indices]
+        
+        # 新しいインスタンスを返す
+        selected_dataset = CodeDatasetSimilarity.__new__(CodeDatasetSimilarity)
+        selected_dataset.samples = selected_samples
+        return selected_dataset
+
 class CodeDatasetForLLM(Dataset):
     def __init__(self, data, args):
         self.samples = []

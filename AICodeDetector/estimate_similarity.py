@@ -1,4 +1,4 @@
-from loguru import logger
+
 from tqdm import tqdm
 
 from masking import tokenize_and_mask
@@ -160,18 +160,18 @@ args = parser.parse_args(input_args)
 
 device = args.DEVICE
 
-#ai_data = download_data_from_json('rewrite_dataset/rewrite_codellama_AI_origin_codellama.json')
-#human_data = download_data_from_json('rewrite_dataset/rewrite_codellama_Human_origin_codellama.json')
-
 #ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_AI_MBPP_gpt.json')
 #human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_Human_MBPP_gpt.json')
 
 ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_AI_CSDataset_gpt.json')
 human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_Human_CSDataset_gpt.json')
 
-#ai_data = download_data_from_json2('json_data/rewrite_code_GPT_inv.json')
-#human_data = download_data_from_json2('json_data/rewrite_code_human_inv.json')
+#ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_AI_HumanEval_gpt.json')
+#human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_Human_HumanEval_gpt.json')
 
+#ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_codellama_AI_CSDataset_gpt.json')
+#human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_codellama_Human_CSDataset_gpt.json')
+#
 #from util_func import remove_comments
 #
 #human_data["original"] = [remove_comments(code) for code in human_data["original"]]
@@ -185,7 +185,30 @@ data = {
     "ai": ai_data
 }
 
+#human_test_data = {
+#    "original": data["human"]["original"][int(len(data["human"]["original"]) * 0.8):],
+#    "rewrite": data["human"]["rewrite"][int(len(data["human"]["rewrite"]) * 0.8):]
+#}
+#ai_test_data = {
+#    "original": data["ai"]["original"][int(len(data["ai"]["original"]) * 0.8):],
+#    "rewrite": data["ai"]["rewrite"][int(len(data["ai"]["rewrite"]) * 0.8):]
+#}
+#
+#test_data = {
+#    "human": human_test_data,
+#    "ai": ai_test_data
+#}
+
+#data = test_data
+
+
 dataset = CodeDatasetSimilarity(data, args)
+
+test_num = 5
+first_50_indices = list(range(test_num))
+last_50_indices = list(range(len(dataset.samples) - test_num, len(dataset.samples)))
+indices = first_50_indices + last_50_indices
+dataset = dataset.select(indices)
 
 dataloader = DataLoader(dataset, args.batch_size, shuffle=True)
 
