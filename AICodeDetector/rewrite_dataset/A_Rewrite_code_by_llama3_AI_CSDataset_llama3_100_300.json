@@ -1,0 +1,658 @@
+[
+    {
+        "original": "\nclass Unit:\n    def __init__(self, is_scv, is_building):\n        self.is_scv = is_scv\n        self.is_building = is_building\n\n    def is_constructing_scv(self) -> bool:\n        return self.is_scv and self.is_building\n",
+        "rewrite": "\nclass Unit:\n    def __init__(self, is_scv: bool, is_building: bool):\n        self.is_scv = is_scv\n        self.is_building = is_building\n\n    def is_constructing_scv(self) -> bool:\n        return self.is_scv and self.is_building\n"
+    },
+    {
+        "original": "\ndef set_form_field_order(form, field_order):\n    if field_order is None:\n        return\n    new_fields = []\n    for field_name in field_order:\n        if hasattr(form, field_name):\n            new_fields.append((field_name, getattr(form, field_name)))\n    for field_name, field in form.fields.items():\n        if field_name not in field_order:\n            new_fields.append((field_name, field))\n    form.fields = OrderedDict(new_fields)\n",
+        "rewrite": "\nfrom collections import OrderedDict\n\ndef set_form_field_order(form, field_order):\n    if field_order is None:\n        return\n    new_fields = [(field_name, getattr(form, field_name)) for field_name in field_order if hasattr(form, field_name)]\n    new_fields.extend([(field_name, field) for field_name, field in form.fields.items() if field_name not in field_order])\n    form.fields = OrderedDict(new_fields)\n"
+    },
+    {
+        "original": "\nimport whatsapp\n\ndef init_client(client_id):\n    \"\"\"Initialse a driver for client and store for future reference\n    \n    @param client_id: ID of client user\n    @return whatsappapi object\n    \"\"\"\n    whatsapp_api = whatsapp.Client()\n    whatsapp_api.authenticate(client_id)\n    return whatsapp_api\n",
+        "rewrite": "\nimport whatsapp\n\ndef init_client(client_id: str) -> whatsapp.Client:\n    whatsapp_api = whatsapp.Client()\n    whatsapp_api.authenticate(client_id)\n    return whatsapp_api\n"
+    },
+    {
+        "original": "\nclass Cell:\n    def __init__(self, row_idx, col_idx):\n        self.row_idx = row_idx\n        self.col_idx = col_idx\n\nclass Table:\n    def __init__(self, rows, cols):\n        self.rows = rows\n        self.cols = cols\n        self.cells = [[Cell(i, j) for j in range(cols)] for i in range(rows)]\n\n    def cell(self, row_idx, col_idx):\n        return self.cells[row_idx][",
+        "rewrite": "\n\n\nclass Cell:\n    def __init__(self, row_idx, col_idx):\n        self.row_idx = row_idx\n        self.col_idx = col_idx\n\nclass Table:\n    def __init__(self, rows, cols):\n        self.rows = rows\n        self.cols = cols\n        self.cells = [[Cell(i, j) for j in range(cols)] for i in range(rows)]\n\n    def cell(self, row_idx, col_idx):\n        return self.cells[row_idx][col_idx]\n"
+    },
+    {
+        "original": "\nclass CardSystem:\n    def __init__(self):\n        self.cards = {}\n\n    def get(self, card_id):\n        return self.cards.get(card_id)\n",
+        "rewrite": "\nclass CardSystem:\n    def __init__(self):\n        self.cards = {}\n\n    def get_card(self, card_id: str) -> dict:\n        return self.cards.get(card_id)\n"
+    },
+    {
+        "original": "\nclass API:\n    def __init__(self):\n        self.not_found_handlers = {}\n\n    def set_not_found_handler(self, handler, version=None):\n        if version is None:\n            self.not_found_handlers['default'] = handler\n        else:\n            self.not_found_handlers[version] = handler\n",
+        "rewrite": "\nclass API:\n    def __init__(self):\n        self.not_found_handlers = {'default': None}\n\n    def set_not_found_handler(self, handler, version=None):\n        self.not_found_handlers[version or 'default'] = handler\n"
+    },
+    {
+        "original": "\nfrom typing import Callable, List\nfrom cirq import GateOperation, Qid\n\ndef measure_each(*qubits: Qid, key_func: Callable[[Qid], str] = str) -> List[GateOperation]:\n    return [GateOperation('measure', qubit) for qubit in qubits]\n",
+        "rewrite": "\nfrom typing import Callable, List\nfrom cirq import GateOperation, Qid, MeasurementGate\n\ndef measure_each(*qubits: Qid, key_func: Callable[[Qid], str] = str) -> List[GateOperation]:\n    return [GateOperation(MeasurementGate(key_func(qubit)), qubit) for qubit in qubits]\n"
+    },
+    {
+        "original": "\nclass RESTObjectList:\n    def __init__(self, items):\n        self.items = items\n\nclass GitlabAuthenticationError(Exception):\n    pass\n\nclass GitlabListError(Exception):\n    pass\n\nclass Participants:\n    def __init__(self, server):\n        self.server = server\n\n    def participants(self, **kwargs):\n        all_items = self.server.get_all_items()\n        if 'all' in kwargs and kwargs['all']:\n            return RESTObjectList(all_items)\n        elif",
+        "rewrite": "\n\n\nclass RESTObjectList:\n    def __init__(self, items):\n        self.items = items\n\nclass GitlabAuthenticationError(Exception):\n    pass\n\nclass GitlabListError(Exception):\n    pass\n\nclass Participants:\n    def __init__(self, server):\n        self.server = server\n\n    def list(self, **kwargs):\n        all_items = self.server.get_all_items()\n        if kwargs.get('all'):\n            return RESTObjectList(all_items)\n        else:\n            return RESTObjectList([item for item in all_items if item.active])\n"
+    },
+    {
+        "original": "\nimport re\nimport portage\n\ndef revdep_rebuild(lib=None):\n    \"\"\"\n    Fix up broken reverse dependencies\n\n    lib\n        Search for reverse dependencies for a particular library rather\n        than every library on the system. It can be a full path to a\n        library or basic regular expression.\n    \"\"\"\n    if lib:\n        # If lib is provided, search for reverse dependencies for that particular library\n        revdeps = portage.dep.get_revdeps(lib, mydb",
+        "rewrite": "\n\nimport re\nimport portage\n\ndef revdep_rebuild(lib=None):\n    if lib:\n        if re.match(r'^/.+$', lib):\n            lib = f'={lib}'\n        revdeps = portage.dep.get_revdeps(lib, portage.db[portage.root][\"vartree\"].dbapi)\n    else:\n        revdeps = portage.dep.get_revdeps(None, portage.db[portage.root][\"vartree\"].dbapi)\n    return revdeps\n"
+    },
+    {
+        "original": "\ndef _canonicalize_name(prefix, qvm_type, noisy):\n    if noisy:\n        return f\"{prefix}_{qvm_type}_noisy\"\n    else:\n        return f\"{prefix}_{qvm_type}\"\n",
+        "rewrite": "\ndef _canonicalize_name(prefix, qvm_type, noisy):\n    return f\"{prefix}_{qvm_type}{'_noisy' if noisy else ''}\"\n"
+    },
+    {
+        "original": "\ndef _line(self, text, indent=0):\n    width = 80  # assuming the width is 80 characters\n    words = text.split()\n    line = ' ' * indent\n    for word in words:\n        if len(line) + len(word) + 1 > width:\n            yield line\n            line = ' ' * indent + word\n        else:\n            line += ' ' + word\n    yield line\n",
+        "rewrite": "\ndef _line(self, text, indent=0):\n    width = 80\n    words = text.split()\n    line = ' ' * indent\n    for word in words:\n        if len(line) + len(word) + 1 > width:\n            yield line.lstrip()\n            line = ' ' * indent + word\n        else:\n            line += ' ' + word\n    yield line.lstrip()\n"
+    },
+    {
+        "original": "\nfrom ibm_watson import DetailedResponse\n\nclass FeedbackService:\n    def get_feedback(self, feedback_id, model=None, **kwargs):\n        # Implement the logic to list a specified feedback entry\n        # For demonstration purposes, assume the feedback entry is stored in a dictionary\n        feedback_entries = {\n            \"feedback1\": {\"id\": \"feedback1\", \"content\": \"This is feedback 1\"},\n            \"feedback2\": {\"id\": \"feedback2\", \"content",
+        "rewrite": "\n\n\nfrom ibm_watson import DetailedResponse\n\nclass FeedbackService:\n    def get_feedback(self, feedback_id, model=None, **kwargs):\n        feedback_entries = {\n            \"feedback1\": {\"id\": \"feedback1\", \"content\": \"This is feedback 1\"},\n            \"feedback2\": {\"id\": \"feedback2\", \"content\": \"This is feedback 2\"}\n        }\n        if feedback_id in feedback_entries:\n            return DetailedResponse(feedback_entries[feedback_id])\n        else:\n            return None\n"
+    },
+    {
+        "original": "\ndef probably_identical(self, f, g):\n    \"\"\"\n    :param f: function 1\n    :param g: function 2\n    :returns: Whether or not these two functions are identical.\n    \"\"\"\n    import random\n    for _ in range(100):  # arbitrary number of tests\n        x = random.random()  # generate a random input\n        if f(x) != g(x):\n            return False\n    return True\n",
+        "rewrite": "\ndef probably_identical(self, f, g, num_tests=100):\n    import random\n    for _ in range(num_tests):\n        x = random.uniform(-1000, 1000)  # generate a random input in a reasonable range\n        if not math.isclose(f(x), g(x)):\n            return False\n    return True\n"
+    },
+    {
+        "original": "\ndef logpdf_link(self, inv_link_f, y, Y_metadata=None):\n    return np.sum(y * np.log(inv_link_f) + (1 - y) * np.log(1 - inv_link_f))\n",
+        "rewrite": "\ndef logpdf_link(self, inv_link_f, y, Y_metadata=None):\n    return np.sum(y * np.log(inv_link_f) + (1 - y) * np.log1p(-inv_link_f))\n"
+    },
+    {
+        "original": "\nimport yaml\nimport os\n\ndef __load_compose_definitions(path, definition):\n    compose_result = None\n    loaded_definition = None\n    err = None\n\n    if os.path.exists(path):\n        try:\n            with open(path, 'r') as file:\n                compose_result = yaml.safe_load(file)\n            loaded_definition = definition\n        except Exception as e:\n            err = str(e)\n    else:\n        err = \"File not found\"\n\n    return compose_result, loaded",
+        "rewrite": "\n\n\nimport yaml\nimport os\n\ndef load_compose_definitions(path, definition):\n    if os.path.exists(path):\n        try:\n            with open(path, 'r') as file:\n                return yaml.safe_load(file), definition\n        except Exception as e:\n            return None, str(e)\n    else:\n        return None, \"File not found\"\n"
+    },
+    {
+        "original": "\nfrom datetime import datetime\n\ndef date_or_None(obj):\n    try:\n        return datetime.strptime(obj, '%Y-%m-%d').date()\n    except ValueError:\n        return None\n",
+        "rewrite": "\nfrom datetime import datetime\n\ndef date_or_None(obj):\n    try:\n        return datetime.strptime(obj, '%Y-%m-%d').date()\n    except ValueError:\n        return None\n"
+    },
+    {
+        "original": "\nimport json\nfrom typing import Optional\n\nasync def build_get_cred_def_request(submitter_did: Optional[str], id_: str) -> str:\n    request = {\n        \"operation\": {\n            \"type\": \"105\",\n            \"dest\": id_\n        }\n    }\n    if submitter_did:\n        request[\"operation\"][\"sender_did\"] = submitter_did\n    return json.dumps(request)\n",
+        "rewrite": "\nimport json\nfrom typing import Optional\n\nasync def build_get_cred_def_request(submitter_did: Optional[str], id_: str) -> str:\n    request = {\"operation\": {\"type\": \"105\", \"dest\": id_}}\n    if submitter_did:\n        request[\"operation\"][\"sender_did\"] = submitter_did\n    return json.dumps(request, separators=(',', ':'))\n"
+    },
+    {
+        "original": "\ndef _get_restartcheck_result(errors):\n    # TO DO: implement the logic to get the restartcheck result\n    # For now, let's assume the result is always True\n    result = True\n    # Append some dummy error to the errors list\n    errors.append(\"Dummy error\")\n    return result\n",
+        "rewrite": "\ndef _get_restartcheck_result(errors):\n    try:\n        # implement the logic to get the restartcheck result\n        # for example, let's assume the result is based on some condition\n        result = some_condition()\n    except Exception as e:\n        result = False\n        errors.append(str(e))\n    else:\n        errors.append(\"No errors found\")\n    return result\n"
+    },
+    {
+        "original": "\ndef check_enable_mode(self, check_string=\"\"):\n    return \"enable\" in check_string.lower()\n",
+        "rewrite": "\ndef check_enable_mode(self, check_string: str = \"\") -> bool:\n    return \"enable\" in check_string.casefold()\n"
+    },
+    {
+        "original": "\ndef _check_rot_sym(self, axis):\n    # TO DO: implement the logic to determine the rotational symmetry about the supplied axis\n    pass\n",
+        "rewrite": "\ndef _check_rot_sym(self, axis):\n    vertices = self.get_vertices()\n    edges = self.get_edges()\n    faces = self.get_faces()\n\n    def rotate_point(point, axis, angle):\n        a, b, c = point\n        u, v, w = axis\n        x, y, z = (a-u, b-v, c-w)\n        r = math.sqrt(x**2 + y**2 + z**2)\n        theta = math.atan2(y, x)\n        phi = math.acos(z/r)\n        theta += angle\n        x = r * math.cos(theta) *"
+    },
+    {
+        "original": "\ndef _get_values(self, lst, list_columns):\n    return [{col: getattr(item, col) for col in list_columns} for item in lst]\n",
+        "rewrite": "\ndef _get_values(self, lst, list_columns):\n    return [{col: item.__getattribute__(col) for col in list_columns} for item in lst]\n"
+    },
+    {
+        "original": "\nimport requests\n\ndef post_message(message, chat_id=None, token=None):\n    if not chat_id or not token:\n        raise ValueError(\"Both chat_id and token are required\")\n    url = f\"https://api.telegram.org/bot{token}/sendMessage\"\n    data = {\"chat_id\": chat_id, \"text\": message}\n    response = requests.post(url, json=data)\n    return response.status_code == 200\n",
+        "rewrite": "\n\n\nimport requests\nfrom typing import Optional\n\ndef post_message(message: str, chat_id: Optional[str] = None, token: Optional[str] = None) -> bool:\n    if not chat_id or not token:\n        raise ValueError(\"Both chat_id and token are required\")\n    url = f\"https://api.telegram.org/bot{token}/sendMessage\"\n    data = {\"chat_id\": chat_id, \"text\": message}\n    response = requests.post(url, json=data)\n    return response.ok\n"
+    },
+    {
+        "original": "\nclass Report:\n    def __init__(self, text):\n        self.text = text\n\n    def topics(self):\n        \"\"\"\n        Get the set of topics that can be extracted from this report.\n        \"\"\"\n        topics = set()\n        for word in self.text.split():\n            if word.startswith('#'):\n                topics.add(word[1:])\n        return topics\n",
+        "rewrite": "\nimport re\n\nclass Report:\n    def __init__(self, text):\n        self.text = text\n\n    def topics(self):\n        return set(re.findall(r'#(\\w+)', self.text))\n"
+    },
+    {
+        "original": "\nimport os\n\ndef get_data_home(path=None):\n    if path is None:\n        path = os.environ.get('YELLOWBRICK_DATA')\n    if path is None:\n        path = os.path.join(os.path.dirname(__file__), 'data')\n    path = os.path.expanduser(path)\n    path = os.path.expandvars(path)\n    return os.path.abspath(path)\n",
+        "rewrite": "\nimport os\n\ndef get_data_home(path=None):\n    path = path or os.environ.get('YELLOWBRICK_DATA')\n    path = path or os.path.join(os.path.dirname(__file__), 'data')\n    return os.path.abspath(os.path.expanduser(os.path.expandvars(path)))\n"
+    },
+    {
+        "original": "\ndef get_monolayer(self, molecular_weight, langmuir_surface_area, langmuir_cross_sectional_area):\n    return (molecular_weight / langmuir_surface_area) * langmuir_cross_sectional_area\n",
+        "rewrite": "\ndef get_monolayer(self, molecular_weight: float, langmuir_surface_area: float, langmuir_cross_sectional_area: float) -> float:\n    return molecular_weight / langmuir_surface_area * langmuir_cross_sectional_area\n"
+    },
+    {
+        "original": "\nimport shapefile\nimport re\n\ndef string_match(sf, regex, field=2):\n    matched_shapes = []\n    for shape in sf.shapeRecords():\n        if re.search(regex, shape.record[field-1]):\n            matched_shapes.append((shape.shape, shape.record))\n    return matched_shapes\n",
+        "rewrite": "\nimport shapefile\nimport re\n\ndef string_match(sf, regex, field=2):\n    return [(shape.shape, shape.record) for shape in sf.shapeRecords() if re.search(regex, shape.record[field-1])]\n"
+    },
+    {
+        "original": "\nclass EventService:\n    def __init__(self):\n        self.subscribers = {}\n\n    def add_subscriber(self, connection_id, subscriptions, last_known_block_id):\n        if not all(self._is_valid_filter(filter) for filter in subscriptions):\n            raise InvalidFilterError(\"One of the filters in the subscriptions is invalid.\")\n        self.subscribers[connection_id] = {\"subscriptions\": subscriptions, \"last_known_block_id\": last_known_block_id}\n\n    def _is_valid_filter(self",
+        "rewrite": "\nclass EventService:\n    def __init__(self):\n        self.subscribers = {}\n\n    def add_subscriber(self, connection_id, subscriptions, last_known_block_id):\n        if not all(self._is_valid_filter(filter) for filter in subscriptions):\n            raise InvalidFilterError(\"One of the filters in the subscriptions is invalid.\")\n        self.subscribers[connection_id] = {\"subscriptions\": subscriptions, \"last_known_block_id\": last_known_block_id}\n\n    def _is_valid_filter(self, filter):\n        # implement your filter validation logic here\n        pass\n"
+    },
+    {
+        "original": "\ndef get_summed_cohp_by_label_and_orbital_list(self, label_list, orbital_list, divisor=1):\n    summed_cohp = 0\n    for label, orbital in zip(label_list, orbital_list):\n        cohp = self.get_cohp_by_label_and_orbital(label, orbital)\n        summed_cohp += cohp\n    summed_cohp /= divisor\n    return COHP(summed_cohp)\n",
+        "rewrite": "\ndef get_summed_cohp_by_label_and_orbital_list(self, label_list, orbital_list, divisor=1):\n    return COHP(sum(c.get_cohp_by_label_and_orbital(label, orbital) for label, orbital in zip(label_list, orbital_list)) / divisor)\n"
+    },
+    {
+        "original": "\nimport qrcode\nfrom PIL import Image\n\nclass Client:\n    def get_qr(self, filename=None):\n        qr = qrcode.QRCode(\n            version=1,\n            error_correction=qrcode.constants.ERROR_CORRECT_L,\n            box_size=10,\n            border=4,\n        )\n        qr.add_data(\"https://example.com\")  # Replace with your data\n        qr.make(fit=True)\n\n        img = qr.make_image(fill_color=\"black\", back_color=\"",
+        "rewrite": "\n\n\nimport qrcode\nfrom PIL import Image\n\nclass Client:\n    def get_qr(self, filename=None):\n        qr = qrcode.QRCode(\n            version=1,\n            error_correction=qrcode.constants.ERROR_CORRECT_L,\n            box_size=10,\n            border=4,\n        )\n        qr.add_data(\"https://example.com\")\n        qr.make(fit=True)\n\n        img = qr.make_image(fill_color=\"black\", back_color=\"white\")\n\n        if filename:\n            img.save(filename)\n        else:\n            img.show()\n"
+    },
+    {
+        "original": "\nimport requests\n\ndef edit_label(owner, repo, name, color, description=github.GithubObject.NotSet):\n    url = f\"https://api.github.com/repos/{owner}/{repo}/labels/{name}\"\n    headers = {\"Accept\": \"application/vnd.github.v3+json\"}\n    data = {\"name\": name, \"color\": color, \"description\": description}\n    response = requests.patch(url, headers=headers, json=data)\n    response.raise_for_status()\n",
+        "rewrite": "\n\nimport requests\n\ndef edit_label(owner: str, repo: str, name: str, color: str, description: str = \"\"):\n    url = f\"https://api.github.com/repos/{owner}/{repo}/labels/{name}\"\n    headers = {\"Accept\": \"application/vnd.github.v3+json\"}\n    data = {\"name\": name, \"color\": color, \"description\": description}\n    response = requests.patch(url, headers=headers, json=data)\n    response.raise_for_status()\n"
+    },
+    {
+        "original": "\nfrom selenium.webdriver.support.ui import WebDriverWait\nfrom selenium.webdriver.support import expected_conditions as EC\nfrom selenium.webdriver.common.by import By\n\ndef switch_to_frame(driver, frame, timeout=settings.SMALL_TIMEOUT):\n    iframe = WebDriverWait(driver, timeout).until(\n        EC.frame_to_be_available_and_switch_to_it((By.XPATH, f\"//iframe[@name='{frame}']\"))\n    )\n    return iframe\n",
+        "rewrite": "\nfrom selenium.webdriver.support.ui import WebDriverWait\nfrom selenium.webdriver.support import expected_conditions as EC\nfrom selenium.webdriver.common.by import By\n\ndef switch_to_frame(driver, frame, timeout=10):\n    return WebDriverWait(driver, timeout).until(\n        EC.frame_to_be_available_and_switch_to_it((By.XPATH, f\"//iframe[@name='{frame}']\"))\n    )\n"
+    },
+    {
+        "original": "\ndef process_eni_metrics(\n    stream_eni, myips, stream,\n    start, end, period, sample_size,\n    resolver, sink_uri):\n    pass  # Please provide the problem description, input, and output specifications.\n",
+        "rewrite": "\n\nimport boto3\nfrom datetime import datetime, timedelta\n\ndef process_eni_metrics(\n    stream_eni, myips, stream,\n    start, end, period, sample_size,\n    resolver, sink_uri):\n    cloudwatch = boto3.client('cloudwatch')\n    eni_metrics = cloudwatch.get_metric_statistics(\n        Namespace='AWS/NetworkInterfaces',\n        MetricName='BytesIn',\n        Dimensions=[{'Name': 'NetworkInterfaceId', 'Value': stream_eni}],\n        StartTime=start,\n        EndTime=end,\n        Period=period,\n        Statistics=['Sum'],\n        Unit='"
+    },
+    {
+        "original": "\ndef read_existing_paths(bt_table):\n    existing_paths = []\n    for row in bt_table:\n        if row[1] is not None:\n            existing_paths.append(row[0])\n    return existing_paths\n",
+        "rewrite": "\ndef read_existing_paths(bt_table):\n    return [row[0] for row in bt_table if row[1] is not None]\n"
+    },
+    {
+        "original": "\nimport pandas as pd\n\nclass SearchEngine:\n    def __init__(self, data):\n        self.data = data\n\n    def search(self, ngram):\n        result = self.data[self.data['texts'].str.contains(ngram)]\n        return result[['texts', 'categories']]\n",
+        "rewrite": "\nimport pandas as pd\n\nclass SearchEngine:\n    def __init__(self, data: pd.DataFrame):\n        self.data = data\n\n    def search(self, ngram: str) -> pd.DataFrame:\n        return self.data[self.data['texts'].str.contains(ngram)][['texts', 'categories']]\n"
+    },
+    {
+        "original": "\nclass Register:\n    def __init__(self):\n        self.namespaces = {}\n\n    def delete(self, name):\n        if name in self.namespaces:\n            del self.namespaces[name]\n",
+        "rewrite": "\nclass Register:\n    def __init__(self):\n        self.namespaces = {}\n\n    def delete(self, name):\n        self.namespaces.pop(name, None)\n"
+    },
+    {
+        "original": "\ndef getfield(self, pkt, s):\n    if pkt.msglen == 0:\n        if pkt.version == 'TLS 1.3':\n            return s\n        else:\n            return ''\n    else:\n        return s[:pkt.msglen]\n",
+        "rewrite": "\ndef getfield(self, pkt, s):\n    return s if pkt.msglen == 0 and pkt.version == 'TLS 1.3' else s[:pkt.msglen]"
+    },
+    {
+        "original": "\nregistry = {}\n\ndef archive(class_obj: type) -> type:\n    \"\"\"\n    Decorator to annotate the Archive class. Registers the decorated class\n    as the Archive known type.\n    \"\"\"\n    registry[class_obj.__name__] = class_obj\n    return class_obj\n",
+        "rewrite": "\nregistry = {}\n\ndef archive(class_obj: type) -> type:\n    registry[class_obj.__name__] = class_obj\n    return class_obj\n"
+    },
+    {
+        "original": "\nfrom elasticsearch import Elasticsearch\nfrom elasticsearch.helpers import scan\n\ndef form_query(query_type, query):\n    es = Elasticsearch()\n    if query_type == \"multi_match\":\n        body = {\n            \"query\": {\n                \"multi_match\": {\n                    \"query\": query,\n                    \"fields\": [\"title\", \"description\"]\n                }\n            }\n        }\n    else:\n        raise ValueError(\"Invalid query type\")\n    return body\n",
+        "rewrite": "\n\n\nfrom elasticsearch import Elasticsearch\nfrom elasticsearch.helpers import scan\n\ndef form_query(query_type, query):\n    es = Elasticsearch()\n    query_types = {\n        \"multi_match\": {\n            \"query\": {\n                \"multi_match\": {\n                    \"query\": query,\n                    \"fields\": [\"title\", \"description\"]\n                }\n            }\n        }\n    }\n    return query_types.get(query_type, {\"error\": \"Invalid query type\"})\n"
+    },
+    {
+        "original": "\nclass ControlDependenceGraph:\n    def __init__(self, graph):\n        self.graph = graph\n\n    def get_dependants(self, run):\n        dependants = []\n        for node in self.graph:\n            if run in self.graph[node]:\n                dependants.append(node)\n        return dependants\n",
+        "rewrite": "\nclass ControlDependenceGraph:\n    def __init__(self, graph):\n        self.graph = graph\n\n    def get_dependants(self, run):\n        return [node for node in self.graph if run in self.graph[node]]\n"
+    },
+    {
+        "original": "\ndef _ExtractClientIdFromPath(entry, event):\n    import re\n    pattern = r\"/clients/(\\w+)/\"\n    match = re.search(pattern, entry.request.path)\n    if match:\n        return match.group(1)\n    else:\n        return None\n",
+        "rewrite": "\nimport re\n\ndef extract_client_id_from_path(entry, event):\n    pattern = r\"/clients/([^/]+)/\"\n    match = re.search(pattern, entry.request.path)\n    return match.group(1) if match else None\n"
+    },
+    {
+        "original": "\nclass OverrideElement:\n    def __init__(self):\n        self.override_elements = []\n\n    def add_override(self, partname, content_type):\n        self.override_elements.append({\"partname\": partname, \"content_type\": content_type})\n\n    def __str__(self):\n        result = \"\"\n        for override in self.override_elements:\n            result += f\"<Override partname='{override['partname']}' content_type='{override['content_type']}'/>\\n\"\n        return result\n",
+        "rewrite": "\n\n\nclass OverrideElement:\n    def __init__(self):\n        self.override_elements = []\n\n    def add_override(self, partname: str, content_type: str):\n        self.override_elements.append({\"partname\": partname, \"content_type\": content_type})\n\n    def __str__(self) -> str:\n        return \"\\n\".join(f\"<Override partname='{override['partname']}' content_type='{override['content_type']}'/>\" for override in self.override_elements)\n"
+    },
+    {
+        "original": "\ndef _post_master_init(self, master):\n    pass\n",
+        "rewrite": "\ndef post_master_init(self, master):\n    raise NotImplementedError(\"Subclasses must implement post_master_init method\")\n"
+    },
+    {
+        "original": "\ndef Kdiag(self, X, target):\n    n_samples = X.shape[0]\n    K = np.zeros((n_samples, n_samples))\n    for i in range(n_samples):\n        for j in range(n_samples):\n            K[i, j] = np.exp(-0.5 * (X[i] - X[j])**2 / target)\n    return np.diag(K)\n",
+        "rewrite": "\ndef Kdiag(self, X, target):\n    return np.exp(-0.5 * np.square(X[:, None] - X[None, :]) / target).diagonal()\n"
+    },
+    {
+        "original": "\ndef make_deprecated_class(oldname, NewClass):\n    class DeprecatedClass(NewClass):\n        def __init__(self, *args, **kwargs):\n            raise NotImplementedError(f\"'{oldname}' is deprecated. Use '{NewClass.__name__}' instead.\")\n    return DeprecatedClass\n",
+        "rewrite": "\ndef make_deprecated_class(oldname, NewClass):\n    class DeprecatedClass(NewClass):\n        def __new__(cls, *args, **kwargs):\n            raise DeprecationWarning(f\"'{oldname}' is deprecated. Use '{NewClass.__name__}' instead.\")\n    return DeprecatedClass\n"
+    },
+    {
+        "original": "\ndef estimate_row_means(X, observed, column_means, column_scales):\n    row_means = []\n    for i in range(X.shape[0]):\n        numerator = 0\n        denominator = 0\n        for j in range(X.shape[1]):\n            if observed[i, j]:\n                numerator += (X[i, j] - column_means[j]) / column_scales[j]\n                denominator += 1 / column_scales[j]\n        row_means.append(numerator / denominator",
+        "rewrite": "\n\nimport numpy as np\n\ndef estimate_rowMeans(X, observed, columnMeans, columnScales):\n    return np.sum(((X - columnMeans) / columnScales) * observed[:, None], axis=1) / (observed.sum(axis=1) / columnScales)\n"
+    },
+    {
+        "original": "\ndef ReadHuntOutputPluginLogEntries(self, hunt_id, output_plugin_id, offset, count, with_type=None, cursor=None):\n    # TO DO: implement the logic to read hunt output plugin log entries\n    pass\n",
+        "rewrite": "\n\ndef ReadHuntOutputPluginLogEntries(self, hunt_id, output_plugin_id, offset, count, with_type=None, cursor=None):\n    query = \"\"\"\n        SELECT * FROM hunt_output_plugin_log_entries\n        WHERE hunt_id = %s AND output_plugin_id = %s\n    \"\"\"\n    params = (hunt_id, output_plugin_id)\n\n    if with_type:\n        query += \" AND type = %s\"\n        params += (with_type,)\n    \n    query += \" OFFSET %s LIMIT %s\"\n    params += (offset, count)\n\n    if cursor:\n       "
+    },
+    {
+        "original": "\nfrom scipy.sparse import lil_matrix\n\nclass CondensationDigraph:\n    def _condensation_lil(self):\n        # Assuming you have a method to get the condensation digraph\n        condensation_digraph = self.get_condensation_digraph()\n        \n        # Create a lil matrix with the same shape as the condensation digraph\n        lil_matrix_representation = lil_matrix(condensation_digraph.shape)\n        \n        # Populate the lil matrix with the edges of the condensation digraph\n",
+        "rewrite": "\n\n\nfrom scipy.sparse import lil_matrix\n\nclass CondensationDigraph:\n    def _condensation_lil(self):\n        condensation_digraph = self.get_condensation_digraph()\n        lil_matrix_representation = lil_matrix(condensation_digraph.shape)\n        \n        for i, j in [(i, j) for i in range(condension_digraph.shape[0]) \n                      for j in range(condension_digraph.shape[1]) \n                      if condension_digraph[i, j] == 1]:\n            lil_matrix_representation[i, j] = 1\n"
+    },
+    {
+        "original": "\ndef build_modules(is_training, vocab_size):\n    if is_training:\n        # training mode\n        embedding_module = tf.keras.layers.Embedding(vocab_size, 128)\n        rnn_module = tf.keras.layers.LSTM(128)\n        output_module = tf.keras.layers.Dense(vocab_size)\n    else:\n        # inference mode\n        embedding_module = tf.keras.layers.Embedding(vocab_size, 128)\n        rnn_module = tf.keras.layers.LSTM(128, return_sequences=True",
+        "rewrite": "\ndef build_modules(is_training, vocab_size):\n    embedding_module = tf.keras.layers.Embedding(vocab_size, 128)\n    rnn_module = tf.keras.layers.LSTM(128, return_sequences=not is_training)\n    output_module = tf.keras.layers.Dense(vocab_size)\n    return embedding_module, rnn_module, output_module"
+    },
+    {
+        "original": "\nimport requests\n\nclass GitHub:\n    def __init__(self, owner, repo, ref):\n        self.owner = owner\n        self.repo = repo\n        self.ref = ref\n\n    def get_statuses(self):\n        url = f\"https://api.github.com/repos/{self.owner}/{self.repo}/statuses/{self.ref}\"\n        response = requests.get(url)\n        response.raise_for_status()\n        return response.json()\n",
+        "rewrite": "\n\n\nimport requests\nfrom urllib.parse import quote\n\nclass GitHub:\n    def __init__(self, owner, repo, ref):\n        self.owner = quote(owner)\n        self.repo = quote(repo)\n        self.ref = quote(ref)\n\n    def get_statuses(self):\n        url = f\"https://api.github.com/repos/{self.owner}/{self.repo}/statuses/{self.ref}\"\n        response = requests.get(url, headers={'Accept': 'application/vnd.github.v3+json'})\n        response.raise_for_status()\n        return response.json()\n"
+    },
+    {
+        "original": "\nimport salt.client\n\ndef get_vm_ip(name=None, session=None, call=None):\n    local = salt.client.LocalClient()\n    if name:\n        vm_ip = local.cmd(name, 'xen_guest_tools.get_ip')\n        return vm_ip[name]\n    else:\n        return \"VM name is required\"\n",
+        "rewrite": "\nimport salt.client\n\ndef get_vm_ip(name, session=None, call=None):\n    local = salt.client.LocalClient()\n    if name:\n        vm_ip = local.cmd(name, 'xen_guest_tools.get_ip')\n        return vm_ip.get(name)\n    return \"VM name is required\"\n"
+    },
+    {
+        "original": "\nimport xarray as xr\n\ndef as_dataset(obj):\n    if isinstance(obj, xr.Dataset):\n        return obj\n    elif isinstance(obj, xr.DataArray):\n        return obj.to_dataset(dim='variable')\n    elif isinstance(obj, dict):\n        return xr.Dataset(obj)\n    else:\n        raise ValueError(\"Object cannot be converted to a Dataset\")\n",
+        "rewrite": "\nimport xarray as xr\n\ndef as_dataset(obj):\n    if isinstance(obj, xr.Dataset):\n        return obj\n    elif isinstance(obj, xr.DataArray):\n        return obj.to_dataset(dim='variable')\n    elif isinstance(obj, dict) and all(isinstance(v, (xr.DataArray, xr.Dataset)) for v in obj.values()):\n        return xr.Dataset(obj)\n    else:\n        raise ValueError(\"Object cannot be converted to a Dataset\")\n"
+    },
+    {
+        "original": "\ndef str2float(text):\n    text = text.replace(\"(\", \"\").replace(\")\", \"\")\n    return float(text)\n",
+        "rewrite": "\ndef str2float(text):\n    return float(''.join(e for e in text if e.isdigit() or e in '.+-'))\n"
+    },
+    {
+        "original": "\nimport subprocess\n\ndef installed(name, channel=None):\n    cmd = [\"snap\", \"install\", name]\n    if channel:\n        cmd.extend([\"--channel\", channel])\n    subprocess.check_call(cmd)\n",
+        "rewrite": "\nimport subprocess\n\ndef install_snap_package(name, channel=None):\n    command = [\"snap\", \"install\", name]\n    if channel:\n        command.extend([\"--channel\", channel])\n    subprocess.check_call(command)\n"
+    },
+    {
+        "original": "\nclass MyClass:\n    def __init__(self):\n        self.sender = None\n\n    async def get_sender(self):\n        if self.sender is None:\n            self.sender = await self._fetch_sender_from_api()\n        return self.sender\n\n    async def _fetch_sender_from_api(self):\n        # implement API call to fetch sender\n        pass\n",
+        "rewrite": "\n\n\nclass MyClass:\n    def __init__(self):\n        self._sender = None\n\n    @property\n    async def sender(self):\n        if self._sender is None:\n            self._sender = await self._fetch_sender_from_api()\n        return self._sender\n\n    async def _fetch_sender_from_api(self):\n        # implement API call to fetch sender\n        pass\n"
+    },
+    {
+        "original": "\nclass GKKPWork:\n    def from_phononwfkq_work(cls, phononwfkq_work, nscf_vars={}, remove_wfkq=True, with_ddk=True, manager=None):\n        # Initialize GKKPWork object\n        gkkp_work = cls()\n\n        # Get valence bands from PhononWfkqWork\n        valence_bands = phononwfkq_work.valence_bands\n\n        # Set nscf",
+        "rewrite": "\n\nclass GKKPWork:\n    @classmethod\n    def from_phononwfkq_work(cls, phononwfkq_work, nscf_vars={}, remove_wfkq=True, with_ddk=True, manager=None):\n        gkkp_work = cls()\n        gkkp_work.valence_bands = phononwfkq_work.valence_bands\n        gkkp_work.nscf_vars = nscf_vars\n        gkkp_work.remove_wfkq = remove_wfkq\n        gkkp_work.with_ddk = with_ddk\n"
+    },
+    {
+        "original": "\ndef get_function_name(s):\n    start = s.find('(')\n    end = s.rfind(')')\n    func_name = s[:start].split()[-1]\n    return func_name\n",
+        "rewrite": "\ndef get_function_name(s):\n    start = s.find('(')\n    func_name = s[:start].strip().rsplit(' ', 1)[-1]\n    return func_name\n"
+    },
+    {
+        "original": "\nclass APIAudit:\n    def __init__(self, db):\n        self.db = db\n\n    def ReadAPIAuditEntries(self, username=None, router_method_names=None, min_timestamp=None, max_timestamp=None):\n        query = \"SELECT * FROM audit_entries\"\n        conditions = []\n        \n        if username:\n            conditions.append(\"username = '{}'\".format(username))\n        if router_method_names:\n            conditions.append(\"router_method_name IN ({})\".format(','.join([\"'{}'",
+        "rewrite": "\n\nclass APIAudit:\n    def __init__(self, db):\n        self.db = db\n\n    def ReadAPIAuditEntries(self, username=None, router_method_names=None, min_timestamp=None, max_timestamp=None):\n        query = \"SELECT * FROM audit_entries\"\n        conditions = []\n        \n        if username:\n            conditions.append(\"username = %s\")\n            params = (username,)\n        if router_method_names:\n            placeholders = ', '.join(['%s'] * len(router_method_names))\n            conditions.append(\"router_method_name IN ({})\".format(placeholders))\n            params += tuple(router_method"
+    },
+    {
+        "original": "\nclass SofMarker:\n    def __init__(self, stream, marker_code, offset):\n        self.stream = stream\n        self.marker_code = marker_code\n        self.offset = offset\n\n    @classmethod\n    def from_stream(cls, stream, marker_code, offset):\n        return cls(stream, marker_code, offset)\n",
+        "rewrite": "\nclass SofMarker:\n    def __init__(self, stream, marker_code, offset):\n        self.stream = stream\n        self.marker_code = marker_code\n        self.offset = offset\n\n    @classmethod\n    def from_stream(cls, stream, marker_code, offset):\n        return cls(stream, marker_code, offset)\n"
+    },
+    {
+        "original": "\ndef normalize(rendered):\n    \"\"\"Return the input string without non-functional spaces or newlines.\"\"\"\n    return ' '.join(rendered.replace('\\n', ' ').split())\n",
+        "rewrite": "\ndef normalize(rendered):\n    return ''.join(e for e in rendered if e!=' ' or (e==' ' and rendered[rendered.index(e)-1]!=' '))\n"
+    },
+    {
+        "original": "\nimport os\nimport hashlib\n\ndef hash_and_stat_file(self, path, saltenv='base'):\n    if path.startswith('salt://'):\n        path = path.replace('salt://', '')\n    else:\n        path = '/' + path\n\n    try:\n        with open(path, 'rb') as f:\n            file_hash = hashlib.md5()\n            while chunk := f.read(8192):\n                file_hash.update(chunk)\n            file_hash = file_hash.hexdigest()\n    except",
+        "rewrite": "\nimport os\nimport hashlib\n\ndef hash_and_stat_file(self, path, saltenv='base'):\n    if not isinstance(path, str):\n        raise ValueError(\"Path must be a string\")\n    if not isinstance(saltenv, str):\n        raise ValueError(\"Salt environment must be a string\")\n\n    if not/path.startswith('salt://'):\n        path = '/' + path\n    else:\n        path = path.replace('salt://', '')\n\n    try:\n        with open(os.path.abspath(os.path.expanduser(path)), 'rb') as f:\n            file_hash = hashlib.md5()\n            while chunk := f.read(819"
+    },
+    {
+        "original": "\nclass AnsibleRunner:\n    def __init__(self, private_data_dir):\n        self.private_data_dir = private_data_dir\n        self.env_metadata = {}\n\n    def prepare_env(self):\n        for file in os.listdir(self.private_data_dir):\n            if file.endswith('.meta'):\n                with open(os.path.join(self.private_data_dir, file), 'r') as f:\n                    metadata = yaml.safe_load(f)\n                    self.env_metadata.update(metadata)\n",
+        "rewrite": "\n\nimport os\nimport yaml\n\nclass AnsibleRunner:\n    def __init__(self, private_data_dir):\n        self.private_data_dir = private_data_dir\n        self.env_metadata = {}\n\n    def prepare_env(self):\n        for file in os.listdir(self.private_data_dir):\n            if file.endswith('.meta'):\n                metadata_file = os.path.join(self.private_data_dir, file)\n                with open(metadata_file, 'r') as f:\n                    self.env_metadata.update(yaml.safe_load(f))\n"
+    },
+    {
+        "original": "\nclass BitSetter:\n    def __init__(self):\n        self.bits = {}\n\n    def setbit(self, name, offset, value):\n        if name not in self.bits:\n            self.bits[name] = 0\n        prev_value = (self.bits[name] >> offset) & 1\n        if value:\n            self.bits[name] |= 1 << offset\n        else:\n            self.bits[name] &= ~(1 << offset)\n        return prev_value\n",
+        "rewrite": "\n\n\nclass BitSetter:\n    def __init__(self):\n        self.bits = {}\n\n    def setbit(self, name: str, offset: int, value: bool) -> bool:\n        if name not in self.bits:\n            self_bits[name] = 0\n        prev_value = (self_bits[name] >> offset) & 1 == 1\n        self_bits[name] = (self_bits[name] & ~(1 << offset)) | ((value & 1) << offset)\n        return prev_value\n"
+    },
+    {
+        "original": "\ndef _checkValueItemParent(policy_element, policy_name, policy_key, policy_valueName, xpath_object, policy_file_data, check_deleted=False, test_item=True):\n    if test_item:\n        if policy_element.tag == '{http://www.microsoft.com/GroupPolicy/Settings}enabledValue':\n            return policy_valueName in policy_file_data\n        elif policy_element.tag == '{http://www.microsoft.com/GroupPolicy/Settings}disabledValue':\n            return policy_valueName not in",
+        "rewrite": "\ndef _checkValueItemParent(policy_element, policy_name, policy_key, policy_valueName, xpath_object, policy_file_data, check_deleted=False, test_item=True):\n    if test_item:\n        if policy_element.tag == '{http://www.microsoft.com/GroupPolicy/Settings}enabledValue':\n            return policy_valueName in policy_file_data\n        elif policy_element.tag == '{http://www.microsoft.com/GroupPolicy/Settings}disabledValue':\n            return policy_valueName not in policy_file_data\n"
+    },
+    {
+        "original": "\ndef extremum_icohpvalue(self, summed_spin_channels=True, spin=Spin.up):\n    if summed_spin_channels:\n        icoop_values = self.icoop_values['up'] + self.icoop_values['down']\n        icoop_extremum = max(icoop_values)\n        ichop_values = self.ichop_values['up'] + self.ichop_values['down']\n        ichop_extremum = min(ichop_values)\n        return max",
+        "rewrite": "\n\n\ndef extremum_icohpvalue(self, summed_spin_channels=True, spin=Spin.up):\n    if summed_spin_channels:\n        icoop_values = self.icoop_values['up'] + self.icoop_values['down']\n        icoop_extremum = max(icoop_values)\n        ichop_values = self.ichop_values['up'] + self.ichop_values['down']\n        ichop_extremum = min(ichop_values)\n        return max(icoop_extremum, -ichop_extremum)\n"
+    },
+    {
+        "original": "\ndef secgroup_list(self):\n    \"\"\"\n    List security groups\n    \"\"\"\n    # Assuming you have a list of security groups\n    security_groups = [\"sg-12345678\", \"sg-23456789\", \"sg-34567890\"]\n    return security_groups\n",
+        "rewrite": "\ndef secgroup_list(self):\n    security_groups = [\"sg-12345678\", \"sg-23456789\", \"sg-34567890\"]\n    return security_groups\n"
+    },
+    {
+        "original": "\ndef detect_model_num(string):\n    return int(''.join(filter(str.isdigit, string)))\n",
+        "rewrite": "\ndef detect_model_num(string):\n    return int(''.join(c for c in string if c.isdigit()))\n"
+    },
+    {
+        "original": "\nfrom PyQt5.QtWidgets import QColorDialog\n\nclass ColorPicker:\n    def onColorPicker(self):\n        color_dialog = QColorDialog()\n        color_dialog.exec_()\n",
+        "rewrite": "\nfrom PyQt5.QtWidgets import QApplication, QColorDialog\nimport sys\n\nclass ColorPicker:\n    def __init__(self):\n        self.app = QApplication(sys.argv)\n        self.color_dialog = QColorDialog()\n\n    def onColorPicker(self):\n        self.color_dialog.exec_()\n\nif __name__ == \"__main__\":\n    picker = ColorPicker()\n    picker.onColorPicker()\n    sys.exit(picker.app.exec_())\n"
+    },
+    {
+        "original": "\n\nimport subprocess\n\ndef check_table(table=None, family='ipv4'):\n    if table is None:\n        raise ValueError(\"Table name is required\")\n\n    command = f'nft -{family} list table {table}'\n    \n    try:\n        subprocess.check_output(command.split())\n        return True\n    except subprocess.CalledProcessError:\n        return False\n\n",
+        "rewrite": "\nimport subprocess\n\ndef check_table(table, family='ipv4'):\n    if not table:\n        raise ValueError(\"Table name is required\")\n\n    command = ['nft', f'-{family}', 'list', 'table', table]\n    \n    try:\n        subprocess.check_output(command)\n        return True\n    except subprocess.CalledProcessError:\n        return False"
+    },
+    {
+        "original": "\ndef mean(name, num, minimum=0, maximum=0, ref=None):\n    if ref is None:\n        ref = []\n    ref.append(num)\n    if len(ref) > num:\n        ref.pop(0)\n    return sum(ref) / len(ref)\n",
+        "rewrite": "\ndef mean(name, num, minimum=0, maximum=0, ref=None):\n    if ref is None:\n        ref = []\n    ref.append(num)\n    if len(ref) > num:\n        ref.pop(0)\n    return sum(ref) / len(ref) if ref else 0\n"
+    },
+    {
+        "original": "\ndef strxor(s1, s2):\n    if len(s1) != len(s2):\n        raise ValueError(\"s1 and s2 must be of same length\")\n    return \"\".join(chr(ord(a) ^ ord(b)) for a, b in zip(s1, s2))\n",
+        "rewrite": "\ndef strxor(s1, s2):\n    if len(s1) != len(s2):\n        raise ValueError(\"s1 and s2 must be of same length\")\n    return bytes(a ^ b for a, b in zip(map(ord, s1), map(ord, s2))).decode()\n"
+    },
+    {
+        "original": "\nimport numpy as np\n\ndef get_ir_reciprocal_mesh(mesh=(10, 10, 10), is_shift=(0, 0, 0)):\n    mesh = np.array(mesh)\n    is_shift = np.array(is_shift)\n    \n    # Generate all kpoints\n    kpoints = np.array(np.meshgrid(*[np.arange(i) for i in mesh])).T.reshape(-1, 3)\n    kpoints = kpoints / mesh\n    \n    # Apply shift",
+        "rewrite": "\n\n\nimport numpy as np\n\ndef get_ir_reciprocal_mesh(mesh=(10, 10, 10), is_shift=(0, 0, 0)):\n    mesh = np.array(mesh)\n    is_shift = np.array(is_shift)\n\n    kpoints = np.array(np.meshgrid(*[np.arange(i) for i in mesh])).T.reshape(-1, 3)\n    kpoints = (kpoints + is_shift) / mesh\n    return kpoints\n"
+    },
+    {
+        "original": "\nimport json\n\ndef json_pretty_dump(obj, filename):\n    with open(filename, 'w') as f:\n        json.dump(obj, f, indent=4)\n",
+        "rewrite": "\nimport json\n\ndef json_pretty_dump(obj, filename):\n    with open(filename, 'w', encoding='utf-8') as f:\n        json.dump(obj, f, indent=4, ensure_ascii=False)\n"
+    },
+    {
+        "original": "\nimport subprocess\n\ndef _hdparm(args, failhard=True):\n    try:\n        output = subprocess.check_output(['hdparm'] + args)\n        return output.decode('utf-8')\n    except subprocess.CalledProcessError as e:\n        if failhard:\n            raise\n        else:\n            return str(e)\n",
+        "rewrite": "\nimport subprocess\n\ndef hdparm(*, failhard=True, *args):\n    try:\n        return subprocess.check_output(['hdparm'] + list(args)).decode('utf-8')\n    except subprocess.CalledProcessError as e:\n        if failhard:\n            raise\n        return str(e)\n"
+    },
+    {
+        "original": "\nclass HInfinityFilter:\n    def __init__(self):\n        self.measurements = []\n\n    def update(self, z):\n        if z is not None:\n            self.measurements.append(z)\n",
+        "rewrite": "\nclass HInfinityFilter:\n    def __init__(self):\n        self.measurements = []\n\n    def update(self, z):\n        if z is not None:\n            self.measurements.append(z)\n"
+    },
+    {
+        "original": "\ndef exhaust_stream(f):\n    def wrapper(*args, **kwargs):\n        result = f(*args, **kwargs)\n        if hasattr(result, '__iter__'):\n            list(result)\n        return result\n    return wrapper\n",
+        "rewrite": "\ndef exhaust_stream(f):\n    def wrapper(*args, **kwargs):\n        result = f(*args, **kwargs)\n        if hasattr(result, '__iter__') and not isinstance(result, (str, bytes)):\n            list(result)\n        return result\n    return wrapper\n"
+    },
+    {
+        "original": "\ndef _cs_path_exists(fspath):\n    return fspath.exists()\n",
+        "rewrite": "\nfrom pathlib import Path\n\ndef cs_path_exists(fspath: str) -> bool:\n    return Path(fspath).exists()\n"
+    },
+    {
+        "original": "\nclass ProgrammingAssistant:\n    def addfield(self, pkt, s, val):\n        if,val not None:\n            setattr(pkt,s,val)\n",
+        "rewrite": "\nclass ProgrammingAssistant:\n    def add_field(self, pkt, s, val):\n        if val is not None:\n            setattr(pkt, s, val)\n"
+    },
+    {
+        "original": "\nimport os\n\ndef _file_path(self, dirname, filename):\n    full_path = os.path.join(dirname, filename)\n    dir_path = os.path.dirname(full_path)\n    if not os.path.exists(dir_path):\n        os.makedirs(dir_path)\n    return full_path\n",
+        "rewrite": "\nimport os\n\ndef _file_path(self, dirname, filename):\n    full_path = os.path.join(dirname, filename)\n    dir_path = os.path.dirname(full_path)\n    os.makedirs(dir_path, exist_ok=True)\n    return full_path\n"
+    },
+    {
+        "original": "\ndef _get_stats_column_names(cls, stats):\n    return tuple(f\"{stat}_{col}\" for stat in stats for col in [\"mean\", \"std\", \"min\", \"max\"])\n",
+        "rewrite": "\ndef _get_stats_column_names(cls, stats):\n    return tuple(f\"{stat}_\" + col for stat in stats for col in (\"mean\", \"std\", \"min\", \"max\"))\n"
+    },
+    {
+        "original": "\nclass TransformedStructure:\n    def __init__(self):\n        self.structures = []\n\n    def add_structure(self, structure):\n        self.structures.append(structure)\n\n    def get_structures(self):\n        return self.structures.copy()\n",
+        "rewrite": "\nfrom typing import List\n\nclass TransformedStructure:\n    def __init__(self):\n        self._structures: List[object] = []\n\n    def add_structure(self, structure: object) -> None:\n        self._structures.append(structure)\n\n    def get_structures(self) -> List[object]:\n        return self._structures.copy()\n"
+    },
+    {
+        "original": "\nimport math \nfrom scipy.stats import norm \n\ndef norm_cdf(x_range, mu, var=1, std=None):\n  if std is None:\n      std = math.sqrt(var)\n  \n  lower_bound = (x_range[0] - mu) / std \n  upper_bound = (x_range[1] - mu) / std \n  \n  lower_prob = norm.cdf(lower_bound) \n  upper_prob = norm.cdf(upper_bound)\n  \n  return upper_prob",
+        "rewrite": "\n\n\nimport math\nfrom scipy.stats import norm\n\ndef norm_cdf(x_range, mu, var=1):\n    std = math.sqrt(var)\n    lower_bound = (x_range[0] - mu) / std\n    upper_bound = (x_range[1] - mu) / std\n    lower_prob = norm.cdf(lower_bound)\n    return norm.cdf(upper_bound) - lower_prob\n"
+    },
+    {
+        "original": "\nimport subprocess\nimport json\n\ndef get_current_versions():\n    result = subprocess.run(['brew', 'list', '--versions'], stdout=subprocess.PIPE)\n    return dict(line.split(' ') for line in result.stdout.decode('utf-8').strip().split('\\n'))\n\ndef get_latest_versions():\n    result = subprocess.run(['brew', 'outdated'], stdout=subprocess.PIPE)\n    return dict(line.split(' ') for line in result.stdout.decode('utf-8').strip().split('\\n'))\n\n",
+        "rewrite": "\n\nimport subprocess\nimport json\n\ndef get_current_versions():\n    result = subprocess.check_output(['brew', 'list', '--versions']).decode('utf-8').strip().split('\\n')\n    return {line.split()[0]: line.split()[1] for line in result}\n\ndef get_latest_versions():\n    result = subprocess.check_output(['brew', 'outdated']).decode('utf-8').strip().split('\\n')\n    return {line.split()[0]: line.split()[1] for line in result}\n"
+    },
+    {
+        "original": "\ndef prev_moment_operating_on(self, qubits, end_moment_index=None, max_distance=None):\n    if max_distance is not None and max_distance < 0:\n        raise ValueError(\"max_distance cannot be negative\")\n    \n    if end_moment_index is None:\n        end_moment_index = len(self.moments)\n    \n    for i in range(end_moment_index - 1, -1, -1):\n        moment = self.moments[i]\n       ",
+        "rewrite": "\ndef prev_moment_operating_on(self, qubits, end_moment_index=None, max_distance=None):\n    if max_distance is not None and max_distance < 0:\n        raise ValueError(\"max_distance cannot be negative\")\n    \n    end_monent_index = end_moment_index or len(self.moments)\n    \n    for i in range(end_monent_index - 1, -1, -1):\n        moment = self.moments[i]"
+    },
+    {
+        "original": "\ndef _fix_ctx(m2_ctx, issuer=None):\n    if issuer is not None:\n        m2_ctx.set_app_data(issuer)\n    else:\n        m2_ctx.set_app_data(None)\n",
+        "rewrite": "\ndef _fix_ctx(m2_ctx, issuer=None):\n    m2_ctx.set_app_data(issuer)\n"
+    },
+    {
+        "original": "\nfrom azure.storage.blob import BlobServiceClient\n\ndef get_storage_conn(storage_account=None, storage_key=None, conn_kwargs=None):\n    if storage_account and storage_key:\n        conn_str = f\"DefaultEndpointsProtocol=https;AccountName={storage_account};AccountKey={storage_key};BlobEndpoint=https://{storage_account}.blob.core.windows.net/\"\n        return BlobServiceClient.from_connection_string(conn_str, **conn_kwargs)\n    else:\n        return None\n",
+        "rewrite": "\n\n\nfrom azure.storage.blob import BlobServiceClient\n\ndef get_storage_conn(storage_account, storage_key, **kwargs):\n    if storage_account and storage_key:\n        conn_str = f\"DefaultEndpointsProtocol=https;AccountName={storage_account};AccountKey={storage_key};BlobEndpoint=https://{storage_account}.blob.core.windows.net/\"\n        return BlobServiceClient.from_connection_string(conn_str, **kwargs)\n    return None\n"
+    },
+    {
+        "original": "\nimport requests\nimport json\n\ndef create_profile(hostname, username, password, profile_type, name, **kwargs):\n    auth = (username, password)\n    url = f\"https://{hostname}/mgmt/tm/{profile_type}\"\n    payload = {\"name\": name}\n    for key, value in kwargs.items():\n        payload[key] = value\n    response = requests.post(url, auth=auth, json=payload)\n    if response.status_code == 200:\n        return response",
+        "rewrite": "\n\n\nimport requests\nimport json\n\ndef create_profile(hostname, username, password, profile_type, name, **kwargs):\n    auth = (username, password)\n    url = f\"https://{hostname}/mgmt/tm/{profile_type}\"\n    payload = {\"name\": name, **kwargs}\n    response = requests.post(url, auth=auth, json=payload)\n    if response.status_code == 200:\n        return response.json()\n"
+    },
+    {
+        "original": "\n\nimport boto3\nfrom botocore.exceptions import ClientError\n\ndef create_policy(name, policy_name, policy_type, policy_data,\n                  region=None,\n                  key=None,\n                  keyid=None,\n                  profile=None):\n    elb = boto3.client('elb', region_name=region)\n    \n    try:\n        response = elb.create_load_balancer_policy(\n            LoadBalancerName=name,\n            PolicyName=policy_name,\n            PolicyTypeName=policy_type,\n",
+        "rewrite": "\n\n\nimport boto3\nfrom botocore.exceptions import ClientError\n\ndef create_policy(name, policy_name, policy_type, policy_data, \n                 region=None, key=None, keyid=None, profile=None):\n    session = boto3.session.Session(profile_name=profile)\n    elb = session.client('elb', region_name=region)\n\n    try:\n        response = elb.create_load_balancer_policy(\n            LoadBalancerName=name,\n            PolicyName=policy_name,\n            PolicyTypeName=policy_type,\n            Policy Attributes={'PolicyAttribute' : [{'AttributeName': 'Protocol-SSLv2"
+    },
+    {
+        "original": "\ndef _finalize_axis(self, key, **kwargs):\n    \"\"\"\n    Extends the ElementPlot _finalize_axis method to set appropriate\n    labels, and axes options for 3D Plots.\n    \"\"\"\n    if self.dim == 3:\n        axis = self.handles['axis']\n        axis.set_xlabel(kwargs.get('xlabel', 'X Axis'))\n        axis.set_ylabel(kwargs.get('ylabel', 'Y Axis'))\n        axis.set_zlabel(kwargs.get('zlabel', 'Z",
+        "rewrite": "\n\n\ndef _finalize_axis(self, key, **kwargs):\n    if self.dim == 3:\n        axis = self.handles['axis']\n        axis.set_xlabel(kwargs.get('xlabel', 'X Axis'))\n        axis.set_ylabel(kwargs.get('ylabel', 'Y Axis'))\n        axis.set_zlabel(kwargs.get('zlabel', 'Z Axis'))\n"
+    },
+    {
+        "original": "\nfrom calendar import monthrange\nfrom datetime import datetime\n\ndef _calendar_month_middles(year):\n    middles = []\n    for month in range(1, 13):\n        _, num_days = monthrange(year, month)\n        middles.append((datetime(year, month, (num_days + 1) // 2)).strftime(\"%Y-%m-%d\"))\n    return middles\n",
+        "rewrite": "\nfrom calendar import monthrange\nfrom datetime import datetime\n\ndef calendar_month_middles(year):\n    return [datetime(year, month, (num_days + 1) // 2).strftime(\"%Y-%m-%d\") for month, (_, num_days) in enumerate(monthrange(year, range(1, 13)), 1)]\n"
+    },
+    {
+        "original": "\nclass Formula:\n    def __init__(self, formula):\n        self.formula = formula\n\n    def reduced_formula(self):\n        elements = {}\n        i = 0\n        while i < len(self.formula):\n            if self.formula[i].isupper():\n                element = self.formula[i]\n                i += 1\n                if i < len(self.formula) and self.formula[i].isdigit():\n                    j = i\n                    while j < len(self.formula",
+        "rewrite": "\n\n\nclass Formula:\n    def __init__(self, formula):\n        self.formula = formula\n\n    def reduced_formula(self):\n        elements = {}\n        i = 0\n        while i < len(self.formula):\n            if self.formula[i].isupper():\n                element = self.formula[i]\n                i += 1\n                count = 0\n                while i < len(self.formula) and self.formula[i].isdigit():\n                    count = count * 10 + int(self.formula[i])\n                    i += 1\n                if count == 0:\n                    count"
+    },
+    {
+        "original": "\ndef find_cell_end(self, lines):\n    in_cell = False\n    end_idx = 0\n    start_idx = 0\n    for i, line in enumerate(lines):\n        if '' in line and not in_cell:\n            start_idx = i\n            in_cell = True\n        elif '' in line and in_cell:\n            end_idx = i\n            break\n    return end_idx + 1, start_idx if start_idx != 0 else",
+        "rewrite": "\n\n\ndef find_cell_end(self, lines):\n    for i, line in enumerate(lines):\n        if '' in line:\n            if not hasattr(self, 'start_idx'):\n                self.start_idx = i\n            else:\n                return i + 1, self.start_idx \n    return None \n"
+    },
+    {
+        "original": "\ndef _filter_cache(self, dmap, kdims):\n    filtered_cache = {}\n    for key, value in dmap.cache.items():\n        if all(k in key and key[k] == v for k, v in kdims.items()):\n            filtered_cache[key] = value\n    return filtered_cache\n",
+        "rewrite": "\ndef _filter_cache(self, dmap, kdims):\n    return {key: value for key, value in dmap.cache.items() if all(k in key and key[k] == v for k, v in kdims.items())}\n"
+    },
+    {
+        "original": "\ndef parse_dict_string(string, key, default):\n    result = {}\n    items = string.split(',')\n    for item in items:\n        k, v = item.split('=')\n        result[k] = v\n    return result.get(key, default)\n",
+        "rewrite": "\ndef parse_dict_string(string, key, default):\n    return dict(item.split('=') for item in string.split(',')).get(key, default)\n"
+    },
+    {
+        "original": "\nimport numpy as np\n\nclass DimensionValues:\n    def __init__(self, array):\n        self.array = array\n\n    def dimension_values(self, dimension, expanded=True, flat=True):\n        values = self.array.take(indices=0, axis=dimension)\n        if expanded:\n            values = np.expand_dims(values, axis=dimension)\n        if flat:\n            values = values.flatten()\n        return values\n",
+        "rewrite": "\n\n\nimport numpy as np\n\nclass DimensionValues:\n    def __init__(self, array):\n        self.array = np.asarray(array)\n\n    def dimension_values(self, dimension):\n        values = np.take(self.array, indices=0, axis=dimension)\n        return values if dimension == 0 else np.expand_dims(values.flatten(), axis=0)\n"
+    },
+    {
+        "original": "\ndef _convert_validators_to_mapping(validators):\n    validators_mapping = {}\n    for validator in validators:\n        check = validator[\"check\"]\n        if not isinstance(check, str):\n            check = str(check)\n        key = (check, validator[\"comparator\"])\n        validators_mapping[key] = validator\n    return validators_mapping\n",
+        "rewrite": "\ndef convert_validators_to_mapping(validators):\n    return {(str(validator[\"check\"]), validator[\"comparator\"]): validator for validator in validators}\n"
+    },
+    {
+        "original": "\nimport re\nfrom rdfvalue import LogTarget\n\ndef ParseAction(action):\n    facility_severity, rest = action.split(' ', 1)\n    facility, severity = facility_severity.split('.')\n    \n    type_def, destination_template = rest.split(';', 1)\n    \n    if type_def == '@@':\n        protocol = 'TCP'\n    elif type_def == '@':\n        protocol = 'UDP'\n    elif type_def == '|':\n        protocol = 'Named Pipe'\n    elif",
+        "rewrite": "\n\n\nimport re\nfrom rdfvalue import LogTarget\n\ndef parse_action(action):\n    facility_severity, rest = action.split(' ', 1)\n    facility, severity = facility_severity.split('.')\n    \n    type_def, destination_template = rest.rsplit(';', 1)\n    \n    if type_def == '@@':\n        protocol = 'TCP'\n    elif type_def == '@':\n        protocol = 'UDP'\n    elif type_def == '|':\n        protocol = 'Named Pipe'\n"
+    },
+    {
+        "original": "\nclass MDP:\n    def __init__(self, states, actions, transition_model, reward_fn):\n        self.states = states\n        self.actions = actions\n        self.transition_model = transition_model\n        self.reward_fn = reward_fn\n\n    def modified_policy_iteration(self, v_init=None, epsilon=1e-8, max_iter=1000, k=20):\n        if v_init is None:\n            v_init = {s: 0 for s in self.states",
+        "rewrite": "\n\n\nclass MDP:\n    def __init__(self, states, actions, transition_model, reward_fn):\n        self.states = states\n        self.actions = actions\n        self.transition_model = transition_model\n        self.reward_fn = reward_fn\n\n    def modified_policy_iteration(self, v_init=None, epsilon=1e-8, max_iter=1000, k=20):\n        if v_init is None:\n            v_init = {s: 0 for s in self.states}\n"
+    },
+    {
+        "original": "\ndef parse_env_file(env_file):\n    env_dict = {}\n    with open(env_file, 'r') as f:\n        for line in f:\n            key_value = line.strip().split('=')\n            if len(key_value) == 2:\n                key, value = key_value\n                env_dict[key] = value\n    return env_dict\n",
+        "rewrite": "\ndef parse_env_file(env_file):\n    env_dict = {}\n    with open(env_file, 'r') as f:\n        for line in (line.strip() for line in f if line.strip()):\n            if '=' in line:\n                key, value = line.split('=', 1)\n                env_dict[key] = value\n    return env_dict\n"
+    },
+    {
+        "original": "\nimport math\n\ndef declination_spencer71(dayofyear):\n    \"\"\"\n    Solar declination from Duffie & Beckman [1] and attributed to\n    Spencer (1971) and Iqbal (1983).\n\n    .. warning::\n        Return units are radians, not degrees.\n\n    Parameters\n    ----------\n    dayofyear : numeric\n\n    Returns\n    -------\n    declination (radians) : numeric\n        Angular position of the sun at solar noon relative to",
+        "rewrite": "\n\n\nimport math\n\ndef declination_spencer71(dayofyear):\n    return 0.4093 * math.sin(2 * math.pi / 365 * (dayofyear - 81))\n"
+    },
+    {
+        "original": "\nclass EOPatch:\n    def __init__(self, data):\n        self.data = data\n\ndef save(self, eopatch, use_tmp=True):\n    if use_tmp:\n        with open(\"temp_file.txt\", \"w\") as f:\n            f.write(str(eopatch.data))\n    else:\n        with open(\"final_file.txt\", \"w\") as f:\n            f.write(str(eopatch.data))\n",
+        "rewrite": "\n\n\nclass EOPatch:\n    def __init__(self, data):\n        self.data = data\n\n    def save(self, use_tmp=True):\n        filename = \"temp_file.txt\" if use_tmp else \"final_file.txt\"\n        with open(filename, \"w\") as f:\n            f.write(str(self.data))\n"
+    },
+    {
+        "original": "\nfrom github import Github\n\nclass GitHubRepository:\n    def __init__(self, repo_owner, repo_name):\n        self.repo_owner = repo_owner\n        self.repo_name = repo_name\n        self.github = Github()\n    \n    def add_to_collaborators(self, collaborator, permission=\"pull\"):\n        if permission not in [\"pull\", \"push\", \"admin\"]:\n            raise ValueError(\"Invalid permission\")\n        \n        repo = self.github.get_repo(f\"{self.repo_owner}/{self.repo",
+        "rewrite": "\n\n\nfrom github import Github\n\nclass GitHubRepository:\n    def __init__(self, repo_owner, repo_name):\n        self.repo_owner = repo_owner\n        self.repo_name = repo_name\n        self.github = Github()\n\n    def add_to_collaborators(self, collaborator, permission=\"pull\"):\n        if permission not in [\"pull\", \"push\", \"admin\"]:\n            raise ValueError(\"Invalid permission\")\n        \n        repo = self.github.get_repo(f\"{self.repo_owner}/{self.repo_name}\")\n        repo.add_to_collaborators(collaborator, permission=permission)\n"
+    },
+    {
+        "original": "\ndef read_and_write(reader, writer, chunk_size):\n    chunk = reader.read(chunk_size)\n    if not chunk:\n        return True\n    writer.write(chunk)\n    return None\n",
+        "rewrite": "\ndef read_and_write(reader, writer, chunk_size):\n    while True:\n        chunk = reader.read(chunk_size)\n        if not chunk:\n            break\n        writer.write(chunk)\n"
+    },
+    {
+        "original": "\nimport paramiko\nimport hashlib\n\ndef file_transfer(\n    ssh_conn,\n    source_file,\n    dest_file,\n    file_system=None,\n    direction=\"put\",\n    disable_md5=False,\n    inline_transfer=False,\n    overwrite_file=False\n):\n    ssh = paramiko.SSHClient()\n    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())\n    \n    if direction == \"put\":\n        sftp = ssh_conn.open_sftp()\n        sftp.put(source_file, dest",
+        "rewrite": "\n\n\nimport paramiko\nimport hashlib\n\ndef file_transfer(\n    ssh_conn, \n    source_file, \n    dest_file, \n    file_system=None, \n    direction=\"put\", \n    disable_md5=False, \n    inline_transfer=False, \n    overwrite_file=False\n):\n    \n     if direction == \"put\":\n         with ssh_conn.open_sftp() as sftp:\n             sftp.put(source_file, dest_file)\n     elif direction == \"get\":\n         with ssh_conn.open_sftar() as sftp:\n             sftp.get(source_file, dest_file)\n"
+    },
+    {
+        "original": "\ndef modify_order(self, orderId: int, quantity: int):\n    # some implementation here \n\nclass TradingPlatform:\n    def __init__(self):\n        self.orderId = 0\n        self.quantity = 0\n\n    def move_stoploss(self, stoploss: float):\n        self.orderId = 1  # assume we have an orderId of 1\n        self.quantity = 10  # assume we have a quantity of 10\n        self.modify_order(self.order",
+        "rewrite": "\n\n\nclass TradingPlatform:\n    def __init__(self):\n        self.orders = {}\n\n    def modify_order(self, order_id: int, quantity: int):\n        if order_id in self.orders:\n            self.orders[order_id] = quantity\n\n    def move_stoploss(self, stoploss: float):\n        order_id = 1  \n        quantity = 10  \n        self.modify_order(order_id, quantity)\n"
+    },
+    {
+        "original": "\nimport github\nfrom datetime import datetime\n\nclass GithubApi:\n    def __init__(self, token):\n        self.git = github.Github(token)\n\n    def get_comments(self, owner, repo, number, since=None):\n        if since is None:\n            comments = self.git.get_repo(repo).get_issue(number).get_comments()\n        else:\n            comments = self.git.get_repo(repo).get_issue(number).get_comments(since=since)\n        \n        return comments\n",
+        "rewrite": "\n\n\nimport github\nfrom datetime import datetime\n\nclass GithubApi:\n    def __init__(self, token):\n        self.git = github.Github(token)\n\n    def get_comments(self, owner, repo, number):\n        repository = self.git.get_repo(f\"{owner}/{repo}\")\n        issue = repository.get_issue(number)\n        \n        since_date = datetime.now() - timedelta(days=30) if 'since' not in locals() else since\n        \n        return issue.get_comments(since=since_date)\n"
+    },
+    {
+        "original": "\nimport os\nimport fnmatch\n\nclass FileProcessor:\n    def __init__(self, directory):\n        self.directory = directory\n\n    def list_filepaths(self, wildcard=None):\n        filepaths = [os.path.join(self.directory, f) for f in os.listdir(self.directory)]\n        \n        if wildcard:\n            patterns = [p.strip() for p in wildcard.split(\"|\")]\n            filtered_filepaths = []\n            for filepath in filepaths:\n                for pattern in patterns:\n                    if fn",
+        "rewrite": "\n\n\nimport os\nimport fnmatch\n\nclass FileProcessor:\n    def __init__(self, directory):\n        self.directory = directory\n\n    def list_filepaths(self, wildcard=None):\n        filepaths = [os.path.join(self.directory, f) for f in os.listdir(self.directory)]\n        \n        if wildcard:\n            patterns = [p.strip() for p in wildcard.split(\"|\")]\n            filepaths = [fp for fp in filepaths if any(fnmatch.fnmatch(os.path.basename(fp), p) for p in patterns)]\n        \n        return filepaths\n"
+    },
+    {
+        "original": "\nimport github\n\nclass GithubRepository:\n    def __init__(self, owner, repo):\n        self.owner = owner\n        self.repo = repo\n        self.g = github.Github()\n        self.repository = self.g.get_repo(f\"{owner}/{repo}\")\n\n    def merge(self, base, head, commit_message=github.GithubObject.NotSet):\n        return self.repository.merge(base, head, commit_message)\n",
+        "rewrite": "\n\n\nimport github\n\nclass GithubRepository:\n    def __init__(self, owner: str, repo: str):\n        self.owner = owner\n        self.repo = repo\n        self.g = github.Github()\n        self.repository = self.g.get_repo(f\"{owner}/{repo}\")\n\n    def merge(self, base: str, head: str, commit_message: str = \"\") -> github.PullRequestMerge:\n        return self.repository.merge(base, head, commit_message)\n"
+    },
+    {
+        "original": "\nfrom pymatgen import Structure\nfrom pymatgen.symmetry.kpoints import KpointPath, KpointException\n\ndef automatic_gamma_density(structure: Structure, kppa: float) -> dict:\n    \"\"\"\n    Returns an automatic Kpoint object based on a structure and a kpoint density.\n    Uses Gamma centered meshes always. For GW.\n\n    Args:\n        structure (Structure): Input structure\n        kppa (float): Grid density\n\n    Returns:\n        dict:",
+        "rewrite": "\n\n\nfrom pymatgen import Structure\nfrom pymatgen.symmetry.kpoints import KpointPath, KpointException\n\ndef automatic_gamma_density(structure: Structure, kppa: float) -> dict:\n    kpoints, _ = KpointPath.automatic_linemode(structure, int(kppa), reciprocal_density=1)\n    return {'kpoints': kpoints}\n"
+    },
+    {
+        "original": "\nimport gitlab\n\nclass GitLab:\n    def __init__(self, url, private_token):\n        self.gl = gitlab.Gitlab(url, private_token=private_token)\n\n    def unprotect(self, project_id, branch_name, **kwargs):\n        project = self.gl.projects.get(project_id)\n        branch = project.branches.get(branch_name)\n        try:\n            branch.unprotect()\n        except gitlab.exceptions.GitlabAuthenticationError as e:\n            raise GitlabAuthentication",
+        "rewrite": "\n\n\nimport gitlab\n\nclass GitLab:\n    def __init__(self, url, private_token):\n        self.gl = gitlab.Gitlab(url, private_token=private_token)\n\n    def unprotect(self, project_id, branch_name):\n        project = self.gl.projects.get(project_id)\n        branch = project.branches.get(branch_name)\n        try:\n            branch.unprotect()\n        except gitlab.exceptions.GitlabAuthenticationError as e:\n            raise Exception(\"GitlabAuthenticationError: {}\".format(e))\n"
+    },
+    {
+        "original": "\nfrom werkzeug.datastructures import RequestCacheControl\n\ndef parse_cache_control_header(value, on_update=None, cls=None):\n    if cls is None:\n        cls = RequestCacheControl\n    cache_control = cls()\n    for directive in value.split(','):\n        directive = directive.strip()\n        if '=' in directive:\n            key, value = [x.strip() for x in directive.split('=', 1)]\n            cache_control.set(key, value)\n        else:\n            cache_control.set(d",
+        "rewrite": "\n\n\nfrom werkzeug.datastructures import RequestCacheControl\n\ndef parse_cache_control_header(value, on_update=None, cls=None):\n    cls = cls or RequestCacheControl\n    cache_control = cls()\n    for directive in (d.strip() for d in value.split(',')):\n        if '=' in directive:\n            key, value = (x.strip() for x in directive.split('=', 1))\n            cache_control.set(key, value)\n        else:\n            cache_control.set(directive)\n"
+    },
+    {
+        "original": "\nclass ScenarioBuilder:\n    def _get_matrix(self):\n        return {\n            \"scenario_1\": {\"subcommand\": [\"action-1\", \"action-2\"]},\n            \"scenario_2\": {\"subcommand\": [\"action-1\"]}\n        }\n",
+        "rewrite": "\nfrom enum import Enum\nfrom typing import Dict, List\n\nclass CommandType(Enum):\n    ACTION = 1\n\nclass Command:\n    def __init__(self, name: str, command_type: CommandType):\n        self.name = name\n        self.command_type = command_type\n\nclass Scenario:\n    def __init__(self, name: str, commands: List[Command]):\n        self.name = name\n        self.commands = commands\n\nclass ScenarioBuilder:\n    def _get_matrix(self) -> Dict[str, Scenario]:\n        action_1 = Command(\"action-1\", CommandType.ACTION)\n        action_2 = Command(\"action"
+    },
+    {
+        "original": "\nimport socket\n\ndef set_tcp_md5sig(s, addr, key):\n    \"\"\"\n    Enable TCP-MD5 on the given socket.\n\n    :param s: Socket\n    :param addr: Associated address.  On some platforms, this has no effect.\n    :param key: Key.  On some platforms, this has no effect.\n    \"\"\"\n    \n    TCP_MD5SIG = 14\n    tcp_md5sig_struct = struct.pack('4s', key.encode())",
+        "rewrite": "\n\n\nimport socket\nimport struct\n\nTCP_MD5SIG = 14\n\ndef set_tcp_md5sig(s, addr, key):\n    tcp_md5sig_struct = struct.pack('4s', key.encode())\n    s.setsockopt(socket.SOL_TCP, TCP_MD5SIG, tcp_md5sig_struct)\n"
+    },
+    {
+        "original": "\ndef _jobs():\n    # Add your implementation here\n    pass\n",
+        "rewrite": "\ndef _jobs():\n    jobs = []\n    jobs.append({\"id\": 1, \"title\": \"Software Engineer\", \"description\": \"Develop software applications\"})\n    jobs.append({\"id\": 2, \"title\": \"Data Scientist\", \"description\": \"Analyze and interpret complex data\"})\n    jobs.append({\"id\": 3, \"title\": \"DevOps Engineer\", \"description\": \"Ensure smooth operation of systems\"})\n    \n    return jobs\n"
+    },
+    {
+        "original": "\nimport base64\n\ndef hidden_basic_auth(user=\"user\", passwd=\"passwd\"):\n    auth_str = f\"{user}:{passwd}\"\n    b64_str = base64.b64encode(auth_str.encode()).decode()\n    header_str = f\"Basic {b64_str}\"\n    \n    return header_str\n",
+        "rewrite": "\nimport base64\nfrom urllib.parse import quote\n\ndef hidden_basic_auth(user=\"user\", password=\"password\"):\n    user = quote(user)\n    password = quote(password)\n    \n    auth_str = f\"{user}:{password}\"\n    \n    b64-str = base64.b64encode(auth_str.encode()).decode()\n    \n    return f\"Basic {b64-str}\"\n"
+    },
+    {
+        "original": "\nimport numpy as np\nfrom typing import Tuple\n\ndef get_noisy_gate(gate_name: str, params: Tuple[float]) -> Tuple[np.ndarray, str]:\n    \"\"\"\n    Look up the numerical gate representation and a proposed 'noisy' name.\n\n    Parameters:\n        gate_name (str): The Quil gate name\n        params (Tuple[float]): The gate parameters.\n\n    Returns:\n        A tuple (matrix, noisy_name) with the representation of the ideal gate matrix \n       ",
+        "rewrite": "\n\n\nimport numpy as np\nfrom typing import Tuple\n\ndef get_noisy_gate(gate_name: str, *params: Tuple[float]) -> Tuple[np.ndarray, str]:\n    if gate_name == 'RX':\n        matrix = np.array([[np.cos(params[0]/2), -1j*np.sin(params[0]/2)], [-1j*np.sin(params[0]/2), np.cos(params[0]/2)]])\n        noisy_name = f\"Noisy RX({params[0]})\"\n    elif gate_name == 'RY':\n        matrix = np.array([[np.cos(params[0"
+    },
+    {
+        "original": "\ndef creep_data(data_set='creep_rupture'):\n    if data_set == 'creep_rupture':\n        # implement Brun and Yoshida's metal creep rupture data\n        pass \n    else:\n        raise ValueError(\"Invalid data set\")\n",
+        "rewrite": "\nfrom enum import Enum\n\nclass DataSet(Enum):\n    CREEP_RUPTURE = 'creep_rupture'\n\ndef creep_data(data_set: str = DataSet.CREEP_RUPTURE.value):\n    if data_set == DataSet.CREEP_RUPTURE.value:\n        # implement Brun and Yoshida's metal creep rupture data\n        pass \n    elif data_set not in [d.value for d in DataSet]:\n        raise ValueError(\"Invalid data set\")\n"
+    },
+    {
+        "original": "\n\nimport salt.client\n\ndef create_baseline(tag=\"baseline\", config='root'):\n    local = salt.client.LocalClient()\n    \n    if not tag:\n        tag = \"baseline\"\n        \n    result = local.cmd('snapper.create', [tag, config])\n    \n    return result[0]\n\n",
+        "rewrite": "\nimport salt.client\n\ndef create_baseline(tag=\"baseline\", config='root'):\n    local = salt.client.LocalClient()\n    result = local.cmd('snapper.create', [tag or \"baseline\", config])\n    return result[0]\n"
+    },
+    {
+        "original": "\nclass Dispatcher:\n    def __init__(self):\n        self.send_last_message_functions = {}\n\n    def remove_send_last_message(self, connection):\n        if connection in self.send_last_message_functions:\n            del self.send_last_message_functions[connection]\n",
+        "rewrite": "\nclass Dispatcher:\n    def __init__(self):\n        self.send_last_message_functions = {}\n\n    def remove_send_last_message(self, connection):\n        self.send_last_message_functions.pop(connection, None)\n"
+    },
+    {
+        "original": "\n\ndef set_syslog_server(server=None, type=\"primary\"):\n    if not isinstance(server, str):\n        raise ValueError(\"Server must be a string\")\n    if type not in [\"primary\", \"secondary\"]:\n        raise ValueError(\"Type must be either 'primary' or 'secondary'\")\n    \n    # implement your logic here to set syslog server on host\n    # this example just prints out what would happen\n    if type == \"primary\":\n        print(f\"Setting primary syslog",
+        "rewrite": "\n\ndef set_syslog_server(server: str, type: str = \"primary\") -> None:\n    if not isinstance(server, str):\n        raise ValueError(\"Server must be a string\")\n    if type not in [\"primary\", \"secondary\"]:\n        raise ValueError(\"Type must be either 'primary' or 'secondary'\")\n\n    if type == \"primary\":\n        print(f\"Setting primary syslog server to {server}\")\n\nLet me know if you need any further changes!"
+    },
+    {
+        "original": "\ndef check_config_mode(self, check_string=\"#)\", pattern=\"#\"):\n    return pattern in check_string\n",
+        "rewrite": "\ndef has_pattern(self, string: str, pattern: str = \"#\") -> bool:\n    return pattern in string\n"
+    },
+    {
+        "original": "\nimport numpy as np\nfrom scipy.stats import gamma\n\ndef from_EV(E, V):\n    alpha = (E ** 2) / V\n    beta = E / V\n    return gamma(alpha, scale=1/beta)\n",
+        "rewrite": "\nimport numpy as np\nfrom scipy.stats import gamma\n\ndef from_EV(E, V):\n    alpha = E**2 / V\n    beta = E / V\n    return gamma(a=alpha, scale=1/beta)\n"
+    },
+    {
+        "original": "\nclass GitlabDeleteError(Exception):\n    pass\n\nclass GitlabAuthenticationError(Exception):\n    pass\n\nclass Server:\n    def __init__(self):\n        self.objects = {}\n\n    def delete(self, id, **kwargs):\n        if not self.authenticate(**kwargs):\n            raise GitlabAuthenticationError\n        if id not in self.objects:\n            raise GitlabDeleteError\n        del self.objects[id]\n\n    def authenticate(self, **kwargs):\n        # implement your authentication logic here\n       ",
+        "rewrite": "\n\n\nclass GitlabDeleteError(Exception):\n    pass\n\nclass GitlabAuthenticationError(Exception):\n    pass\n\nclass Server:\n    def __init__(self):\n        self.objects = {}\n\n    def delete(self, id, **kwargs):\n        if not self.authenticate(**kwargs):\n            raise GitlabAuthenticationError(\"Authentication failed\")\n        if id not in self.objects:\n            raise GitlabDeleteError(f\"Object with ID {id} does not exist\")\n        del self.objects[id]\n\n    def authenticate(self, **kwargs):\n        return True  # Replace with actual authentication logic\n"
+    },
+    {
+        "original": "\nclass ISA:\n    def __init__(self):\n        self.data = {}\n\n    def add_gate(self, num_qubits, gate_type, **_gate_info):\n        if str(num_qubits) + 'Q' not in self.data:\n            self.data[str(num_qubits) + 'Q'] = {}\n        \n        if \"_\" in _gate_info:\n            qubit_str = _gate_info\n        else:\n            qubit_str = _gate_info\n        \n        if 'dead' in",
+        "rewrite": "\n\n\nclass ISA:\n    def __init__(self):\n        self.data = {}\n\n    def add_gate(self, num_qubits, gate_type, *_gate_info):\n        qubit_key = str(num_qubits) + 'Q'\n        \n        if qubit_key not in self.data:\n            self.data[qubit_key] = {}\n        \n        if '_' in _gate_info:\n            qubit_str = _gate_info\n        else:\n            qubit_str = _gate_info\n        \n"
+    },
+    {
+        "original": "\nclass ServiceScaler:\n    def __init__(self):\n        self.containers = []\n\n    def scale(self, replicas):\n        if replicas < len(self.containers):\n            del self.containers[replicas:]\n        elif replicas > len(self.containers):\n            self.containers.extend([None]*(replicas - len(self.containers)))\n        \n        return True\n",
+        "rewrite": "\nclass ServiceScaler:\n    def __init__(self):\n        self.containers = []\n\n    def scale(self, replicas):\n        diff = replicas - len(self.containers)\n        if diff > 0:\n            self.containers.extend([None]*diff)\n        elif diff < 0:\n            del self.containers[replicas:]\n        \n        return True\n"
+    },
+    {
+        "original": "\ndef register_switch_address(addr, interval=None):\n    \"\"\"\n    Registers a new address to initiate connection to switch.\n\n    Registers a new IP address and port pair of switch to let\n    ryu.controller(controller.OpenFlowController)to trytoinitiate \n   connectiontoswitch.\n\n   :paramaddr: Atupleof(host,port)pair ofswitch.\n   :paraminterval: Intervalin secondstotrytoconnecttoswitch\n  \"\"\"\nimport time\n\ndef register_switch_address(addr,",
+        "rewrite": "\n\n\ndef register_switch_address(addr, interval=5):\n    import time\n"
+    },
+    {
+        "original": "Please provide the programming challenge in Markdown format, and I'll be happy to help you with it!",
+        "rewrite": "\ndef solution():\n    programming_challenge = input(\"Please provide the programming challenge in Markdown format: \")\n    print(\"I'll be happy to help you with it!\")\n\nsolution()\n"
+    },
+    {
+        "original": "\ndef build_lines_data(self, code_obj):\n    pass\n",
+        "rewrite": "\ndef build_lines_data(self, code_obj):\n    lines_data = {}\n    for line_num, line in enumerate(code_obj.code.splitlines(), start=1):\n        lines_data[line_num] = {'line': line, 'issues': []}\n    return lines_data"
+    },
+    {
+        "original": "\nimport hashlib\nfrom ecdsa import VerifyingKey, SigningKey\nfrom base58 import b58encode_check\n\ndef key_pair_from_ed25519_key(hex_private_key):\n    # Convert hex private key to bytes\n    priv\tkey_bytes = bytes.fromhex(hex_private_key)\n    \n    # Create an Ed25519 signing key from the private key bytes\n    signing_key = SigningKey.from_secret_exponent(priv_key_bytes, hashlib.sha256)\n    \n    # Get verifykey",
+        "rewrite": "\n\n\nimport hashlib\nfrom ecdsa import VerifyingKey, SigningKey\nfrom base58 import b58encode_check\n\ndef key_pair_from_ed25519_key(hex_private_key):\n    priv_key_bytes = bytes.fromhex(hex_private_key)\n    signing_key = SigningKey.from_secret_exponent(priv_key_bytes, hashlib.sha256)\n    verifying_key = signing_key.get_verifying:key()\n    return signing_key, verifying:key \n"
+    },
+    {
+        "original": "\nimport matplotlib.pyplot as plt\nfrom matplotlib.ticker import FuncFormatter\n\nclass BandstructurePlotter:\n    def __init__(self):\n        self.fig, self.ax = plt.subplots()\n\n    def get_plot(self, ylim=None, units=\"thz\"):\n        if ylim:\n            self.ax.set_ylim(ylim)\n        \n        if units == \"thz\":\n            self.ax.set_ylabel(\"Frequency (THz)\")\n        elif units == \"ev\":\n            self.ax.set_ylabel(\"Frequency (",
+        "rewrite": "\n\n\nimport matplotlib.pyplot as plt\nfrom matplotlib.ticker import FuncFormatter\n\nclass BandstructurePlotter:\n    def __init__(self):\n        self.fig, self.ax = plt.subplots()\n\n    def get_plot(self, ylim=None, units=\"thz\"):\n        if ylim:\n            self.ax.set_ylim(ylim)\n        \n        if units == \"thz\":\n            self.ax.set_ylabel(\"Frequency (THz)\")\n        elif units == \"ev\":\n            self(ax).set_ylabel(\"Energy (eV)\")\n"
+    },
+    {
+        "original": "\ndef add_abbreviation(source_text, replacement_text, match_suffix=False, timeout=2):\n\u0627\u0626\u064a\u0644 \n\nPlease provide more information about this function's functionality within an external environment such as what kind of event-listening platform it's supposed to be used with (e.g., keyboard listeners), how it interacts with this environment (e.g., sending backspace events), and how it handles multiple abbreviations or conflicts between them.\n\nAlso please clarify what exactly needs to be implemented here: is it",
+        "rewrite": "\n\nimport time\nimport pyautogui\n\ndef add_abbreviation(source_text, replacement_text, match_suffix=False, timeout=2):\n    try:\n        pyautogui.typewrite(source_text)\n        time.sleep(timeout)\n        for _ in range(len(source_text)):\n            pyautogui.press('backspace')\n        pyautogui.typewrite(replacement_text)\n    except KeyboardInterrupt:\n        print('Operation cancelled.')\n"
+    },
+    {
+        "original": "\nfrom qiskit import QuantumCircuit, QuantumRegister\nimport math\n\ndef make_grover_circuit(input_qubits, output_qubit, oracle):\n    n = len(input_qubits)\n    qc = QuantumCircuit(n + 1)\n    \n    # Initialize input qubits to |+\n    for i in range(n):\n        qc.h(input_qubits[i])\n    \n    # Apply Hadamard gate to output qubit\n    qc.h(output_qubit)\n    \n   ",
+        "rewrite": "\n\n\nfrom qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister\n\ndef make_grover_circuit(input_size, output_bit, oracle):\n    n = input_size\n    qc = QuantumCircuit(n + 1)\n\n    qr_input = QuantumRegister(n)\n    cr_output = ClassicalRegister(1)\n\n    for i in range(n):\n        qc.h(qr_input[i])\n\n    qc.h(qr_input[n])\n"
+    },
+    {
+        "original": "\nclass SubscriptionManager:\n    def __init__(self):\n        self.channels = set()\n\n    def subscribe(self, *_channel):\n        if not isinstance(channel, str):\n            raise ValueError(\"Channel must be a string\")\n        self.channels.add(channel)\n\n    def unsubscribe(self, *_args):\n        if not args:\n            self.channels.clear()\n        else:\n            for channel in args:\n                if channel in self.channels:\n                    self.channels.remove(channel)\n",
+        "rewrite": "\n\n\nclass SubscriptionManager:\n    def __init__(self):\n        self.channels = set()\n\n    def subscribe(self, channel: str) -> None:\n        if not isinstance(channel, str):\n            raise ValueError(\"Channel must be a string\")\n        self.channels.add(channel)\n\n    def unsubscribe(self, *_channel: str = None, *_channels: list[str] = []) -> None:\n        if _channel is not None and _channel in self.channels:\n            self.channels.remove(_channel)\n        for channel in _channels:\n            if channel in self.channels:\n                self_channels.remove(channel)\n"
+    },
+    {
+        "original": "\nfrom typing import Optional\n\nclass BlobImageDescriptor:\n    pass  # Define your BlobImageDescriptor class here\n\ndef UploadFilePath(filepath: str, offset: int = 0, amount: Optional[int] = None) -> BlobImageDescriptor:\n    with open(filepath, 'rb') as f:\n        f.seek(offset)\n        if amount is None:\n            data = f.read()\n        else:\n            data = f.read(amount)\n        \n        # Currently returns none since BlobImageDescriptor class",
+        "rewrite": "\n\n\nfrom typing import Optional\n\nclass BlobImageDescriptor:\n    def __init__(self, data: bytes):\n        self.data = data\n\ndef UploadFilePath(filepath: str, offset: int = 0, amount: Optional[int] = None) -> BlobImageDescriptor:\n    with open(filepath, 'rb') as f:\n        f.seek(offset)\n        if amount is None:\n            data = f.read()\n        else:\n            data = f.read(amount)\n        \n    return BlobImageDescriptor(data)\n"
+    },
+    {
+        "original": "\n\nimport subprocess\n\ndef connect(image):\n    \"\"\"\n    Activate nbd for an image file.\n\n    CLI Example:\n\n    .. code-block:: bash\n\n        salt '*' qemu_nbd.connect /tmp/image.raw\n    \"\"\"\n    \n    command = f\"qemu-nbd -c /dev/nbd0 {image}\"\n    subprocess.run(command, shell=True)\n\n",
+        "rewrite": "\nimport subprocess\n\ndef connect(image):\n    command = [\"qemu-nbd\", \"-c\", \"/dev/nbd0\", image]\n    subprocess.run(command)\n"
+    },
+    {
+        "original": "\ndef del_flowspec_local(flowspec_family, route_dist, rules):\n    # Assuming flowspec_family is a string, route_dist is a string, and rules is a list of strings\n    # Delete/withdraw Flow Specification route from VRF identified by route_dist\n    # For simplicity, let's assume we have a dictionary to store the Flow Specification routes\n    flow_spec_routes = {}\n    \n    # Check if route_dist exists in the dictionary\n    if route_dist in",
+        "rewrite": "\n\n\ndef del_flowspec_local(flowspec_family, route_dist, rules):\n    flow_spec_routes = {}\n    \n    if route_dist in flow_spec_routes:\n        if flowspec_family in flow_spec_routes[route_dist]:\n            for rule in rules:\n                try:\n                    del flow_spec_routes[route_dist][flowspec_family][rule]\n                except KeyError:\n                    pass\n            if not flow_spec_routes[route-dist][flowspec_family]:\n                del flow_spec_routes[route_dist][flowspec_family]\n            if not flow_spec_routes[route-dist]:\n                del flow_SPEC.routes[route"
+    },
+    {
+        "original": "\nclass Volume:\n    def __init__(self, names):\n        self.names = names\n\n    def Name(self):\n        return max(self.names, key=len)\n",
+        "rewrite": "\nclass Volume:\n    def __init__(self, *):\n        self.names = names\n\n    def name(self):\n        return max(set(self.names), key=len)\n"
+    },
+    {
+        "original": "\nfrom mpi4py import MPI\n\ndef reduce_dict(input_dict, average=True):\n    comm = MPI.COMM_WORLD\n    rank = comm.rank\n    \n    if rank == 0:\n        result = input_dict.copy()\n        for i in range(1, comm.size):\n            data = comm.recv(source=i)\n            for k, v in data.items():\n                if k in result:\n                    result[k] += v\n                else:\n                    result[k] = v\n        if average",
+        "rewrite": "\nfrom mpi4py import MPI\n\ndef reduce_dict(input_dict, average=True):\n    comm = MPI.COMM_WORLD\n    rank = comm.rank\n    \n    if rank == 0:\n        result = input_dict.copy()\n        for i in range(1, comm.size):\n            data = comm.recv(source=i)\n            for k, v in data.items():\n                if k in result:\n                    result[k] += v\n                else:\n                    result[k] = v\n        if average:\n            for k in result:\n                result[k] /= comm.size\n    else:\n        comm.send(input_dict, dest=0)\n"
+    },
+    {
+        "original": "\nimport hashlib\n\ndef digest_auth_nostale(qop=None, user=\"user\", passwd=\"passwd\", algorithm=\"MD5\"):\n    if algorithm == \"MD5\":\n        ha = hashlib.md5((user + \":\" + qop + \":\" + passwd).encode()).hexdigest()\n    elif algorithm == \"SHA-256\":\n        ha = hashlib.sha256((user + \":\" + qop + \":\" + passwd).encode()).hexdigest()\n    elif algorithm == \"SHA-512\":\n        ha",
+        "rewrite": "\nimport hashlib\n\ndef digest_auth_nostale(qop=None, user=\"user\", passwd=\"passwd\", algorithm=\"MD5\"):\n    if algorithm == \"MD5\":\n        ha = hashlib.md5(f\"{user}:{qop}:{passwd}\".encode()).hexdigest()\n    elif algorithm == \"SHA-256\":\n        ha = hashlib.sha256(f\"{user}:{qop}:{passwd}\".encode()).hexdigest()\n    elif algorithm == \"SHA-512\":\n        ha = hashlib.sha512(f\"{user}:{qop}:{passwd}\".encode()).hexdigest()\n    return ha"
+    },
+    {
+        "original": "\n\ndef print_info(info_mapping):\n    \"\"\"\n    Print information stored in a dictionary with keys aligned.\n\n    Args:\n    info_mapping (dict): Input dictionary with key-value pairs.\n\n    Returns:\n    None\n    \"\"\"\n    \nprint(\"============== Output ==============\")\nprint(\"{:14} : {}\".format(\"Key\", \"Value\"))\nprint(\"-------------------- : --------------------\")\nfor key, value in info_mapping.items():\n    print(\"{:14} : {}\".format(key, value))\nprint",
+        "rewrite": "\n\n\ndef print_info(info_mapping):\n    print(\"============== Output ==============\")\n    print(\"{:<14} : {}\".format(\"Key\", \"Value\"))\n    print(\"-------------------- : --------------------\")\n    for key, value in info_mapping.items():\n        print(\"{:<14} : {}\".format(key, value))"
+    },
+    {
+        "original": "\ndef summed_icohp(self):\n    \"\"\"\n    Adds ICOHPs of both spin channels for spin polarized compounds\n    Returns:\n         icohp value in eV\n    \"\"\"\n    icohp_up = self.icohp_up\n    icohp_down = self.icohp_down\n    summed_icohp = icohp_up + icohp_down\n    return summed_icohp\n",
+        "rewrite": "\ndef summed_icohp(self):\n    return self.icohp_up + self.icohp_down"
+    },
+    {
+        "original": "\ndef wrap_tuple_streams(unwrapped, kdims, streams):\n    result = []\n    for i in range(len(unwrapped)):\n        tuple_values = []\n        for j in range(len(kdims)):\n            if kdims[j] == 'stream':\n                tuple_values.append(streams[i])\n            else:\n                tuple_values.append(getattr(unwrapped[i], kdims[j]))\n        result.append(tuple(tuple_values))\n    return result\n",
+        "rewrite": "\ndef wrap_tuple_streams(unwrapped, kdims, streams):\n    return [tuple(streams[i] if kd == 'stream' else getattr(u, kd) for kd in kdims) for i, u in enumerate(unwrapped)]\n"
+    },
+    {
+        "original": "\nimport pandas as pd\nimport numpy as np\n\ndef lines(n_traces=5,n=100,columns=None,dateIndex=True,mode=None):\n    if columns is None:\n        if mode == 'abc':\n            columns = [chr(i) for i in range(65,65+n_traces)]\n        elif mode == 'stocks':\n            columns = [f'Stock {i}' for i in range(1,n_traces+1)]\n        else:\n            columns =",
+        "rewrite": "Here is the revised version of the code:\n\n\nimport pandas as pd\nimport numpy as np\n\ndef generate_lines(n_traces=5, n=100, columns=None, dateIndex=True, mode=None):\n    if columns is None:\n        if mode == 'abc':\n            columns = [chr(i) for i in range(65, 65 + n_traces)]\n        elif mode == 'stocks':\n            columns = [f'Stock {i}' for i in range(1, n_traces + 1)]\n        else:\n            raise ValueError(\"Mode must be 'abc' or 'stocks'\")\n"
+    },
+    {
+        "original": "\nfrom typing import Tuple\n\ndef _parse_name(name: str, as_qvm: bool = False, noisy: bool = False) -> Tuple[str, str, bool]:\n    \"\"\"\n    Try to figure out whether we're getting a (noisy) qvm, and the associated qpu name.\n\n    See :py:func:`get_qc` for examples of valid names + flags.\n    \"\"\"\n    \n    if 'qvm' in name.lower():\n        if 'no",
+        "rewrite": "\n\nfrom typing import Tuple\n\ndef parse_name(name: str, as_qvm: bool = False, noisy: bool = False) -> Tuple[str, str, bool]:\n    if 'qvm' in name.lower():\n        if 'noisy' in name.lower():\n            return '', name.replace('qvm', '').replace('noisy', ''), True\n        else:\n            return '', name.replace('qvm', ''), True\n    else:\n        return '', name, as_qvm or noisy\n"
+    },
+    {
+        "original": "\nclass MultiSet:\n    def __init__(self):\n        self.subject_attributes = {}\n\n    def __call__(self, subject, values, timestamp=None, replace=True, sync=True, to_delete=None):\n        if subject not in self.subject_attributes:\n            self.subject_attributes[subject] = {}\n        \n        if to_delete is not None:\n            for attribute in to_delete:\n                if attribute in self.subject_attributes[subject]:\n                    del self.subject_attributes[subject][attribute]\n        \n        for",
+        "rewrite": "\n\n\nclass MultiSet:\n    def __init__(self):\n        self.subject_attributes = {}\n\n    def __call__(self, subject, values, timestamp=None, replace=True, sync=True, to_delete=None):\n        if subject not in self.subject_attributes:\n            self.subject_attributes[subject] = {}\n        \n        if to_delete is not None:\n            for attribute in to_delete:\n                self.subject_attributes[subject].pop(attribute, None)\n        \n        for key, value in values.items():\n            if replace or key not in self(subject)[subject]:\n                self(subject)[key] = value\n"
+    },
+    {
+        "original": "\nimport tensorflow as tf\n\ndef _decode_crop_and_flip(image_buffer, num_channels):\n    image_tensor = tf.io.decode_jpeg(image_buffer, channels=num_channels)\n    crop_size = [tf.shape(image_tensor)[0] - tf.random.uniform([], minval=50), \n                 tf.shape(image_tensor)[1] - tf.random.uniform([], minval=50)]\n    cropped_image = tf.image.random_crop(value=image_tensor, size=crop_size)\n    flipped_image = tf.image.random",
+        "rewrite": "\n\n\nimport tensorflow as tf\n\ndef decode_crop_and_flip(image_buffer, num_channels):\n    image_tensor = tf.io.decode_jpeg(image_buffer, channels=num_channels)\n    crop_size = [tf.shape(image_tensor)[0] - tf.random.uniform([], 30, 50), \n                 tf.shape(image_tensor)[1] - tf.random.uniform([], 30, 50)]\n    cropped_image = tf.image.random_crop(value=image_tensor, size=crop_size)\n    flipped_image = tf.imagerandom_flip_left_right(cropped_image)\n    return flipped_image\n"
+    },
+    {
+        "original": "\ndef bgp_summary_parser(bgp_summary):\n    # Your code here\n    pass\n",
+        "rewrite": "\nimport re\n\ndef bgp_summary_parser(bgp_summary):\n    result = {}\n    for line in bg_summary.split('\\n'):\n        if 'bgp summary' in line.lower():\n            continue\n        match = re.match(r'\\s*(\\d+)\\s+(\\S+)\\s+(\\d+(?:\\.\\d+)?)(?:%|K)?\\s+(\\d+(?:\\.\\d+)?)(?:%|K)?', line)\n        if match:\n            asn, prefix, prefix_len, metric, weight = match.groups()\n            result[asn] = {'prefix': prefix, 'prefix_len':"
+    },
+    {
+        "original": "\ndef warp(self, warp_matrix, img, iflag=cv2.INTER_NEAREST):\n    return cv2.warpPerspective(img, warp_matrix, (img.shape[1], img.shape[0]), flags=iflag)\n",
+        "rewrite": "\ndef warp(self, warp_matrix: np.ndarray, img: np.ndarray, iflag: int = cv2.INTER_NEAREST) -> np.ndarray:\n    return cv2.warpPerspective(img, warp_matrix, (img.shape[1], img.shape[0]), flags=iflag)\n"
+    },
+    {
+        "original": "\ndef get_projection_on_elements(self, structure):\n    \"\"\"\n    Method returning a dictionary of projections on elements.\n\n    Args:\n        structure (Structure): Input structure.\n\n    Returns:\n        a dictionary in the {Spin.up:[k index][b index][{Element:values}]}\n    \"\"\"\n    projection_dict = {}\n    for spin in [Spin.up]:\n        spin_dict = {}\n        for k_index in range(structure.num_kpoints):\n            k_dict = {}\n            for b_index in",
+        "rewrite": "Here's the revised code:\n\n\ndef get_projection_on_elements(self, structure):\n    projection_dict = {}\n    for spin in [Spin.up]:\n        spin_dict = {}\n        for k_index in range(structure.num_kpoints):\n            k_dict = {}\n            for b_index in range(structure.num_bands):\n                element_dict = {}\n                for element, _ in enumerate(structure.elements):\n                    element_dict[element] = self.get_projection_value(structure, k_index, b_index, element)\n                k_dict[b_index] = element_dict\n            spin_dict[k_index] = k_dict\n        projection_dict[spin] ="
+    },
+    {
+        "original": "\nfrom werkzeug.datastructures import IfRange\nfrom datetime import datetime\n\ndef parse_if_range_header(value):\n    if value.startswith('\"') and value.endswith('\"'):\n        return IfRange(etag=value[1:-1])\n    elif value.startswith('W/') and value[2:].startswith('\"') and value.endswith('\"'):\n        return IfRange(etag=value[2:-1])\n    else:\n        try:\n            dt = datetime.strptime(value, '%a, %d %b %Y",
+        "rewrite": "\n\n\nfrom werkzeug.datastructures import IfRange\nfrom datetime import.datetime\n\ndef parse_if_range_header(value):\n    if value.startswith('\"') and value.endswith('\"'):\n        return IfRange(etag=value[1:-1])\n    elif value.startswith('W/ \"') and len(value) > 3 and value[-1] == '\"':\n        return IfRange(last_modified=datetime.strptime(value[2:-1], '%a, %d %b %Y'))\n\n    try:\n        return IfRange(last_modified=datetime.strptime(value, '%a, %d %b %Y'))\n    except ValueError:\n        raise"
+    },
+    {
+        "original": "\n\ndef get_repo(repo, **kwargs):\n    \"\"\"\n    Display a repo from the sources.list / sources.list.d\n\n    The repo passed in needs to be a complete repo entry.\n\n    CLI Examples:\n\n        salt '*' pkg.get_repo \"myrepo definition\"\n    \"\"\"\n    \nfrom os import listdir\nfrom os.path import isfile, join\nfrom glob import glob\n\ndef get_repo(repo, **kwargs):\n  sources_list = '/etc/apt/sources.list'\n .sources_list",
+        "rewrite": "\n\nimport glob\nimport os\n\ndef get_repo(repo, *kwargs):\n    sources_list_dir = '/etc/apt/sources.list.d'\n    for file in glob.glob(os.path.join(sources_list_dir, '*.list')):\n        with open(file) as f:\n            for line in f:\n                if line.strip() == repo:\n                    return line.strip()\n    with open('/etc/apt/sources.list') as f:\n        for line in f:\n            if line.strip() == repo:\n                return line.strip()\n    return None\n"
+    },
+    {
+        "original": "\nimport numpy as np\n\ndef random_choice(actions=None, random_state=None):\n    if isinstance(random_state, int):\n        np.random.seed(random_state)\n    elif isinstance(random_state, np.random.RandomState):\n        np.random.set_state(random_state.get_state())\n    \n    if actions is None:\n        # assuming default action space for demonstration purposes only; \n        # actual implementation would require access to environment's action space \n\t\tactions = list(range(10))  # default to integer",
+        "rewrite": "\n\n\nimport numpy as np\n\ndef random_choice(actions=None, random_state=None):\n    if isinstance(random_state, int):\n        np.random.seed(random_state)\n    elif isinstance(random_state, np.random.RandomState):\n        np.random.set_state(random_state.get_state())\n    \n    if actions is None:\n        actions = list(range(10))\n        \n    return np.random.choice(actions)\n"
+    },
+    {
+        "original": "\ndef GetAuditLogEntries(offset, now, token):\n    from DateTime import RDFDatetime\n    from ApiCall import FlowARGV\n\n    start_time = now - offset\n    flow_args = FlowARGV(token=token)\n    flow_args\u0435\u043d\u0438\u0435urce_urn = flow_args.client_urn.Add('aff4:/flows/W \uff09\n    \n    for _, result in flow_args(CallFlow(name='GetAuditLog', \n                                       next_client_id=0,\n                                       validatingeyhannel='audit',\n                                      ",
+        "rewrite": "\n\n\nfrom datetime import datetime, timedelta\nfrom ApiCall import FlowARGV\nfrom DateTime import RDFDatetime\n\ndef get_audit_log_entries(offset, now, token):\n    start_time = now - timedelta(minutes=offset)\n    flow_args = FlowARGV(token=token)\n    \n    request_data = {\n        \"name\": \"GetAuditLog\",\n        \"next_client_id\": 0,\n        \"validating_channel\": \"audit\"\n    }\n    \n    response = flow_args.CallFlow(**_data=request_data)\n    \n    return response\n"
+    },
+    {
+        "original": "\ndef evaluate(self, data_loader):\n    self.model.eval()\n    torch.no_grad()\n    total_correct = 0\n    with torch.no_grad():\n        for batch_idx, (data, target) in enumerate(data_loader):\n            output = self.model(data)\n            pred = output.max(1)[1]\n            total_correct += pred.eq(target).sum().item()\n\n    accuracy = total_correct / len(data_loader.dataset)\n    return accuracy\n",
+        "rewrite": "\n\n\ndef evaluate(self, data_loader):\n    self.model.eval()\n    total_correct = 0\n    with torch.no_grad():\n        for data, target in data_loader:\n            output = self.model(data)\n            _, pred = output.max(1)\n            total_correct += (pred == target).sum().item()\n\n    accuracy = total_correct / len(data_loader.dataset)\n    return accuracy\n"
+    },
+    {
+        "original": "\ndef secgroup_delete(self, name):\n    ec2 = boto3.client('ec2')\n    sec_group_ids = [sg['GroupId'] for sg in ec2.describe_security_groups(Filters=[{'Name': 'group-name', 'Values': [name]}])['SecurityGroups']]\n    if len(sec_group_ids) > 0:\n        ec2.delete_security_group(GroupId=sec_group_ids[0])\n",
+        "rewrite": "\ndef secgroup_delete(self, name):\n    ec2 = boto3.client('ec2')\n    response = ec2.describe_security_groups(Filters=[{'Name': 'group-name', 'Values': [name]}])\n    for sg in response['SecurityGroups']:\n        ec2.delete_security_group(GroupId=sg['GroupId'])\n"
+    },
+    {
+        "original": "\nclass PySID:\n    def sidConversion(cls, val, **kwargs):\n        \"\"\"\n        converts a list of pysid objects to string representations\n        \"\"\"\n        sid_list = [str(sid) for sid in val]\n        return ', '.join(sid_list)\n",
+        "rewrite": "\nclass PySID:\n    @classmethod\n    def sid_conversion(cls, vals, **kwargs):\n        return ', '.join(str(val) for val in vals)\n"
+    },
+    {
+        "original": "\nimport json\nimport requests\n\ndef _check_result(method_name, result):\n    if not isinstance(result, requests.Response):\n        raise ApiException(f\"Invalid response from {method_name}.\")\n    \n    if result.status_code != 200:\n        raise ApiException(f\"Failed to call {method_name}. Status code: {result.status_code}\")\n    \n    try:\n        json_result = result.json()\n    except ValueError:\n        raise ApiException(f\"Failed to parse JSON from {method_name}\")\n    \n   ",
+        "rewrite": "\n\n\nimport json\nimport requests\n\nclass ApiException(Exception):\n    pass\n\ndef _check_result(method_name, result):\n    if not isinstance(result, requests.Response):\n        raise ApiException(f\"Invalid response from {method_name}.\")\n    \n    if result.status_code != 200:\n        raise ApiException(f\"Failed to call {method_name}. Status code: {result.status_code}\")\n    \n    try:\n        return result.json()\n    except ValueError as e:\n        raise ApiException(f\"Failed to parse JSON from {method_name}\") from e\n"
+    },
+    {
+        "original": "\nclass LEDBoard:\n    def __init__(self, *leds):\n        self.state = [False] * len(leds)\n        self.pins = leds\n    \n    def toggle(self, *args=None):\n        if hasattr(self,'blink_thread') and self.blink_thread.is_alive():\n           self.blink_thread.stop()\n           del self.blink_thread\n        \n        if args is None:\n           for i in range(len(self.state)):\n               self.state[i] = not self.state",
+        "rewrite": "\n\n\nclass LEDBoard:\n    def __init__(self, leds):\n        self.state = [False] * len(leds)\n        self.pins = leds\n    \n    def toggle(self, *=None):\n        if hasattr(self,'blink_thread') and self.blink_thread.is_alive():\n            self.blink_thread.stop()\n            del self.blink_thread\n        \n        if args is None:\n            for i in range(len(self.state)):\n                self.state[i] = not self.state[i]\n"
+    },
+    {
+        "original": "\nfrom dataclasses import dataclass\nfrom enum import Enum\n\n@dataclass\nclass Contract:\n    symbol: str\n    # other attributes ...\n\n@dataclass\nclass Order:\n    quantity: int\n    # other attributes ...\n\nclass Status(Enum):\n    NEW = 1\n    FILLED = 2\n    CANCELED = 3\n\n@dataclass\nclass Trade:\n    id: int\n    contract: Contract\n    order: Order\n    status: Status\n\ndef",
+        "rewrite": "\n\n\nfrom dataclasses import dataclass, field, asdict, astuple, fields, is_dataclass\nfrom enum import Enum, unique\n\n@dataclass(frozen=True)\nclass Contract:\n    symbol: str\n\n@dataclass(frozen=True)\nclass Order:\n    quantity: int\n\n@unique\nclass Status(Enum):\n    NEW = 1\n    FILLED = 2 \n    CANCELED = 3 \n\n@dataclass(frozen=True)\nclass Trade:\n   id :int \n   contract :Contract \n   order :Order \n   status :Status \n\n"
+    },
+    {
+        "original": "\nclass JobTracker:\n    def __init__(self):\n        self.jobs = {}\n\n    def submit(self, jid, result):\n        self.jobs[jid] = result\n\n    def get_jid(self, jid):\n        return self.jobs.get(jid)\n\ntracker = JobTracker()\n\n# Example usage\ntracker.submit(1, \"Result of job 1\")\ntracker.submit(2, \"Result of job 2\")\n\nprint(tracker.get_jid(1))  # Output",
+        "rewrite": "\nclass JobTracker:\n    def __init__(self):\n        self.jobs = {}\n\n    def submit(self, jid, result):\n        self.jobs[jid] = result\n\n    def get_job_result(self, jid):\n        return self.jobs.get(jid)\n\njob_tracker = JobTracker()\n\njob_tracker.submit(1, \"Result of job 1\")\njob_tracker.submit(2, \"Result of job 2\")\n\nprint(job_tracker.get_job_result(1))\n"
+    },
+    {
+        "original": "\nclass WatchdogError(Exception):\n    pass\n\nclass IOError(OSError):\n    pass  # For Python 2 compatibility\n\nclass Device:\n    def __init__(self, fd):\n        self.fd = fd\n        self.closed = False\n\n    def _ioctl(self, func, arg):\n        if self.closed:\n            raise WatchdogError(\"Device is closed\")\n        \n        try:\n            import fcntl\n            return fcntl.ioctl(self.fd, func, arg)\n        except OSError",
+        "rewrite": "\nclass WatchdogError(Exception):\n    pass\n\ntry:\n    from errno import ENODEV\nexcept ImportError:\n    ENODEV = 19  # For Python 3 compatibility\n\nclass IOError(OSError):\n    pass \n\nclass Device:\n    def __init__(self, fd):\n        self.fd = fd\n        self.closed = False\n\n    def _ioctl(self, func, arg):\n        if self.closed:\n            raise WatchdogError(\"Device is closed\")\n        \n        try:\n            import fcntl\n            return fcntl.ioctl(self.fd, func, arg)\n        except OSError as e:\n            if e.errno =="
+    },
+    {
+        "original": "\ndef _policyFileReplaceOrAppend(this_string, policy_data, append_only=False):\n    if append_only:\n        policy_data += this_string\n    else:\n        policy_data = this_string\n    return policy_data\n",
+        "rewrite": "\ndef _policyFileReplaceOrAppend(this_string, policy_data, append_only=False):\n    return policy_data + this_string if append_only else this_string\n"
+    },
+    {
+        "original": "\nimport re\nfrom html.parser import HTMLParser\nfrom typing import List, Tuple\n\nclass MessageEntity:\n    def __init__(self, offset: int, length: int, html: str):\n        self.offset = offset\n        self.length = length\n        self.html = html\n\nclass Parser(HTMLParser):\n    def __init__(self):\n        super().__init__()\n        self.clean_message = ''\n        self.entities = []\n        self.in_tag = False\n\n    def handle_data",
+        "rewrite": "\n\n\nimport re\nfrom html.parser import HTMLParser\nfrom typing import List, Tuple\n\nclass MessageEntity:\n    def __init__(self, offset: int, length: int, html: str):\n        self.offset = offset\n        self.length = length\n        self.html = html\n\nclass Parser(HTMLParser):\n    def __init__(self):\n        super().__init__()\n        self.clean_message = ''\n        self.entities = []\n        self.in_tag = False\n        self.entity_html = ''\n        self.entity_offset = 0\n        self.entity_length = 0\n\n    def handle_start"
+    },
+    {
+        "original": "\ndef execute(eopatch):\n    ndvi_values = [pixel.NDVI for pixel in eopatch.pixels]\n    dates = [pixel.date for pixel in eopatch.pixels]\n\n    ndvi_slope = []\n    for i in range(1, len(ndvi_values) - 1):\n        numerator = ndvi_values[i + 1] - ndvi_values[i - 1]\n        denominator = dates[i + 1] - dates[i - ",
+        "rewrite": "\ndef execute(eopatch):\n    ndvi_values = [pixel.NDVI for pixel in eopatch.pixels]\n    dates = [pixel.date for pixel in eopatch.pixels]\n\n    ndvi_slope = []\n    for i in range(1, len(ndvi_values) - 1):\n        numerator = ndvi_values[i + 1] - ndvi_values[i - 1]\n        denominator = (dates[i + 1] - dates[i - 1]).days\n        ndvi_slope.append(numerator / denominator)\n    return ndvi_slope\n"
+    },
+    {
+        "original": "\nclass UserAvatarManager:\n    def __init__(self):\n        self.user_avatars = {}\n\n    def set_user_avatar(self, username, avatar):\n        self.user_avatars[username] = avatar\n\n# Example usage:\nmanager = UserAvatarManager()\nmanager.set_user_avatar(\"john\", 1)\nmanager.set_user_avatar(\"jane\", 2)\n\nprint(manager.user_avatars)  # Output: {\"john\": 1, \"jane\": 2}\n",
+        "rewrite": "\nclass UserAvatarManager:\n    def __init__(self):\n        self._user_avatars = {}\n\n    def set_user_avatar(self, username: str, avatar: int) -> None:\n        if not isinstance(username, str):\n            raise TypeError(\"Username must be a string\")\n        if not isinstance(avatar, int):\n            raise TypeError(\"Avatar must be an integer\")\n        self._user_avatars[username] = avatar\n\n    def get_user_avatars(self) -> dict:\n        return self._user_avatars.copy()\n\n# Example usage:\nmanager = UserAvatarManager()\nmanager.set_user_avatar(\"john\", 1"
+    }
+]

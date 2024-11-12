@@ -89,9 +89,48 @@ def rewrite_code2(codes):
     
     return rewrite_codes
 
+def rewrite_code3(codes):
+    api_key = os.getenv('LLAMA_API_KEY')
+    llama = LlamaAPI(api_key)
+
+    prompt_str = "<PROMPT_START> Revise the code below with your best effort"
+    prefix = "No need to explain. Just write code(No code comments needed)<PROMPT_END>"
+
+    rewrite_codes = []
+    i = 0
+    for code in codes:
+        prompt = f"{prompt_str}\n{code}\n{prefix}"
+        tokens = prompt
+        outputs = ""
+        for t in range(128):
+            api_request_json = {
+                "model": "llama3-70b",
+                "messages": [
+                    {"role": "user", "content": tokens},
+                ],
+                "max_tokens": 1,
+            }
+            response = llama.run(api_request_json)
+            data = response.json()
+            response_text = data["choices"][0]["message"]["content"]
+            tokens += " "+ response_text
+            outputs += " "+ response_text
+            print("token: ", response_text)
+            print("tokens: ", tokens)
+            print("outputs: ", outputs)
+        rewrite_codes.append(outputs)
+        i += 1
+        print(code)
+        print("---------")
+        print(outputs)
+        print("E---------")
+        exit()
+    
+    return rewrite_codes
+
 
 def save_to_json_rewritten_code(codes, rewrite_codes, origin, by="gpt"):
-    rewrite_string = "CSDataset_gpt"
+    rewrite_string = "CSDataset_llama3_100_300"
     data = []
     for i in range(len(codes)):
         sec = {
@@ -143,7 +182,7 @@ def rewrite_gpt():
     #data["sampled"] = data["sampled"][:data_num]
 
     #with open("HumanEval/outputs_codellama-CodeLlama-7b-Instruct-hf.json", 'r') as file:
-    with open("CSDataset/outputs_llama3.json", 'r') as file:
+    with open("CSDataset/outputs_llama3_100_300.json", 'r') as file:
         json_data = json.load(file)
     original_codes = [item['original'] for item in json_data]
     sampled_codes = [item['sampled'] for item in json_data]
