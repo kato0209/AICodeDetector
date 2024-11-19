@@ -130,7 +130,7 @@ def rewrite_code3(codes):
 
 
 def save_to_json_rewritten_code(codes, rewrite_codes, origin, by="gpt"):
-    rewrite_string = "CSDataset_llama3_100_300"
+    rewrite_string = "CSDataset_llama3_300_500"
     data = []
     for i in range(len(codes)):
         sec = {
@@ -138,7 +138,7 @@ def save_to_json_rewritten_code(codes, rewrite_codes, origin, by="gpt"):
             "rewrite": rewrite_codes[i]
         }
         data.append(sec)
-    with open(f'rewrite_dataset/A_Rewrite_code_by_{by}_{origin}_{rewrite_string}.json', 'w') as file:
+    with open(f'rewrite_dataset/Rewrite_code_by_{by}_{origin}_{rewrite_string}.json', 'w') as file:
         json.dump(data, file, indent=4)
 
 def rewrite_code_gpt(codes, model_config, args, origin=None):
@@ -182,7 +182,7 @@ def rewrite_gpt():
     #data["sampled"] = data["sampled"][:data_num]
 
     #with open("HumanEval/outputs_codellama-CodeLlama-7b-Instruct-hf.json", 'r') as file:
-    with open("CSDataset/outputs_llama3_100_300.json", 'r') as file:
+    with open("CSDataset/outputs_llama3_300_500.json", 'r') as file:
         json_data = json.load(file)
     original_codes = [item['original'] for item in json_data]
     sampled_codes = [item['sampled'] for item in json_data]
