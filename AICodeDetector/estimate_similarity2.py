@@ -116,7 +116,7 @@ args_dict = {
     #'base_model_name': "meta-llama/Llama-2-7b-chat-hf",
     #'base_model_name': "microsoft/codebert-base",
     'mask_filling_model_name': "Salesforce/codet5p-770m",
-    'batch_size': 32,
+    'batch_size': 2,
     'chunk_size': 10,
     'n_similarity_samples': 20,
     'int8': False,
@@ -163,8 +163,8 @@ device = args.DEVICE
 #ai_data = download_data_from_json('rewrite_dataset/rewrite_codellama_AI_origin_codellama.json')
 #human_data = download_data_from_json('rewrite_dataset/rewrite_codellama_Human_origin_codellama.json')
 
-ai_data = download_data_from_json('rewrite_dataset/Train_Rewrite_code_by_gpt_AI_HumanEval_codellama.json')
-human_data = download_data_from_json('rewrite_dataset/Train_Rewrite_code_by_gpt3-5_Human.json')
+ai_data = download_data_from_json('rewrite_dataset/out_rewrite_code_by_llama3_AI_CSDataset_llama3.json')
+human_data = download_data_from_json('rewrite_dataset/out_rewrite_code_by_llama3_Human_CSDataset_llama3.json')
 
 #ai_data = download_data_from_json2('json_data/rewrite_code_GPT_inv.json')
 #human_data = download_data_from_json2('json_data/rewrite_code_human_inv.json')
@@ -183,6 +183,11 @@ data = {
 }
 
 dataset = CodeDatasetSimilarity(data, args)
+test_num = 2
+first_50_indices = list(range(test_num))
+last_50_indices = list(range(len(dataset.samples) - test_num, len(dataset.samples)))
+indices = first_50_indices + last_50_indices
+dataset = dataset.select(indices)
 
 dataloader = DataLoader(dataset, args.batch_size, shuffle=True)
 
@@ -211,12 +216,21 @@ logging.basicConfig(filename=os.path.join(log_path, f'test_{timestamp}.log'),
                     datefmt='%Y-%m-%d %H:%M:%S',
                     level=logging.INFO)
 
+#model_name = "meta-llama/Llama-3.2-3B"
+model_name = "meta-llama/Llama-2-7b-chat-hf"
+import transformers
+tokenizer = transformers.AutoTokenizer.from_pretrained(model_name)
+tokenizer.pad_token = tokenizer.eos_token
+model = transformers.AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True, device_map="auto", torch_dtype=torch.float32)
+
+from rewrite_code import rewrite_code, rewrite_code_z
 cclm.eval()
 label_list, pred_list, all_similarities, all_labels = [], [], [], []
 with torch.no_grad():
     for batch in dataloader:
         codes = batch['code']
-        rewrite_codes = batch['rewrite_code']
+        #rewrite_codes = batch['rewrite_code']
+        rewrite_codes, _, _ = rewrite_code_z(codes, model, tokenizer, args.batch_size)
         labels = batch['labels'].to(device)
         labels = torch.tensor(labels).to(device)
         similarities, original_codes, per_codes = cclm.calc_similarity_custom(codes, rewrite_codes, model_config=model_config, args=args)

@@ -163,8 +163,8 @@ device = args.DEVICE
 #ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_AI_MBPP_gpt.json')
 #human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_Human_MBPP_gpt.json')
 
-ai_data = download_data_from_json('rewrite_dataset/a.json')
-human_data = download_data_from_json('rewrite_dataset/b.json')
+ai_data = download_data_from_json('rewrite_dataset/AI.json')
+human_data = download_data_from_json('rewrite_dataset/Human.json')
 
 #ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_AI_HumanEval_gpt.json')
 #human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_Human_HumanEval_gpt.json')
@@ -204,7 +204,7 @@ data = {
 
 dataset = CodeDatasetSimilarity(data, args)
 
-test_num = 100
+test_num = 50
 first_50_indices = list(range(test_num))
 last_50_indices = list(range(len(dataset.samples) - test_num, len(dataset.samples)))
 indices = first_50_indices + last_50_indices
