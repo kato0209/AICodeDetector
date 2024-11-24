@@ -189,6 +189,8 @@ last_50_indices = list(range(len(dataset.samples) - test_num, len(dataset.sample
 indices = first_50_indices + last_50_indices
 dataset = dataset.select(indices)
 
+dataset = dataset.select([1])
+
 dataloader = DataLoader(dataset, args.batch_size, shuffle=True)
 
 model_config = {}
@@ -216,12 +218,27 @@ logging.basicConfig(filename=os.path.join(log_path, f'test_{timestamp}.log'),
                     datefmt='%Y-%m-%d %H:%M:%S',
                     level=logging.INFO)
 
-#model_name = "meta-llama/Llama-3.2-3B"
-model_name = "meta-llama/Llama-2-7b-chat-hf"
+model_name = "meta-llama/Llama-3.1-8B"
+#model_name = "meta-llama/Llama-2-7b-chat-hf"
 import transformers
 tokenizer = transformers.AutoTokenizer.from_pretrained(model_name)
-tokenizer.pad_token = tokenizer.eos_token
-model = transformers.AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True, device_map="auto", torch_dtype=torch.float32)
+#tokenizer.pad_token = tokenizer.eos_token
+model = transformers.AutoModelForCausalLM.from_pretrained(model_name, device_map="auto")
+
+#pipeline = transformers.pipeline(
+#    "text-generation", model=model_name, model_kwargs={"torch_dtype": torch.bfloat16}, device_map="auto"
+#)
+#prompt = (
+#    "Please remove all comments from the Python code shown below. However, please keep the behavior and structure of the code intact, and remove only the comments completely. Do not make any changes to other elements such as functions, methods, variable names, etc.\n"
+#    "Output the code after comment deletion behind Output.\n"
+#    f"{dataset[0]['code']}"
+#    "\n"
+#    "Output:\n"
+#)
+#
+#res = pipeline(prompt, max_new_tokens=128, do_sample=False)
+#print(res[0]['generated_text'])
+#exit()
 
 from rewrite_code import rewrite_code, rewrite_code_z
 cclm.eval()

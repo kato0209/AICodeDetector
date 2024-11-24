@@ -297,14 +297,6 @@ class CustomCodeLlamaModel(nn.Module):
 
     def calc_similarity_custom(self, original_codes, rewrite_codes, args=None, model_config=None):
         #perturbed_codes, _, _ = self.rewrite_code(original_codes, model_config, args)
-        for i in range(len(original_codes)):
-            print("S---------")
-            print(original_codes[i])
-            print("-----------------")
-            print(rewrite_codes[i])
-            print("E---------")
-
-
         input_ids = []
         attention_mask = []
         for i in range(len(original_codes)):

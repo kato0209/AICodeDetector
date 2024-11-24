@@ -99,21 +99,21 @@ def rewrite_code_z(codes, model, tokenizer, batch_size):
 
     rewrite_codes = []
 
-    prompt_str = "Revise the code with your best effort"
-    prefix = ". No need to explain. Just write code(No code comments needed):"
+    prompt_str = "Please remove all comments from the Python code shown below. However, please keep the behavior and structure of the code intact, and remove only the comments completely. Do not make any changes to other elements such as functions, methods, variable names, etc.\n Output the code after comment deletion behind Output.\n"
+
+    prefix = "\n Output:\n"
     
     #with torch.distributed.fsdp.FullyShardedDataParallel.summon_full_params(model, offload_to_cpu=True):
     with torch.no_grad():
         for i in range(len(codes)):
-            input_prompt = f"{prompt_str}: \"{codes[i]}\" {prefix}"
+            input_prompt = f"{prompt_str}{codes[i]}{prefix}"
             inputs = tokenizer(input_prompt, return_tensors="pt")
             input_ids = inputs.input_ids.to(0)
             attention_mask = inputs.attention_mask[0].to(0).unsqueeze(0)
             output_sentence = tokenizer.decode(input_ids[0], skip_special_tokens=True).rstrip()
             print(f"入力コード: {output_sentence}")
             
-            outputs = model.generate(input_ids, attention_mask=attention_mask, do_sample=False, max_new_tokens=128, 
-                                            top_p=0.9, temperature=0.75, pad_token_id=tokenizer.eos_token_id)
+            outputs = model.generate(input_ids, attention_mask=attention_mask, do_sample=False, max_new_tokens=128)
             response_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
 

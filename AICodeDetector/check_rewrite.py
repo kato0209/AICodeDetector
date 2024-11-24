@@ -1,14 +1,14 @@
 import json
 
 # 元のJSONファイルを読み込む
-with open('json_data/llama_rewrite_code_human_inv.json', 'r', encoding='utf-8') as infile:
+with open('json_data/equi_rewrite_code_human_fix.json', 'r', encoding='utf-8') as infile:
     data = json.load(infile)
 
 # 新しい形式のリストを作成
 output_data = [
     {
         "original": item["input"],
-        "rewrite": item["Revise the code with your best effort"]
+        "rewrite": item["tmp&_Rewrite to use more code to complete the same function"]
     }
     for item in data
 ]
