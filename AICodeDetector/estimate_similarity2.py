@@ -218,7 +218,8 @@ logging.basicConfig(filename=os.path.join(log_path, f'test_{timestamp}.log'),
                     datefmt='%Y-%m-%d %H:%M:%S',
                     level=logging.INFO)
 
-model_name = "meta-llama/Llama-3.1-8B"
+#model_name = "meta-llama/Llama-3.1-8B"
+model_name = "meta-llama/Meta-Llama-3.1-8B-Instruct"
 #model_name = "meta-llama/Llama-2-7b-chat-hf"
 import transformers
 tokenizer = transformers.AutoTokenizer.from_pretrained(model_name)
@@ -226,11 +227,10 @@ tokenizer = transformers.AutoTokenizer.from_pretrained(model_name)
 model = transformers.AutoModelForCausalLM.from_pretrained(model_name, device_map="auto")
 
 #pipeline = transformers.pipeline(
-#    "text-generation", model=model_name, model_kwargs={"torch_dtype": torch.bfloat16}, device_map="auto"
+#    "text-generation", model=model, tokenizer=tokenizer
 #)
 #prompt = (
-#    "Please remove all comments from the Python code shown below. However, please keep the behavior and structure of the code intact, and remove only the comments completely. Do not make any changes to other elements such as functions, methods, variable names, etc.\n"
-#    "Output the code after comment deletion behind Output.\n"
+#    "Remove the comments from the python code below and output the new code after Output:\n"
 #    f"{dataset[0]['code']}"
 #    "\n"
 #    "Output:\n"
@@ -240,6 +240,43 @@ model = transformers.AutoModelForCausalLM.from_pretrained(model_name, device_map
 #print(res[0]['generated_text'])
 #exit()
 
+#tokenizer = transformers.AutoTokenizer.from_pretrained(model_name)
+#model = transformers.AutoModelForCausalLM.from_pretrained(
+#    model_name,
+#    torch_dtype=torch.bfloat16,
+#    device_map="auto",
+#)
+#
+#messages = [
+#    {"role": "system", "content": "You are a helpful chatbot"},
+#    {"role": "user", "content": prompt},
+#]
+#
+#input_ids = tokenizer.apply_chat_template(
+#    messages,
+#    add_generation_prompt=True,
+#    return_tensors="pt",
+#).to(model.device)
+#
+#print("Input tokens:")
+#print(input_ids)
+#
+#attention_mask = torch.ones_like(input_ids)
+#outputs = model.generate(
+#    input_ids,
+#    max_new_tokens=128,
+#    eos_token_id=tokenizer.eos_token_id,
+#    do_sample=True,
+#    temperature=0.6,
+#    top_p=0.9,
+#    attention_mask=attention_mask,
+#)
+#response = outputs[0][input_ids.shape[-1]:]
+#print("\nOutput:\n")
+#print(tokenizer.decode(response, skip_special_tokens=True))
+#exit()
+
+
 from rewrite_code import rewrite_code, rewrite_code_z
 cclm.eval()
 label_list, pred_list, all_similarities, all_labels = [], [], [], []
@@ -247,7 +284,7 @@ with torch.no_grad():
     for batch in dataloader:
         codes = batch['code']
         #rewrite_codes = batch['rewrite_code']
-        rewrite_codes, _, _ = rewrite_code_z(codes, model, tokenizer, args.batch_size)
+        rewrite_codes, _, _ = rewrite_code(codes, model, tokenizer, args.batch_size)
         labels = batch['labels'].to(device)
         labels = torch.tensor(labels).to(device)
         similarities, original_codes, per_codes = cclm.calc_similarity_custom(codes, rewrite_codes, model_config=model_config, args=args)
