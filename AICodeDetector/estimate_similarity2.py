@@ -183,13 +183,13 @@ data = {
 }
 
 dataset = CodeDatasetSimilarity(data, args)
-test_num = 2
+test_num = 40
 first_50_indices = list(range(test_num))
 last_50_indices = list(range(len(dataset.samples) - test_num, len(dataset.samples)))
 indices = first_50_indices + last_50_indices
 dataset = dataset.select(indices)
 
-dataset = dataset.select([1])
+#dataset = dataset.select([1])
 
 dataloader = DataLoader(dataset, args.batch_size, shuffle=True)
 
@@ -202,8 +202,7 @@ sm = SimilarityModel(model=model_config['sentence_model'], tokenizer=model_confi
 #model_path = 'saved_model/model_sm_20240628_064206.pth' 
 model_path = 'saved_model/SM_model_sm_20240715_210228.pth' 
 
-sm.load_state_dict(torch.load(model_path, map_location=device))
-sm.to(device)
+sm.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
 
 cclm = CustomCodeLlamaModel(model=model_config['model'], tokenizer=model_config['tokenizer'], sentence_model=sm, sentence_model_tokenizer=model_config['sentence_model_tokenizer'])
 cclm.to(device)
@@ -229,24 +228,26 @@ model = transformers.AutoModelForCausalLM.from_pretrained(model_name, device_map
 #pipeline = transformers.pipeline(
 #    "text-generation", model=model, tokenizer=tokenizer
 #)
-#prompt = (
-#    "Remove the comments from the python code below and output the new code after Output:\n"
-#    f"{dataset[0]['code']}"
-#    "\n"
-#    "Output:\n"
-#)
+
+
+#dataset.change_code(0, "def install_app(app, target='/Applications/'):\n    \"\"\"\n    Install an app file by moving it into the specified Applications directory\n\n    Args:\n        app (str): The location of the .app file\n        target (str): The target in which to install the package to\n                      Default is ''/Applications/''\n\n    Returns:\n        str: The results of the rsync command\n\n    CLI Example:\n\n    .. code-block:: bash\n\n        salt '*' macpackage.install_app /tmp/tmp.app /Applications/\n    \"\"\"\n\n    if target[-4:] != '.app':\n        if app[-1:] == '/':\n            base_app = os.path.basename(app[:-1])\n        else:\n            base_app = os.path.basename(app)\n\n        target = os.path.join(target, base_app)\n\n    if not app[-1] == '/':\n        app += '/'\n\n    cmd = 'rsync -a --delete \"{0}\" \"{1}\"'.format(app, target)\n    return __salt__['cmd.run'](cmd)")
+
+#prompt_str = "Revise the code with your best effort"
+#prefix = ". No need to explain. Just write code(No code comments needed):"
+#code = "def install_app(app, target='/Applications/'):\n    \"\"\"\n    Install an app file by moving it into the specified Applications directory\n\n    Args:\n        app (str): The location of the .app file\n        target (str): The target in which to install the package to\n                      Default is ''/Applications/''\n\n    Returns:\n        str: The results of the rsync command\n\n    CLI Example:\n\n    .. code-block:: bash\n\n        salt '*' macpackage.install_app /tmp/tmp.app /Applications/\n    \"\"\"\n\n    if target[-4:] != '.app':\n        if app[-1:] == '/':\n            base_app = os.path.basename(app[:-1])\n        else:\n            base_app = os.path.basename(app)\n\n        target = os.path.join(target, base_app)\n\n    if not app[-1] == '/':\n        app += '/'\n\n    cmd = 'rsync -a --delete \"{0}\" \"{1}\"'.format(app, target)\n    return __salt__['cmd.run'](cmd)"
 #
+#prompt = f"{prompt_str}: \"{code}\" {prefix}"
 #res = pipeline(prompt, max_new_tokens=128, do_sample=False)
+#
 #print(res[0]['generated_text'])
 #exit()
-
 #tokenizer = transformers.AutoTokenizer.from_pretrained(model_name)
 #model = transformers.AutoModelForCausalLM.from_pretrained(
 #    model_name,
 #    torch_dtype=torch.bfloat16,
 #    device_map="auto",
 #)
-#
+
 #messages = [
 #    {"role": "system", "content": "You are a helpful chatbot"},
 #    {"role": "user", "content": prompt},
@@ -276,10 +277,13 @@ model = transformers.AutoModelForCausalLM.from_pretrained(model_name, device_map
 #print(tokenizer.decode(response, skip_special_tokens=True))
 #exit()
 
-
 from rewrite_code import rewrite_code, rewrite_code_z
 cclm.eval()
 label_list, pred_list, all_similarities, all_labels = [], [], [], []
+AI_original_code_list = []
+AI_rewrite_code_list = []
+Human_original_code_list = []
+Human_rewrite_code_list = []
 with torch.no_grad():
     for batch in dataloader:
         codes = batch['code']
@@ -288,6 +292,14 @@ with torch.no_grad():
         labels = batch['labels'].to(device)
         labels = torch.tensor(labels).to(device)
         similarities, original_codes, per_codes = cclm.calc_similarity_custom(codes, rewrite_codes, model_config=model_config, args=args)
+
+        for i in range(len(codes)):
+            if labels[i] == 1:
+                AI_original_code_list.append(codes[i])
+                AI_rewrite_code_list.append(per_codes[i])
+            else:
+                Human_original_code_list.append(codes[i])
+                Human_rewrite_code_list.append(per_codes[i])
         
         similarities = similarities.detach().cpu().numpy()
         labels = labels.detach().cpu().numpy()
@@ -360,6 +372,10 @@ print(pred_list)
 print(accuracy)
 auc = roc_auc_score(label_list, pred_list)
 print(f"ROC AUC Threshold : {auc}")
+
+from utils.save_to_json import save_to_json_rewritten_code
+save_to_json_rewritten_code(AI_original_code_list, AI_rewrite_code_list, "AI", by="llama3")
+save_to_json_rewritten_code(Human_original_code_list, Human_rewrite_code_list, "Human", by="llama3")
 
 
 target_names = ['Human','ChatGPT']

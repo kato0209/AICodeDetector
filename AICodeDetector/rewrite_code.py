@@ -39,6 +39,7 @@ def rewrite_code(codes, model, tokenizer, batch_size):
     temperature = 1.0
     top_p = 0.95
     max_length = 128
+    max_token_length = 256
 
     prompt_str = "Revise the code with your best effort"
     prefix = ". No need to explain. Just write code(No code comments needed):"
@@ -46,9 +47,22 @@ def rewrite_code(codes, model, tokenizer, batch_size):
     with torch.no_grad():
         for i in range(len(codes)):
             input_prompt = f"{prompt_str}: \"{codes[i]}\" {prefix}"
-            inputs = tokenizer(input_prompt, return_tensors="pt")
-            input_ids = inputs.input_ids.to(0)
-            attention_mask = inputs.attention_mask[0].to(0).unsqueeze(0)
+            messages = [
+                {"role": "system", "content": "You are a helpful chatbot"},
+                {"role": "user", "content": input_prompt},
+            ]
+            input_ids = tokenizer.apply_chat_template(
+                messages,
+                add_generation_prompt=True,
+                return_tensors="pt",
+            ).to(model.device)
+            attention_mask = torch.ones_like(input_ids)
+            if input_ids.size(1) > max_token_length:
+                input_ids = input_ids[:, :max_token_length]
+                attention_mask = attention_mask[:, :max_token_length]
+            #inputs = tokenizer(input_prompt, return_tensors="pt", max_length=256, truncation=True)
+            #input_ids = inputs.input_ids.to(0)
+            #attention_mask = inputs.attention_mask[0].to(0).unsqueeze(0)
 
             output_ids = input_ids.clone()
             j = 0
@@ -106,9 +120,18 @@ def rewrite_code_z(codes, model, tokenizer, batch_size):
     with torch.no_grad():
         for i in range(len(codes)):
             input_prompt = f"{prompt_str}: \"{codes[i]}\" {prefix}"
-            inputs = tokenizer(input_prompt, return_tensors="pt")
-            input_ids = inputs.input_ids.to(0)
-            attention_mask = inputs.attention_mask[0].to(0).unsqueeze(0)
+            messages = [
+                {"role": "system", "content": "You are a helpful chatbot"},
+                {"role": "user", "content": input_prompt},
+            ]
+            input_ids = tokenizer.apply_chat_template(
+                messages,
+                add_generation_prompt=True,
+                return_tensors="pt",
+            ).to(model.device)
+            #input_ids = inputs.input_ids.to(0)
+            #attention_mask = inputs.attention_mask[0].to(0).unsqueeze(0)
+            attention_mask = torch.ones_like(input_ids)
             output_sentence = tokenizer.decode(input_ids[0], skip_special_tokens=True).rstrip()
             print(f"入力コード: {output_sentence}")
             

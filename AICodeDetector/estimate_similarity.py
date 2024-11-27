@@ -163,15 +163,13 @@ device = args.DEVICE
 #ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_AI_MBPP_gpt.json')
 #human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_Human_MBPP_gpt.json')
 
-ai_data = download_data_from_json('rewrite_dataset/AI.json')
-human_data = download_data_from_json('rewrite_dataset/Human.json')
+#ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_llama3_8B_AI_CSDataset_llama3_temp.json')
+#human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_llama3_8B_Human_CSDataset_llama3_temp.json')
 
-#ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_AI_HumanEval_gpt.json')
-#human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_Human_HumanEval_gpt.json')
+ai_data = download_data_from_json('rewrite_dataset_out/local_Rewrite_code_by_llama3_AI_CSDataset_llama3.json')
+human_data = download_data_from_json('rewrite_dataset_out/local_Rewrite_code_by_llama3_Human_CSDataset_llama3.json')
 
-#ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_codellama_AI_CSDataset_gpt.json')
-#human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_codellama_Human_CSDataset_gpt.json')
-#
+
 #from util_func import remove_comments
 #
 #human_data["original"] = [remove_comments(code) for code in human_data["original"]]
@@ -204,6 +202,7 @@ data = {
 
 dataset = CodeDatasetSimilarity(data, args)
 
+#test_num = 50
 test_num = 50
 first_50_indices = list(range(test_num))
 last_50_indices = list(range(len(dataset.samples) - test_num, len(dataset.samples)))

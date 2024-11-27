@@ -206,6 +206,9 @@ class CodeDatasetSimilarity(Dataset):
         selected_dataset.samples = selected_samples
         return selected_dataset
 
+    def change_code(self, index, code):
+        self.samples[index] = (code, self.samples[index][1], self.samples[index][2])
+
 class CodeDatasetForLLM(Dataset):
     def __init__(self, data, args):
         self.samples = []
