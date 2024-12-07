@@ -14,7 +14,6 @@ import datetime
 from torch.utils.data import DataLoader, random_split
 
 from model import CustomBertModel, SimilarityModel
-from pertubate import rewrite_code
 from transformers.optimization import AdamW, get_linear_schedule_with_warmup
 from utils.model_save import model_save, similarity_model_save
 from utils.confusion_matrix import plot_confusion_matrix
@@ -288,6 +287,8 @@ test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle=False)
 
 sm = SimilarityModel(model=model_config["model"], tokenizer=model_config["tokenizer"])
 sm.to(device)
+print(sm)
+exit()
 
 total_steps = int(len(train_dataloader) * args.num_train_epochs)
 warmup_steps = int(total_steps * args.warmup_ratio)

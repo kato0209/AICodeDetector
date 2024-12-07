@@ -163,11 +163,14 @@ device = args.DEVICE
 #ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_AI_MBPP_gpt.json')
 #human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_Human_MBPP_gpt.json')
 
-#ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_llama3_8B_AI_CSDataset_llama3_temp.json')
-#human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_llama3_8B_Human_CSDataset_llama3_temp.json')
+ai_data = download_data_from_json('rewrite_dataset/a.json')
+human_data = download_data_from_json('rewrite_dataset/b.json')
 
-ai_data = download_data_from_json('rewrite_dataset_out/local_Rewrite_code_by_llama3_AI_CSDataset_llama3.json')
-human_data = download_data_from_json('rewrite_dataset_out/local_Rewrite_code_by_llama3_Human_CSDataset_llama3.json')
+#ai_data = download_data_from_json('rewrite_dataset_out/Rewrite_code_by_llama3_AI_CSDataset_llama3.json')
+#human_data = download_data_from_json('rewrite_dataset_out/Rewrite_code_by_llama3_Human_CSDataset_llama3.json')
+
+#ai_data = download_data_from_json('rewrite_dataset_out/local_llama3.1_INST_test_300_500_Rewrite_code_by_llama3_AI_CSDataset_llama3.json')
+#human_data = download_data_from_json('rewrite_dataset_out/local_llama3.1_INST_test_300_500_Rewrite_code_by_llama3_Human_CSDataset_llama3.json')
 
 
 #from util_func import remove_comments
@@ -238,6 +241,10 @@ logging.basicConfig(filename=os.path.join(log_path, f'test_{timestamp}.log'),
 
 cclm.eval()
 label_list, pred_list, all_similarities, all_labels = [], [], [], []
+AI_original_code_list = []
+AI_rewrite_code_list = []
+Human_original_code_list = []
+Human_rewrite_code_list = []
 with torch.no_grad():
     for batch in dataloader:
         codes = batch['code']
@@ -245,6 +252,14 @@ with torch.no_grad():
         labels = batch['labels'].to(device)
         similarities, original_codes, per_codes = cclm.calc_similarity_custom(codes, rewrite_codes, model_config=model_config, args=args)
         
+        for i in range(len(codes)):
+            if labels[i] == 1:
+                AI_original_code_list.append(codes[i])
+                AI_rewrite_code_list.append(per_codes[i])
+            else:
+                Human_original_code_list.append(codes[i])
+                Human_rewrite_code_list.append(per_codes[i])
+
         similarities = similarities.detach().cpu().numpy()
         labels = labels.detach().cpu().numpy()
         
@@ -324,3 +339,7 @@ cm = confusion_matrix(label_list, pred_list)
 plot_confusion_matrix(cm, target_names, title='Confusion Matrix')
 logging.info('Classification Report')
 logging.info(classification_report(label_list, pred_list, target_names=target_names))
+
+from utils.save_to_json import save_to_json_rewritten_code
+#save_to_json_rewritten_code(AI_original_code_list, AI_rewrite_code_list, "AI", by="llama3")
+#save_to_json_rewritten_code(Human_original_code_list, Human_rewrite_code_list, "Human", by="llama3")

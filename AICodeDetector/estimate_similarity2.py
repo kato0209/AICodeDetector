@@ -163,8 +163,8 @@ device = args.DEVICE
 #ai_data = download_data_from_json('rewrite_dataset/rewrite_codellama_AI_origin_codellama.json')
 #human_data = download_data_from_json('rewrite_dataset/rewrite_codellama_Human_origin_codellama.json')
 
-ai_data = download_data_from_json('rewrite_dataset/out_rewrite_code_by_llama3_AI_CSDataset_llama3.json')
-human_data = download_data_from_json('rewrite_dataset/out_rewrite_code_by_llama3_Human_CSDataset_llama3.json')
+ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_llama3_AI_CSDataset_llama3_300_500.json')
+human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_llama3_Human_CSDataset_llama3_300_500.json')
 
 #ai_data = download_data_from_json2('json_data/rewrite_code_GPT_inv.json')
 #human_data = download_data_from_json2('json_data/rewrite_code_human_inv.json')
@@ -183,7 +183,7 @@ data = {
 }
 
 dataset = CodeDatasetSimilarity(data, args)
-test_num = 40
+test_num = 50
 first_50_indices = list(range(test_num))
 last_50_indices = list(range(len(dataset.samples) - test_num, len(dataset.samples)))
 indices = first_50_indices + last_50_indices
