@@ -231,3 +231,33 @@ class CodeDatasetForLLM(Dataset):
     def __getitem__(self, index):
         code, masked_code, label = self.samples[index]
         return {'code': code, 'masked_code': masked_code, 'labels': torch.tensor(label, dtype=torch.long)}
+
+class CodeDatasetSimilarityLearning(Dataset):
+    def __init__(self, data):
+        self.samples = []
+
+        human_data = data["human"]
+        ai_data = data["ai"]
+
+        #for i in range (len(human_data["original"])):
+        #    self.samples.append((human_data["original"][i], human_data["rewrite"][i], 0))
+        
+        for i in range (len(ai_data["original"])):
+            self.samples.append((ai_data["original"][i], ai_data["rewrite"][i], 1))
+    
+    def __len__(self):
+        return len(self.samples)
+
+    def __getitem__(self, index):
+
+        code, rewrite_code, label = self.samples[index]
+        
+        return {'code': code, 'rewrite_code': rewrite_code, 'labels': torch.tensor(label, dtype=torch.long)}
+    def select(self, indices):
+        # 選択されたインデックスを使って新しいサブセットを作成
+        selected_samples = [self.samples[i] for i in indices]
+        
+        # 新しいインスタンスを返す
+        selected_dataset = CodeDatasetSimilarityLearning.__new__(CodeDatasetSimilarityLearning)
+        selected_dataset.samples = selected_samples
+        return selected_dataset
