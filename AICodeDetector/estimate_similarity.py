@@ -163,11 +163,11 @@ device = args.DEVICE
 #ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_AI_MBPP_gpt.json')
 #human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_Human_MBPP_gpt.json')
 
-ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_llama3_AI_CSDataset_gpt.json')
-human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_llama3_Human_CSDataset_gpt.json')
+#ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_llama3_AI_CSDataset_gpt.json')
+#human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_llama3_Human_CSDataset_gpt.json')
 
-#ai_data = download_data_from_json('rewrite_dataset_out/Rewrite_code_by_llama3_AI_CSDataset_llama3.json')
-#human_data = download_data_from_json('rewrite_dataset_out/Rewrite_code_by_llama3_Human_CSDataset_llama3.json')
+ai_data = download_data_from_json('rewrite_dataset_out/test_3.1_8B_diff_train_100_Rewrite_code_by_llama3_AI_CSDataset_llama3.json')
+human_data = download_data_from_json('rewrite_dataset_out/test_3.1_8B_diff_train_100_Rewrite_code_by_llama3_Human_CSDataset_llama3.json')
 
 #ai_data = download_data_from_json('rewrite_dataset_out/local_llama3.1_INST_test_300_500_Rewrite_code_by_llama3_AI_CSDataset_llama3.json')
 #human_data = download_data_from_json('rewrite_dataset_out/local_llama3.1_INST_test_300_500_Rewrite_code_by_llama3_Human_CSDataset_llama3.json')
