@@ -163,8 +163,8 @@ device = args.DEVICE
 #ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_AI_MBPP_gpt.json')
 #human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_gpt_Human_MBPP_gpt.json')
 
-ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_llama3.1_8B_AI_CSDataset_llama3_300_500.json')
-human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_llama3.1_8B_Human_CSDataset_llama3_300_500.json')
+ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_llama3.1_8B_AI_CSDataset_llama3_0_300.json')
+human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_llama3.1_8B_Human_CSDataset_llama3_0_300.json')
 
 #ai_data = download_data_from_json('rewrite_dataset_out/Rewrite_code_by_llama3_AI_CSDataset_llama3.json')
 #human_data = download_data_from_json('rewrite_dataset_out/Rewrite_code_by_llama3_Human_CSDataset_llama3.json')
