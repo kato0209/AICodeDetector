@@ -37,7 +37,7 @@ def generate_hf(prompts, solutions):
         """
         prompt = prompt.format(problem=prompts[i])
         api_request_json = {
-            "model": "llama3-8b",
+            "model": "llama3.1-8b",
             "messages": [
                 {"role": "user", "content": prompt},
             ],
@@ -92,5 +92,5 @@ for i in range(len(prompts)):
     })
 
 #with open(f'HumanEval/outputs_{save_name}_t1-0.json', 'w') as file:
-with open(f'CSDataset/outputs_llama3_8B_300_500.json', 'w') as file:
+with open(f'CSDataset/outputs_llama3.1_8B_300_500.json', 'w') as file:
     json.dump(data, file, indent=4)
