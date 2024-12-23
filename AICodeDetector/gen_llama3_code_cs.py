@@ -73,8 +73,8 @@ prompts = np.array(prompts)[perm]
 solutions = np.array(solutions)[perm]
 
 data_num = 100
-prompts = prompts[300:500]
-solutions = solutions[300:500]
+prompts = prompts[1000:2000]
+solutions = solutions[1000:2000]
 
 data = []
 outputs = generate_hf(prompts, solutions)
@@ -92,5 +92,5 @@ for i in range(len(prompts)):
     })
 
 #with open(f'HumanEval/outputs_{save_name}_t1-0.json', 'w') as file:
-with open(f'CSDataset/outputs_llama3.1_8B_300_500.json', 'w') as file:
+with open(f'CSDataset/outputs_llama3.1_8B_1000_2000.json', 'w') as file:
     json.dump(data, file, indent=4)
