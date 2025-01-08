@@ -6,7 +6,7 @@ from preprocessing import preprocess_and_save
 from load_model import load_mask_filling_model, load_model
 from filling_mask import replace_masks
 from extract_fill import extract_fills, apply_extracted_fills
-from code_dataset import CodeDataset, CodeDatasetFromCodeSearchNet, CodeDatasetForLLM, CodeDatasetSimilarity
+from code_dataset import CodeDataset, CodeDatasetFromCodeSearchNet, CodeDatasetForLLM, CodeDatasetSimilarity_z
 import argparse
 import torch
 import os
@@ -163,6 +163,9 @@ device = args.DEVICE
 ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_llama3_AI_CSDataset_llama3_add_rewrite_latest3.json')
 human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_llama3_Human_CSDataset_llama3_add_rewrite_latest3.json')
 
+ai_data2 = download_data_from_json('rewrite_dataset/Rewrite_code_by_llama3_AI_CSDataset_llama3_add_rewrite_latest2_llama333.json')
+human_data2 = download_data_from_json('rewrite_dataset/Rewrite_code_by_llama3_Human_CSDataset_llama3_add_rewrite_latest2_llama333.json')
+
 #ai_data = download_data_from_json('rewrite_dataset_out/a.json')
 #human_data = download_data_from_json('rewrite_dataset_out/b.json')
 
@@ -180,6 +183,14 @@ human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_llama3_Hum
 #
 #ai_data["original"] = [remove_comments(code) for code in ai_data["original"]]
 #ai_data["rewrite"] = [remove_comments(code) for code in ai_data["rewrite"]]
+
+ai_data["rewrites"] = []
+for i in range(len(ai_data["rewrite"])):
+    ai_data["rewrites"].append([ai_data["rewrite"][i], ai_data2["rewrite"][i]])
+
+human_data["rewrites"] = []
+for i in range(len(human_data["rewrite"])):
+    human_data["rewrites"].append([human_data["rewrite"][i], human_data2["rewrite"][i]])
 
 data = {
     "human": human_data,
@@ -203,7 +214,7 @@ data = {
 #data = test_data
 
 
-dataset = CodeDatasetSimilarity(data, args)
+dataset = CodeDatasetSimilarity_z(data, args)
 
 #test_num = 50
 test_num = 50
@@ -248,31 +259,13 @@ Human_rewrite_code_list = []
 with torch.no_grad():
     for batch in dataloader:
         codes = batch['code']
-        rewrite_codes = batch['rewrite_code']
+        #rewrite_codes = batch['rewrite_code']
+        rewrite_codes_set = batch['rewrite_sets']
         labels = batch['labels'].to(device)
-        similarities, original_codes, per_codes = cclm.calc_similarity_custom(codes, rewrite_codes, model_config=model_config, args=args)
-        
-        for i in range(len(codes)):
-            if labels[i] == 1:
-                AI_original_code_list.append(codes[i])
-                AI_rewrite_code_list.append(per_codes[i])
-            else:
-                Human_original_code_list.append(codes[i])
-                Human_rewrite_code_list.append(per_codes[i])
+        similarities, original_codes, per_codes_set = cclm.calc_similarity_custom_z(codes, rewrite_codes_set, model_config=model_config, args=args)
 
         similarities = similarities.detach().cpu().numpy()
         labels = labels.detach().cpu().numpy()
-        
-        for i in range(len(similarities)):
-            print("S------------------")
-            print(original_codes[i])
-            print("------------------")
-            print(per_codes[i])
-            print("------------------")
-            print(similarities[i])
-            print("------------------")
-            print(labels[i])
-            print("E------------------")
         
         all_similarities.extend(similarities)
         all_labels.extend(labels)

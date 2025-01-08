@@ -184,17 +184,21 @@ class CodeDatasetSimilarity(Dataset):
 
         for i in range (len(human_data["original"])):
             self.samples.append((human_data["original"][i], human_data["rewrite"][i], 0))
+            #self.samples.append((human_data["original"][i], human_data["rewrite"][i], human_data["rewrites"][i], 0))
         
         for i in range (len(ai_data["original"])):
             self.samples.append((ai_data["original"][i], ai_data["rewrite"][i], 1))
+            #self.samples.append((ai_data["original"][i], ai_data["rewrite"][i], ai_data["rewrites"][i], 1))
     
     def __len__(self):
         return len(self.samples)
 
     def __getitem__(self, index):
 
+        #code, rewrite_code, rewrites_set, label = self.samples[index]
         code, rewrite_code, label = self.samples[index]
         
+        #return {'code': code, 'rewrite_code': rewrite_code, 'rewrite_sets': rewrites_set, 'labels': torch.tensor(label, dtype=torch.long)}
         return {'code': code, 'rewrite_code': rewrite_code, 'labels': torch.tensor(label, dtype=torch.long)}
 
     def select(self, indices):
@@ -203,6 +207,45 @@ class CodeDatasetSimilarity(Dataset):
         
         # 新しいインスタンスを返す
         selected_dataset = CodeDatasetSimilarity.__new__(CodeDatasetSimilarity)
+        selected_dataset.samples = selected_samples
+        return selected_dataset
+
+    def change_code(self, index, code):
+        self.samples[index] = (code, self.samples[index][1], self.samples[index][2])
+
+class CodeDatasetSimilarity_z(Dataset):
+    def __init__(self, data, args):
+        self.samples = []
+        self.args = args
+
+        human_data = data["human"]
+        ai_data = data["ai"]
+
+        for i in range (len(human_data["original"])):
+            #self.samples.append((human_data["original"][i], human_data["rewrite"][i], 0))
+            self.samples.append((human_data["original"][i], human_data["rewrite"][i], human_data["rewrites"][i], 0))
+        
+        for i in range (len(ai_data["original"])):
+            #self.samples.append((ai_data["original"][i], ai_data["rewrite"][i], 1))
+            self.samples.append((ai_data["original"][i], ai_data["rewrite"][i], ai_data["rewrites"][i], 1))
+    
+    def __len__(self):
+        return len(self.samples)
+
+    def __getitem__(self, index):
+
+        code, rewrite_code, rewrites_set, label = self.samples[index]
+        #code, rewrite_code, label = self.samples[index]
+        
+        return {'code': code, 'rewrite_code': rewrite_code, 'rewrite_sets': rewrites_set, 'labels': torch.tensor(label, dtype=torch.long)}
+        #return {'code': code, 'rewrite_code': rewrite_code, 'labels': torch.tensor(label, dtype=torch.long)}
+
+    def select(self, indices):
+        # 選択されたインデックスを使って新しいサブセットを作成
+        selected_samples = [self.samples[i] for i in indices]
+        
+        # 新しいインスタンスを返す
+        selected_dataset = CodeDatasetSimilarity_z.__new__(CodeDatasetSimilarity_z)
         selected_dataset.samples = selected_samples
         return selected_dataset
 

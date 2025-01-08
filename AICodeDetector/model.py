@@ -324,6 +324,56 @@ class CustomCodeLlamaModel(nn.Module):
     
         return cos_sim, original_codes, rewrite_codes
     
+    def calc_similarity_custom_z(self, original_codes, rewrite_codes_sets, args=None, model_config=None):
+        input_ids = []
+        attention_mask = []
+        for i in range(len(original_codes)):
+            encoded_inputs = self.sentence_model_tokenizer(
+                original_codes[i], 
+                return_tensors="pt", 
+                padding="max_length", 
+                truncation=True, 
+                max_length=128
+            ).to(self.model.device)
+            input_ids.append(encoded_inputs.input_ids)
+            attention_mask.append(encoded_inputs.attention_mask)
+        
+        # Convert input_ids and attention_mask to tensors
+        input_ids = torch.cat(input_ids, dim=0)
+        attention_mask = torch.cat(attention_mask, dim=0)
+        
+        # Calculate similarity for each rewritten set
+        all_cos_sim = []
+        for rewrite_codes in rewrite_codes_sets:
+            input_ids_p = []
+            attention_mask_p = []
+            for i in range(len(rewrite_codes)):
+                encoded_inputs = self.sentence_model_tokenizer(
+                    rewrite_codes[i], 
+                    return_tensors="pt", 
+                    padding="max_length", 
+                    truncation=True, 
+                    max_length=128
+                ).to(self.model.device)
+                input_ids_p.append(encoded_inputs.input_ids)
+                attention_mask_p.append(encoded_inputs.attention_mask)
+            
+            # Convert input_ids_p and attention_mask_p to tensors
+            input_ids_p = torch.cat(input_ids_p, dim=0)
+            attention_mask_p = torch.cat(attention_mask_p, dim=0)
+            
+            # Calculate embeddings and similarity
+            with torch.no_grad():
+                embeddings1 = self.sentence_model.output_embeddings(input_ids, attention_mask)
+                embeddings2 = self.sentence_model.output_embeddings(input_ids_p, attention_mask_p)
+            cos_sim = self.sentence_model.sim(embeddings1, embeddings2)
+            all_cos_sim.append(cos_sim)
+        
+        # Calculate the average similarity across all rewritten sets
+        average_cos_sim = torch.mean(torch.stack(all_cos_sim), dim=0)
+        
+        return average_cos_sim, original_codes, rewrite_codes_sets
+    
     def rewrite_code2(self, codes, model_config, args):
         def tokenize_and_normalize(sentence):
             # Tokenization and normalization
