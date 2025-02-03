@@ -232,11 +232,11 @@ model = transformers.AutoModelForCausalLM.from_pretrained(model_name, device_map
 
 #dataset.change_code(0, "def install_app(app, target='/Applications/'):\n    \"\"\"\n    Install an app file by moving it into the specified Applications directory\n\n    Args:\n        app (str): The location of the .app file\n        target (str): The target in which to install the package to\n                      Default is ''/Applications/''\n\n    Returns:\n        str: The results of the rsync command\n\n    CLI Example:\n\n    .. code-block:: bash\n\n        salt '*' macpackage.install_app /tmp/tmp.app /Applications/\n    \"\"\"\n\n    if target[-4:] != '.app':\n        if app[-1:] == '/':\n            base_app = os.path.basename(app[:-1])\n        else:\n            base_app = os.path.basename(app)\n\n        target = os.path.join(target, base_app)\n\n    if not app[-1] == '/':\n        app += '/'\n\n    cmd = 'rsync -a --delete \"{0}\" \"{1}\"'.format(app, target)\n    return __salt__['cmd.run'](cmd)")
 
-#prompt_str = "Revise the code with your best effort"
-#prefix = ". No need to explain. Just write code(No code comments needed):"
-#code = "def install_app(app, target='/Applications/'):\n    \"\"\"\n    Install an app file by moving it into the specified Applications directory\n\n    Args:\n        app (str): The location of the .app file\n        target (str): The target in which to install the package to\n                      Default is ''/Applications/''\n\n    Returns:\n        str: The results of the rsync command\n\n    CLI Example:\n\n    .. code-block:: bash\n\n        salt '*' macpackage.install_app /tmp/tmp.app /Applications/\n    \"\"\"\n\n    if target[-4:] != '.app':\n        if app[-1:] == '/':\n            base_app = os.path.basename(app[:-1])\n        else:\n            base_app = os.path.basename(app)\n\n        target = os.path.join(target, base_app)\n\n    if not app[-1] == '/':\n        app += '/'\n\n    cmd = 'rsync -a --delete \"{0}\" \"{1}\"'.format(app, target)\n    return __salt__['cmd.run'](cmd)"
-#
-#prompt = f"{prompt_str}: \"{code}\" {prefix}"
+prompt_str = "Revise the code with your best effort"
+prefix = ". No need to explain. Just write code(No code comments needed):"
+code = "def install_app(app, target='/Applications/'):\n    \"\"\"\n    Install an app file by moving it into the specified Applications directory\n\n    Args:\n        app (str): The location of the .app file\n        target (str): The target in which to install the package to\n                      Default is ''/Applications/''\n\n    Returns:\n        str: The results of the rsync command\n\n    CLI Example:\n\n    .. code-block:: bash\n\n        salt '*' macpackage.install_app /tmp/tmp.app /Applications/\n    \"\"\"\n\n    if target[-4:] != '.app':\n        if app[-1:] == '/':\n            base_app = os.path.basename(app[:-1])\n        else:\n            base_app = os.path.basename(app)\n\n        target = os.path.join(target, base_app)\n\n    if not app[-1] == '/':\n        app += '/'\n\n    cmd = 'rsync -a --delete \"{0}\" \"{1}\"'.format(app, target)\n    return __salt__['cmd.run'](cmd)"
+
+prompt = f"{prompt_str}: \"{code}\" {prefix}"
 #res = pipeline(prompt, max_new_tokens=128, do_sample=False)
 #
 #print(res[0]['generated_text'])
@@ -247,7 +247,6 @@ model = transformers.AutoModelForCausalLM.from_pretrained(model_name, device_map
 #    torch_dtype=torch.bfloat16,
 #    device_map="auto",
 #)
-
 #messages = [
 #    {"role": "system", "content": "You are a helpful chatbot"},
 #    {"role": "user", "content": prompt},
@@ -273,11 +272,15 @@ model = transformers.AutoModelForCausalLM.from_pretrained(model_name, device_map
 #    attention_mask=attention_mask,
 #)
 #response = outputs[0][input_ids.shape[-1]:]
-#print("\nOutput:\n")
-#print(tokenizer.decode(response, skip_special_tokens=True))
-#exit()
 
 from rewrite_code import rewrite_code, rewrite_code_z
+rewrite_codes, _, _ = rewrite_code([code], model, tokenizer, args.batch_size)
+print("\nOutput:\n")
+#print(tokenizer.decode(response, skip_special_tokens=True))
+print(rewrite_codes)
+exit()
+
+
 cclm.eval()
 label_list, pred_list, all_similarities, all_labels = [], [], [], []
 AI_original_code_list = []

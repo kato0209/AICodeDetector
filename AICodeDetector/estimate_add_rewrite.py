@@ -160,11 +160,11 @@ args = parser.parse_args(input_args)
 
 device = args.DEVICE
 
-ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_llama3_AI_CSDataset_llama3_add_rewrite_latest3.json')
-human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_llama3_Human_CSDataset_llama3_add_rewrite_latest3.json')
+ai_data = download_data_from_json('rewrite_dataset_out/c.json')
+human_data = download_data_from_json('rewrite_dataset_out/d.json')
 
-ai_data2 = download_data_from_json('rewrite_dataset/Rewrite_code_by_llama3_AI_CSDataset_llama3_add_rewrite_latest2_llama333.json')
-human_data2 = download_data_from_json('rewrite_dataset/Rewrite_code_by_llama3_Human_CSDataset_llama3_add_rewrite_latest2_llama333.json')
+ai_data2 = download_data_from_json('rewrite_dataset_out/a.json')
+human_data2 = download_data_from_json('rewrite_dataset_out/b.json')
 
 #ai_data = download_data_from_json('rewrite_dataset_out/a.json')
 #human_data = download_data_from_json('rewrite_dataset_out/b.json')

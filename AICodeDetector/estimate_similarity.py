@@ -160,11 +160,11 @@ args = parser.parse_args(input_args)
 
 device = args.DEVICE
 
-ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_llama3_AI_CSDataset_llama3_add_rewrite_latest3.json')
-human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_llama3_Human_CSDataset_llama3_add_rewrite_latest3.json')
+#ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_llama3_AI_CSDataset_llama3_add_rewrite_latest3.json')
+#human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_llama3_Human_CSDataset_llama3_add_rewrite_latest3.json')
 
-#ai_data = download_data_from_json('rewrite_dataset_out/a.json')
-#human_data = download_data_from_json('rewrite_dataset_out/b.json')
+ai_data = download_data_from_json('rewrite_dataset_out/a.json')
+human_data = download_data_from_json('rewrite_dataset_out/b.json')
 
 #ai_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_llama3.1_8B_AI_CSDataset_llama3.1_8B_300_500.json')
 #human_data = download_data_from_json('rewrite_dataset/Rewrite_code_by_llama3.1_8B_Human_CSDataset_llama3.1_8B_300_500.json')
@@ -212,7 +212,7 @@ last_50_indices = list(range(len(dataset.samples) - test_num, len(dataset.sample
 indices = first_50_indices + last_50_indices
 dataset = dataset.select(indices)
 
-dataloader = DataLoader(dataset, args.batch_size, shuffle=True)
+dataloader = DataLoader(dataset, args.batch_size, shuffle=False)
 
 model_config = {}
 model_config = load_model(args, args.base_model_name, model_config)

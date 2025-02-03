@@ -1,8 +1,15 @@
 import torch
 from torch.distributed.fsdp import FullyShardedDataParallel as FSDP
 import torch.nn.functional as F
+import time
+
+def set_random_seed():
+    seed = int(time.time())  # 例: 現在のUNIX timeをseedに使う
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
 
 def top_p_sampling(logits, tokenizer, top_p=0.95, temperature=1.0, top_k=5):
+    set_random_seed()
     # 温度でスケーリング
     logits = logits / temperature
 
@@ -36,6 +43,8 @@ def rewrite_code(codes, model, tokenizer, batch_size):
 
     rewrite_codes = []
     
+    #temperature = 1.5
+    #top_p = 0.9
     temperature = 1.0
     top_p = 0.95
     max_length = 128
